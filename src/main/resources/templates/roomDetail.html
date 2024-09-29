@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Phòng</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .computer-card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .computer-card.normal {
+            background-color: #d4edda; /* Màu xanh lá nhạt */
+        }
+
+        .computer-card.error {
+            background-color: #ffeeba; /* Màu cam nhạt */
+        }
+
+        .computer-card:hover {
+            transform: translateY(-5px);
+            background-color: #f1f1f1; /* Giữ màu nền của card khi hover */
+        }
+
+        .computer-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .computer-link {
+            text-decoration: none; /* Xóa gạch chân */
+            color: inherit; /* Giữ nguyên màu văn bản */
+            transition: color 0.2s ease, background-color 0.2s ease; /* Thêm hiệu ứng chuyển màu nền */
+        }
+
+        .computer-link:hover {
+            text-decoration: none; /* Xóa gạch chân */
+            color: #000; /* Đổi màu văn bản thành màu đen khi hover */
+            background-color: grey; /* Đặt màu nền cho thẻ a khi hover */
+        }
+    </style>
+
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Chi tiết Phòng</h1>
+
+    <div class="row mt-4">
+        <!-- Duyệt qua danh sách các máy tính -->
+        <div th:each="computer : ${computerDtoList}" class="col-md-3">
+            <a th:href="@{'/computer/' + ${computer.id}}" class="computer-link">
+                <div th:class="'computer-card ' + (${computer.status} == 1 ? 'normal' : 'error')">
+                    <div class="computer-title" th:text="${computer.name}">Tên Máy</div>
+                    <p><strong>Trạng thái:</strong>
+                        <span th:text="${computer.status} == 1 ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
+                    </p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

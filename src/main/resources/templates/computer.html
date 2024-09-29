@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Máy Tính</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        .device-card, .software-card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .device-card.normal, .software-card.normal {
+            background-color: #d4edda; /* Màu xanh nhạt */
+        }
+
+        .device-card.error, .software-card.error {
+            background-color: #ffeeba; /* Màu cam nhạt */
+        }
+
+        .device-card:hover, .software-card:hover {
+            transform: translateY(-5px);
+            background-color: #f1f1f1;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Chi tiết Máy Tính</h1>
+
+    <h2>Danh sách Thiết Bị</h2>
+    <div class="row mt-4">
+        <div th:each="device : ${deviceDtoList}" class="col-md-4">
+            <div th:class="'device-card ' + (${device.status == 1} ? 'normal' : 'error')">
+                <div class="title" th:text="${device.name}">Tên Thiết Bị</div>
+                <p><strong>Trạng thái:</strong>
+                    <span th:text="${device.status == 1} ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
+                </p>
+                <!-- Nút "Chi tiết" với điều hướng đến incident của thiết bị -->
+                <a th:href="@{/incident/device/{deviceId}(deviceId=${device.id})}" class="btn btn-primary">Chi tiết</a>
+            </div>
+        </div>
+    </div>
+
+    <h2>Danh sách Phần Mềm</h2>
+    <div class="row mt-4">
+        <div th:each="software : ${softWareDtoList}" class="col-md-4">
+            <div th:class="'software-card ' + (${software.status == 1} ? 'normal' : 'error')">
+                <div class="title" th:text="${software.name}">Tên Phần Mềm</div>
+                <p><strong>Phiên bản:</strong> <span th:text="${software.version}">Phiên bản</span></p>
+                <p>
+                    <strong>Thời gian cài đặt:</strong>
+                    <span th:text="${#temporals.format(software.setupTime, 'dd/MM/yyyy HH:mm')}">Thời gian</span>
+                </p>
+                <p><strong>Trạng thái:</strong>
+                    <span th:text="${software.status == 1} ? 'Hoạt động' : 'Không hoạt động'">Trạng thái</span>
+                </p>
+                <!-- Nút "Chi tiết" với điều hướng đến incident của phần mềm -->
+                <a th:href="@{/incident/software/{softwareId}(softwareId=${software.id})}" class="btn btn-primary">Chi tiết</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

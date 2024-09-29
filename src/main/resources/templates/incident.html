@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Incident Details</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+        .column {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .btn-success, .btn-warning {
+            margin-bottom: 10px;
+        }
+        .incident-form, .edit-device-form {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 column">
+            <h3>Thông tin Chi tiết</h3>
+            <p><strong>Tên thiết bị:</strong> <span th:text="${deviceDto.name}"></span></p>
+
+            <p>
+                <strong>Loại:</strong>
+                <span th:text="${deviceDto.type}"></span>
+                <select class="form-control" th:name="type" id="deviceTypeSelect">
+                    <option value="1" th:selected="${deviceDto.type == 1}">Bàn phím</option>
+                    <option value="2" th:selected="${deviceDto.type == 2}">Chuột</option>
+                    <option value="3" th:selected="${deviceDto.type == 3}">Màn hình</option>
+                    <option value="4" th:selected="${deviceDto.type == 4}">Thùng máy</option>
+                    <option value="5" th:selected="${deviceDto.type == 5}">Khác</option>
+                </select>
+            </p>
+
+            <p>
+                <strong>Trạng thái:</strong>
+                <span th:text="${deviceDto.status}"></span>
+                <select class="form-control" th:name="status" id="deviceStatusSelect">
+                    <option value="1" th:selected="${deviceDto.status == 1}">Bình thường</option>
+                    <option value="2" th:selected="${deviceDto.status == 2}">Lỗi</option>
+                </select>
+            </p>
+
+            <button id="editDeviceBtn" class="btn btn-warning">Chỉnh sửa</button>
+
+            <!-- Form chỉnh sửa thiết bị -->
+            <div id="editDeviceForm" class="edit-device-form">
+                <h4>Chỉnh sửa thông tin thiết bị</h4>
+                <form th:action="@{/incident/updateDevice}" method="post">
+                    <input type="hidden" th:name="${deviceDto.id}" th:value="${deviceDto.id}"/>
+
+                    <div class="form-group">
+                        <label>Tên thiết bị:</label>
+                        <input type="text" class="form-control" th:name="name" th:value="${deviceDto.name}" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Loại:</label>
+                        <select class="form-control" th:name="type" required>
+                            <option value="1">Bàn phím</option>
+                            <option value="2">Chuột</option>
+                            <option value="3">Màn hình</option>
+                            <option value="4">Thùng máy</option>
+                            <option value="5">Khác</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trạng thái:</label>
+                        <select class="form-control" th:name="status" required>
+                            <option value="1">Bình thường</option>
+                            <option value="2">Lỗi</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-8 column">
+            <h3>Thông tin Incident</h3>
+            <button id="addIncidentBtn" class="btn btn-success">Thêm Incident</button>
+
+            <!-- Form nhập incident -->
+            <div id="incidentForm" class="incident-form">
+                <h4>Nhập thông tin sự cố</h4>
+                <form th:action="@{/incident/add}" method="post">
+                    <div class="form-group">
+                        <label>Mô tả sự cố:</label>
+                        <textarea class="form-control" th:name="description" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trạng thái:</label>
+                        <select class="form-control" th:name="status">
+                            <option value="0">Lỗi</option>
+                            <option value="1">Hoạt động</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày báo cáo:</label>
+                        <input type="date" class="form-control" th:name="reportDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required/>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Thêm Sự cố</button>
+                </form>
+            </div>
+
+            <div th:each="incident : ${incidentDtoList}" class="incident-item">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p><strong>Mô tả:</strong> <span th:text="${incident.description}"></span></p>
+                        <p><strong>Trạng thái:</strong> <span th:text="${incident.status}"></span></p>
+                        <p><strong>Ngày báo cáo:</strong> <span th:text="${#dates.format(incident.reportDate, 'dd/MM/yyyy')}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#addIncidentBtn').click(function() {
+            $('#incidentForm').toggle();
+        });
+
+        $('#editDeviceBtn').click(function() {
+            $('#editDeviceForm').toggle();
+        });
+    });
+</script>
+
+</body>
+</html>
