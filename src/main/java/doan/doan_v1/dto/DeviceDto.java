@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class DeviceDto implements Serializable {
+public class DeviceDto extends AbstractDto implements Serializable {
     private int id;
 
     private String name;

@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.io.Serializable;
 @Getter
 @Setter
-public class RoomTypeDto implements Serializable {
+public class RoomTypeDto extends AbstractDto implements Serializable {
     private int id;
 
     private String name;

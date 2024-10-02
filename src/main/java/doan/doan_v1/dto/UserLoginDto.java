@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginDto implements Serializable {
+public class UserLoginDto extends AbstractDto implements Serializable {
 
     @NotEmpty
     @Size(min = 3, max = 20)

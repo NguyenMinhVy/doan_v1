@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class IncidentDto implements Serializable {
+public class IncidentDto extends AbstractDto implements Serializable {
 
     private int id;
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -44,6 +45,13 @@ public class IncidentController {
         SoftWareDto softWareDto = softWareService.getSoftWareDtoById(softwareId);
         model.addAttribute("softWareDto", softWareDto);
         model.addAttribute("incidentDtoList", incidentDtoList);
+        return "incident";
+    }
+
+    @GetMapping("/add")
+    public String addIncident (IncidentDto incidentDtoRequest , Model model) {
+        IncidentDto incidentDto = incidentService.addIncident(incidentDtoRequest);
+        model.addAttribute("incidentDto", incidentDto);
         return "incident";
     }
 }
