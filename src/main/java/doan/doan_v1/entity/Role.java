@@ -23,5 +23,5 @@ public class Role extends AbstractEntity{
     private String name;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 }

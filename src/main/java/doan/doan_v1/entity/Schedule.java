@@ -40,6 +40,6 @@ public class Schedule extends AbstractEntity{
     private int lectureId;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 
 }

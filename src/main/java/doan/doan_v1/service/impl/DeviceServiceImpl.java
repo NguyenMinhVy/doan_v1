@@ -36,4 +36,17 @@ public class DeviceServiceImpl implements DeviceService {
         Device device = deviceRepository.findById(deviceId).orElse(null);
         return deviceMapper.deviceToDeviceDto(device);
     }
+
+    @Override
+    public DeviceDto updateDeviceDto(DeviceDto deviceDto) {
+        Device device = deviceRepository.findById(deviceDto.getId()).orElse(null);
+        if (device == null) {
+            return null;
+        }else {
+            Device deviceUpdate = deviceMapper.deviceDtoToDevice(deviceDto);
+            deviceUpdate.setId(deviceDto.getId());
+            deviceRepository.save(deviceUpdate);
+        }
+        return deviceDto;
+    }
 }

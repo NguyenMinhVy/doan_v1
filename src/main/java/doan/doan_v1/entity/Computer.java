@@ -28,5 +28,5 @@ public class Computer extends AbstractEntity{
     private int status;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 }

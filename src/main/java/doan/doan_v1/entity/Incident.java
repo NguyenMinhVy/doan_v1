@@ -42,5 +42,5 @@ public class Incident extends AbstractEntity{
     private int deviceId;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 }

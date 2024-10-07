@@ -30,7 +30,7 @@ public class IncidentNotification extends AbstractEntity{
     private int receiveId;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 
 
 }

@@ -31,5 +31,5 @@ public class Software extends AbstractEntity{
     private LocalDateTime setupTime;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 }

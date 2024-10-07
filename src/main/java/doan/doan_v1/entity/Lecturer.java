@@ -29,5 +29,5 @@ public class Lecturer extends AbstractEntity{
     private int userId;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 }

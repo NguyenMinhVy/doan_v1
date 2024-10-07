@@ -29,5 +29,5 @@ public class Technician extends AbstractEntity{
     private int locationId;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 }

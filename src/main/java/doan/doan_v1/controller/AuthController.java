@@ -39,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping(value = "/auth")
-    public String auth(@Valid @ModelAttribute UserLoginDto userLoginDto, BindingResult bindingResult, Model model){
+    public String auth(@Valid @ModelAttribute UserLoginDto userLoginDto, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             return "login";
         }

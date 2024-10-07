@@ -26,5 +26,5 @@ public class RoomType extends AbstractEntity{
     private String capacity;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 }

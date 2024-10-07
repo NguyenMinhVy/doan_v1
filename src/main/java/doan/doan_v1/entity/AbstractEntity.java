@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,18 +17,18 @@ public abstract class AbstractEntity implements Serializable {
 
     @JsonIgnore
     @Column(name="insert_id", length = 16, nullable = false, unique = false)
-    private String insertId;
+    private int insertId;
 
     @JsonIgnore
     @Column(name="insert_date", nullable = false, unique = false)
-    private Timestamp insertDate;
+    private LocalDateTime insertDate;
 
     @JsonIgnore
     @Column(name="update_id", length = 16, nullable = false, unique = false)
-    private String updateId;
+    private int updateId;
 
     @JsonIgnore
     @Column(name="update_date", nullable = false, unique = false)
-    private Timestamp updateDate;
+    private LocalDateTime updateDate;
 
 }

@@ -35,5 +35,5 @@ public class User extends AbstractEntity{
     private int roleId;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 }

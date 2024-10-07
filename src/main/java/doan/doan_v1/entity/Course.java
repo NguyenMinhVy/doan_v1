@@ -38,5 +38,5 @@ public class Course extends AbstractEntity{
     private int roomId;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 }

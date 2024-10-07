@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Incident Details</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -21,119 +20,98 @@
         .btn-success, .btn-warning {
             margin-bottom: 10px;
         }
-        .incident-form, .edit-device-form {
-            display: none;
+        .incident-form {
             margin-top: 15px;
             padding: 15px;
             background-color: #e9ecef;
             border-radius: 5px;
+            display: none; /* Ẩn form khi tải trang */
+        }
+        .incident-form:last-child {
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div th:if="${message}" class="alert alert-success" role="alert">
+        <span th:text="${message}"></span>
+    </div>
     <div class="row">
         <div class="col-md-4 column">
+            <input type="hidden" th:value="${deviceDto.id}" id="deviceId">
             <h3>Thông tin Chi tiết</h3>
-            <p><strong>Tên thiết bị:</strong> <span th:text="${deviceDto.name}"></span></p>
 
-            <p>
-                <strong>Loại:</strong>
-                <span th:text="${deviceDto.type}"></span>
-                <select class="form-control" th:name="type" id="deviceTypeSelect">
+            <div>
+                <label><strong>Tên thiết bị:</strong></label>
+                <input type="text" class="form-control" th:value="${deviceDto.name}" id="deviceNameInput"/>
+            </div>
+
+            <div>
+                <label><strong>Loại:</strong></label>
+                <select class="form-control" id="deviceTypeSelect">
                     <option value="1" th:selected="${deviceDto.type == 1}">Bàn phím</option>
                     <option value="2" th:selected="${deviceDto.type == 2}">Chuột</option>
                     <option value="3" th:selected="${deviceDto.type == 3}">Màn hình</option>
                     <option value="4" th:selected="${deviceDto.type == 4}">Thùng máy</option>
                     <option value="5" th:selected="${deviceDto.type == 5}">Khác</option>
                 </select>
-            </p>
+            </div>
 
-            <p>
-                <strong>Trạng thái:</strong>
-                <span th:text="${deviceDto.status}"></span>
-                <select class="form-control" th:name="status" id="deviceStatusSelect">
+            <div>
+                <label><strong>Trạng thái:</strong></label>
+                <select class="form-control" id="deviceStatusSelect">
                     <option value="1" th:selected="${deviceDto.status == 1}">Bình thường</option>
                     <option value="2" th:selected="${deviceDto.status == 2}">Lỗi</option>
                 </select>
-            </p>
-
-            <button id="editDeviceBtn" class="btn btn-warning">Chỉnh sửa</button>
-
-            <!-- Form chỉnh sửa thiết bị -->
-            <div id="editDeviceForm" class="edit-device-form">
-                <h4>Chỉnh sửa thông tin thiết bị</h4>
-                <form th:action="@{/incident/updateDevice}" method="post">
-                    <input type="hidden" th:name="${deviceDto.id}" th:value="${deviceDto.id}"/>
-
-                    <div class="form-group">
-                        <label>Tên thiết bị:</label>
-                        <input type="text" class="form-control" th:name="name" th:value="${deviceDto.name}" required/>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Loại:</label>
-                        <select class="form-control" th:name="type" required>
-                            <option value="1">Bàn phím</option>
-                            <option value="2">Chuột</option>
-                            <option value="3">Màn hình</option>
-                            <option value="4">Thùng máy</option>
-                            <option value="5">Khác</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Trạng thái:</label>
-                        <select class="form-control" th:name="status" required>
-                            <option value="1">Bình thường</option>
-                            <option value="2">Lỗi</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Cập nhật</button>
-                </form>
             </div>
+
+            <button id="saveDeviceBtn" class="btn btn-primary">Lưu</button>
         </div>
 
         <div class="col-md-8 column">
             <h3>Thông tin Incident</h3>
             <button id="addIncidentBtn" class="btn btn-success">Thêm Incident</button>
 
-            <!-- Form nhập incident -->
-            <div id="incidentForm" class="incident-form">
-                <h4>Nhập thông tin sự cố</h4>
-                <form th:action="@{/incident/add}" method="post">
-                    <div class="form-group">
-                        <label>Mô tả sự cố:</label>
-                        <textarea class="form-control" th:name="description" required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Trạng thái:</label>
-                        <select class="form-control" th:name="status">
-                            <option value="0">Lỗi</option>
-                            <option value="1">Hoạt động</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Ngày báo cáo:</label>
-                        <input type="date" class="form-control" th:name="reportDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required/>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Thêm Sự cố</button>
-                </form>
-            </div>
-
+            <!-- Hiển thị danh sách các incident đã có -->
             <div th:each="incident : ${incidentDtoList}" class="incident-item">
                 <div class="card mb-3">
                     <div class="card-body">
                         <p><strong>Mô tả:</strong> <span th:text="${incident.description}"></span></p>
-                        <p><strong>Trạng thái:</strong> <span th:text="${incident.status}"></span></p>
-                        <p><strong>Ngày báo cáo:</strong> <span th:text="${#dates.format(incident.reportDate, 'dd/MM/yyyy')}"></span></p>
+                        <p>
+                            <strong>Trạng thái:</strong>
+                            <span th:if="${incident.status == 1}">Bình thường</span>
+                            <span th:if="${incident.status == 2}">Lỗi</span>
+                        </p>
+                        <p><strong>Ngày báo cáo:</strong> <span th:text="${#temporals.format(incident.reportDate, 'dd/MM/yyyy HH:mm')}"></span></p>
                     </div>
                 </div>
+            </div>
+
+            <!-- Form nhập incident -->
+            <div class="incident-form">
+                <h4>Nhập thông tin sự cố</h4>
+                <form id="incidentForm" th:action="@{/device/incident/add}" method="post">
+                    <input type="hidden" name="deviceId" th:value="${deviceDto.id}"/>
+                    <div class="form-group">
+                        <label>Mô tả sự cố:</label>
+                        <textarea class="form-control" name="description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Trạng thái:</label>
+                        <select class="form-control" name="status" required disabled>
+                            <option value="2" selected>Lỗi</option>
+                            <option value="1">Hoạt động</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày báo cáo:</label>
+                        <input type="datetime-local" class="form-control" name="reportDate" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm Sự cố</button>
+                    <button type="button" class="btn btn-danger cancel-btn">Hủy</button>
+                </form>
             </div>
         </div>
     </div>
@@ -141,12 +119,78 @@
 
 <script>
     $(document).ready(function() {
-        $('#addIncidentBtn').click(function() {
-            $('#incidentForm').toggle();
+        // Sự kiện lưu thông tin thiết bị
+        $('#saveDeviceBtn').click(function() {
+            let deviceId = $('#deviceId').val();
+            let name = $('#deviceNameInput').val();
+            let type = $('#deviceTypeSelect').val();
+            let status = $('#deviceStatusSelect').val();
+
+            // Kiểm tra thông tin nhập liệu
+            if (name.trim() === "") {
+                alert("Vui lòng nhập tên thiết bị.");
+                return;
+            }
+
+            let requestMap = {
+                deviceId: deviceId,
+                name: name,
+                type: type,
+                status: status
+            };
+
+            // Gửi AJAX request để cập nhật thông tin thiết bị
+            $.ajax({
+                type: "post",
+                async: false,
+                url: "/device/update/" + deviceId,
+                data: requestMap,
+                success: function (result) {
+                    alert("Cập nhật thiết bị thành công.");
+                },
+                error: function (error) {
+                    alert("Lỗi khi cập nhật thiết bị.");
+                }
+            });
         });
 
-        $('#editDeviceBtn').click(function() {
-            $('#editDeviceForm').toggle();
+        // Xử lý nút Thêm Incident
+        $('#addIncidentBtn').click(function() {
+            if ($('.incident-form').is(':visible')) {
+                alert("Hãy hoàn tất báo cáo hiện tại hoặc hủy để thêm mới incident.");
+            } else {
+                $('.incident-form').show(); // Hiển thị form khi chưa được hiển thị
+            }
+        });
+
+        // Xử lý nút Hủy trong form
+        $(document).on('click', '.cancel-btn', function () {
+            $('.incident-form').hide(); // Ẩn form khi hủy
+        });
+
+        // Kiểm tra đầu vào trước khi gửi form
+        $('#incidentForm').on('submit', function(event) {
+            let description = $(this).find('textarea[name="description"]').val();
+            let status = $(this).find('select[name="status"]').val();
+            let reportDate = $(this).find('input[name="reportDate"]').val();
+
+            if (description.trim() === "") {
+                alert("Vui lòng nhập mô tả sự cố.");
+                event.preventDefault(); // Ngăn chặn gửi form
+                return;
+            }
+
+            if (!status) {
+                alert("Vui lòng chọn trạng thái sự cố.");
+                event.preventDefault(); // Ngăn chặn gửi form
+                return;
+            }
+
+            if (!reportDate) {
+                alert("Vui lòng chọn ngày báo cáo.");
+                event.preventDefault(); // Ngăn chặn gửi form
+                return;
+            }
         });
     });
 </script>

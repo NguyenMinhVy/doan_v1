@@ -29,5 +29,5 @@ public class Room extends AbstractEntity{
     private int roomTypeId;
 
     @Column
-    private Boolean delFlag;
+    private Boolean delFlag = false;
 }
