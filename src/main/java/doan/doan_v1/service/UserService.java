@@ -13,4 +13,6 @@ public interface UserService {
     List<UserDto> findAllUsers();
 
     UserDto findByUsername(String username);
+
+    User getCurrentUserInfo();
 }

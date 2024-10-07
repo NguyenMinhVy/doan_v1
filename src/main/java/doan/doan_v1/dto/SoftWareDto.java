@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SoftWareDto implements Serializable {
+public class SoftWareDto extends AbstractDto implements Serializable {
 
     private int id;
 

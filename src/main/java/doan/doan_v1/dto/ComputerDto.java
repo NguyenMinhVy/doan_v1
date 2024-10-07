@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ComputerDto implements Serializable {
+public class ComputerDto extends AbstractDto implements Serializable {
 
     private int id;
 

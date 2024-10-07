@@ -11,4 +11,5 @@ public interface IncidentService {
     List<IncidentDto> getIncidentDtoListBySoftwareId(int softwareId);
 
 
+    IncidentDto addIncident(IncidentDto incidentDto);
 }

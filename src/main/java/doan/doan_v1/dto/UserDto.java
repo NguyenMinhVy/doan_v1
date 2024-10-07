@@ -13,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserDto implements Serializable {
+public class UserDto extends AbstractDto implements Serializable {
 
     private int id;
 

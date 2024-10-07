@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class RoomDto implements Serializable {
+public class RoomDto extends AbstractDto implements Serializable {
 
     private int id;
 
