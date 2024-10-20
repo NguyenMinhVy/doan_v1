@@ -5,39 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết Máy Tính</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 
-    <style>
-        .device-card, .software-card {
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease;
-        }
-
-        .device-card.normal, .software-card.normal {
-            background-color: #d4edda; /* Màu xanh nhạt */
-        }
-
-        .device-card.error, .software-card.error {
-            background-color: #ffeeba; /* Màu cam nhạt */
-        }
-
-        .device-card:hover, .software-card:hover {
-            transform: translateY(-5px);
-            background-color: #f1f1f1;
-        }
-
-        .title {
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-    </style>
 </head>
 <body>
-<div th:insert="fragments/header :: header"></div>
+<div th:replace="~{fragments/header :: header}"></div>
 
 <div class="container mt-5">
     <h1 class="text-center">Chi tiết Máy Tính</h1>

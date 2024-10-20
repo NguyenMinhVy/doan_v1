@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết Phòng</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+
     <style>
         .computer-card {
             border: 1px solid #ddd;
@@ -49,7 +51,7 @@
 
 </head>
 <body>
-<div th:insert="fragments/header :: header"></div>
+<div th:replace="~{fragments/header :: header}"></div>
 
 <div class="container mt-5">
     <h1 class="text-center">Chi tiết Phòng</h1>
