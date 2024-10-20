@@ -54,4 +54,11 @@ public class IncidentController {
         model.addAttribute("incidentDto", incidentDto);
         return "incident";
     }
+
+    @GetMapping("/list")
+    public String getIncidentList (Model model) {
+        List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoList();
+        model.addAttribute("incidentDtoList", incidentDtoList);
+        return "incidentList";
+    }
 }

@@ -12,4 +12,6 @@ public interface IncidentService {
 
 
     IncidentDto addIncident(IncidentDto incidentDto);
+
+    List<IncidentDto> getIncidentDtoList();
 }

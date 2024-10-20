@@ -2,7 +2,6 @@ package doan.doan_v1.controller;
 
 import doan.doan_v1.dto.DeviceDto;
 import doan.doan_v1.dto.SoftWareDto;
-import doan.doan_v1.service.ComputerService;
 import doan.doan_v1.service.DeviceService;
 import doan.doan_v1.service.SoftWareService;
 import org.springframework.beans.factory.annotation.Autowired;

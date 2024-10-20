@@ -1,9 +1,7 @@
 package doan.doan_v1.controller;
 
 import doan.doan_v1.dto.ComputerDto;
-import doan.doan_v1.dto.RoomDto;
 import doan.doan_v1.service.ComputerService;
-import doan.doan_v1.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -5,12 +5,12 @@ import doan.doan_v1.entity.Incident;
 import doan.doan_v1.entity.User;
 import doan.doan_v1.mapper.IncidentMapper;
 import doan.doan_v1.repository.IncidentRepository;
+import doan.doan_v1.repository.UserRepository;
 import doan.doan_v1.service.IncidentService;
 import doan.doan_v1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +26,8 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
 
     @Override
@@ -48,7 +50,20 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     public IncidentDto addIncident(IncidentDto incidentDto) {
-//        incidentDto.set(userService.getUserInfo().getId());
+        User user = userRepository.findById(incidentDto.getReportUser()).orElse(null);
+        if (user == null) {
+            return null;
+        }
+        incidentDto.setReportUserName(user.getUsername());
         return incidentMapper.incidentToIncidentDto(incidentRepository.save(incidentMapper.incidentDtoToIncident(incidentDto)));
+    }
+
+    @Override
+    public List<IncidentDto> getIncidentDtoList() {
+        List<Incident> incidentList = incidentRepository.findAll();
+        if (incidentList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return incidentMapper.incidentListToIncidentDtoList(incidentList);
     }
 }

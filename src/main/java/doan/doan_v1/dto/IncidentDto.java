@@ -24,6 +24,8 @@ public class IncidentDto extends AbstractDto implements Serializable {
 
     private int reportUser;
 
+    private String reportUserName;
+
     private int softwareId;
 
     private int deviceId;
