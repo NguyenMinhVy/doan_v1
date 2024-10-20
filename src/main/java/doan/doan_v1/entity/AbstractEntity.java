@@ -16,19 +16,19 @@ import java.time.LocalDateTime;
 public abstract class AbstractEntity implements Serializable {
 
     @JsonIgnore
-    @Column(name="insert_id", length = 16, nullable = false, unique = false)
+    @Column(name="insert_id", length = 16, nullable = true, unique = false)
     private int insertId;
 
     @JsonIgnore
-    @Column(name="insert_date", nullable = false, unique = false)
+    @Column(name="insert_date", nullable = true, unique = false)
     private LocalDateTime insertDate;
 
     @JsonIgnore
-    @Column(name="update_id", length = 16, nullable = false, unique = false)
+    @Column(name="update_id", length = 16, nullable = true, unique = false)
     private int updateId;
 
     @JsonIgnore
-    @Column(name="update_date", nullable = false, unique = false)
+    @Column(name="update_date", nullable = true, unique = false)
     private LocalDateTime updateDate;
 
 }

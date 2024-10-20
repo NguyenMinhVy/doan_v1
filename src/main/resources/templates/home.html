@@ -42,18 +42,20 @@
 <div th:replace="fragments/header :: header"></div>
 
 <div class="container mt-5">
-    <h1 class="text-center">Danh sách Phòng</h1>
+    <h1 class="text-center">Danh sách Phòng theo Địa điểm</h1>
 
-    <div class="row mt-4" th:each="room : ${roomList}">
-        <div class="col-md-3">
-            <a th:href="@{'/room/' + ${room.id}}" class="room-link">
-                <div class="room-card">
-                    <div class="room-title" th:text="${room.name}">Tên Phòng</div>
-                    <p><strong>Dãy Nhà:</strong> <span th:text="${room.locationDto.name}">Dãy A</span></p>
-                    <p><strong>Loại Phòng:</strong> <span th:text="${room.roomTypeDto.name}">MEDIUM</span></p>
-                    <p><strong>Số lượng máy:</strong> <span th:text="${room.roomTypeDto.capacity}">20</span></p>
-                </div>
-            </a>
+    <div th:each="location : ${locations}" class="mt-4">
+        <h2 th:text="${location.name}">Tên Địa điểm</h2>
+        <div class="row">
+            <div th:each="room : ${roomsByLocation.get(location)}" class="col-md-3">
+                <a th:href="@{'/room/' + ${room.id}}" class="room-link">
+                    <div class="room-card">
+                        <div class="room-title" th:text="${room.name}">Tên Phòng</div>
+                        <p><strong>Loại Phòng:</strong> <span th:text="${room.roomTypeDto.name}">MEDIUM</span></p>
+                        <p><strong>Số lượng máy:</strong> <span th:text="${room.roomTypeDto.capacity}">20</span></p>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 </div>
