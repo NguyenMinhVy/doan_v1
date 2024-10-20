@@ -12,9 +12,9 @@ import doan.doan_v1.service.RoomTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 public class RoomServiceImpl implements RoomService {
 
@@ -53,4 +53,29 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomRepository.findById(id).orElse(null);
         return roomMapper.roomToRoomDto(room);
     }
+
+    @Override
+    public RoomDto createRoom(RoomDto roomDto) {
+        Room room = roomMapper.roomDtoToRoom(roomDto);
+        return roomMapper.roomToRoomDto(roomRepository.save(room));
+    }
+
+    @Override
+    public Map<LocationDto, List<RoomDto>> getRoomsByLocation() {
+        List<RoomDto> allRooms = getAllRoomList();
+
+        Map<LocationDto, List<RoomDto>> roomsByLocation = new TreeMap<>(Comparator.comparing(LocationDto::getName));
+
+        for (RoomDto room : allRooms) {
+            roomsByLocation.computeIfAbsent(room.getLocationDto(), k -> new ArrayList<>()).add(room);
+        }
+
+        for (List<RoomDto> rooms : roomsByLocation.values()) {
+            rooms.sort(Comparator.comparing(RoomDto::getName));
+        }
+
+        return roomsByLocation;
+    }
+
+
 }

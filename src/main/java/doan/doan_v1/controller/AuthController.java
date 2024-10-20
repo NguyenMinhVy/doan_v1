@@ -1,8 +1,10 @@
 package doan.doan_v1.controller;
 
+import doan.doan_v1.dto.LocationDto;
 import doan.doan_v1.dto.RoomDto;
 import doan.doan_v1.dto.UserDto;
 import doan.doan_v1.dto.UserLoginDto;
+import doan.doan_v1.service.LocationService;
 import doan.doan_v1.service.RoomService;
 import doan.doan_v1.service.UserService;
 import jakarta.validation.Valid;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -31,6 +34,9 @@ public class AuthController {
 
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private LocationService locationService;
 
     @GetMapping("/login")
     public String login(Model model){
@@ -63,9 +69,12 @@ public class AuthController {
 
 
     @GetMapping("/home")
-    public String home(Model model){
-        List<RoomDto> roomList = roomService.getAllRoomList();
-        model.addAttribute("roomList", roomList);
+    public String home(Model model) {
+        List<LocationDto> locations = locationService.getAllLocationsSortedByName();
+        Map<LocationDto, List<RoomDto>> roomsByLocation = roomService.getRoomsByLocation();
+
+        model.addAttribute("locations", locations);
+        model.addAttribute("roomsByLocation", roomsByLocation);
         return "home";
     }
 
