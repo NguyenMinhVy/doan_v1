@@ -21,13 +21,12 @@
 .header-menu li a {
     text-decoration: none;
     color: #333;
-    font-weight: normal; /* Chữ không in đậm mặc định */
+    font-weight: bold; /* Chữ không in đậm mặc định */
     transition: font-weight 0.3s; /* Hiệu ứng chuyển tiếp cho font-weight */
 }
 
 .header-menu li a:hover {
-    font-weight: bold; /* In đậm khi hover */
-    color: mediumpurple; /* Màu chữ khi hover */
+    color: #7a62a5; /* Màu chữ khi hover */
 }
 
 .header-user-info {
@@ -56,4 +55,130 @@
     background-color: mediumpurple; /* Màu nền khi hover */
 }
 
+.dropdown-toggle {
+    cursor: pointer; /* Đổi con trỏ chuột thành tay khi hover */
+    padding: 10px 15px; /* Khoảng cách cho nút */
+    color: black; /* Màu chữ */
+    border-radius: 5px; /* Bo góc */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển đổi */
+}
+
+.dropdown-toggle:hover {
+    background-color: #7a62a5; /* Màu nền khi hover */
+}
+
+.dropdown-menu {
+    display: none; /* Ẩn menu dropdown */
+    position: absolute; /* Định vị tuyệt đối */
+    top: 100%; /* Đưa menu xuống dưới */
+    left: 0; /* Căn trái */
+    background-color: #dcd3ff; /* Màu nền menu */
+    border: 1px solid #dcd3ff; /* Viền xung quanh menu */
+    border-radius: 5px; /* Bo góc */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+    z-index: 1000; /* Đảm bảo menu luôn ở trên */
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block; /* Hiển thị menu khi hover */
+}
+
+.dropdown-menu li {
+    padding: 10px 15px; /* Khoảng cách cho các mục menu */
+}
+
+.dropdown-menu li a {
+    color: #333; /* Màu chữ cho các mục menu */
+    text-decoration: none; /* Không gạch chân */
+}
+
+/*.dropdown-menu li:hover {*/
+/*    background-color: #7a62a5; !* Màu nền khi hover vào mục menu *!*/
+/*    color: black; !* Màu chữ khi hover *!*/
+/*}*/
+
+
+/* style.css */
+
+/* Thiết lập bố cục và lề */
+.container {
+    margin-top: 20px;
+}
+
+/* Định dạng cho tiêu đề chính */
+h1, h2 {
+    color: #333;
+    font-weight: bold;
+}
+
+/* Định dạng thẻ card chung cho thiết bị, phần mềm và máy tính */
+.device-card, .software-card, .room-card, .computer-card {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+/* Hiệu ứng hover cho card */
+.device-card:hover, .software-card:hover, .room-card:hover, .computer-card:hover {
+    transform: scale(1.05);
+}
+
+/* Định dạng tiêu đề trong thẻ card */
+.device-card .title, .software-card .title, .room-card .room-title, .computer-card .computer-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Định dạng trạng thái */
+.device-card.normal, .software-card.normal, .room-card.normal, .computer-card.normal {
+    border-color: #28a745;
+    background-color: #e6f4ea; /* Nền xanh nhạt */
+
+}
+
+.device-card.error, .software-card.error, .room-card.error, .computer-card.error {
+    border-color: #dc3545;
+    background-color: #fde9d9; /* Nền cam nhạt */
+
+}
+
+/* Định dạng cho các thẻ a để trông giống văn bản */
+a {
+    color: black; /* Màu xanh */
+    text-decoration: none; /* Loại bỏ gạch chân */
+}
+
+a:hover {
+    color: black; /* Màu xanh đậm hơn khi hover */
+    text-decoration: none; /* Không gạch chân khi hover */
+}
+
+.btn.btn-primary {
+    color: black; /* Màu chữ */
+    background-color: #dcd3ff; /* Màu nền mặc định */
+    border-color: #dcd3ff; /* Màu viền giống như màu nền */
+}
+
+/* Thay đổi màu nền và màu viền khi hover */
+.btn.btn-primary:hover {
+    background-color: mediumpurple; /* Màu nền khi hover */
+    border-color: mediumpurple; /* Màu viền khi hover (nếu cần) */
+}
+
+.btn.btn-primary-outline {
+    color: black; /* Màu chữ */
+    background-color: transparent; /* Nền trong suốt hoàn toàn */
+    border-color: #dcd3ff; /* Màu viền giống như màu nền */
+}
+
+/* Thay đổi màu nền và màu viền khi hover */
+.btn.btn-primary-outline:hover {
+    background-color: mediumpurple; /* Màu nền khi hover */
+    border-color: mediumpurple; /* Màu viền khi hover (nếu cần) */
+}
 

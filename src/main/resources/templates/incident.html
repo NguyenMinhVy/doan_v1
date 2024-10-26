@@ -43,60 +43,78 @@
     </div>
     <div class="row">
         <div class="col-md-4 column">
-            <input type="hidden" th:value="${deviceDto.id}" id="deviceId">
-            <h3>Thông tin Chi tiết</h3>
+            <div th:if="${deviceDto != null}">
+                <input type="hidden" th:value="${deviceDto.id}" id="deviceId">
+                <h3>Thông tin Chi tiết</h3>
 
-            <div>
-                <label><strong>Tên thiết bị:</strong></label>
-                <input type="text" class="form-control" th:value="${deviceDto.name}" id="deviceNameInput"/>
+                <div>
+                    <label><strong>Tên thiết bị:</strong></label>
+                    <input type="text" class="form-control" th:value="${deviceDto.name}" id="deviceNameInput"/>
+                </div>
+
+                <div>
+                    <label><strong>Loại:</strong></label>
+                    <select class="form-control" id="deviceTypeSelect">
+                        <option value="1" th:selected="${deviceDto.type == 1}">Bàn phím</option>
+                        <option value="2" th:selected="${deviceDto.type == 2}">Chuột</option>
+                        <option value="3" th:selected="${deviceDto.type == 3}">Màn hình</option>
+                        <option value="4" th:selected="${deviceDto.type == 4}">Thùng máy</option>
+                        <option value="5" th:selected="${deviceDto.type == 5}">Khác</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label><strong>Trạng thái:</strong></label>
+                    <select class="form-control" id="deviceStatusSelect">
+                        <option value="1" th:selected="${deviceDto.status == 1}">Bình thường</option>
+                        <option value="2" th:selected="${deviceDto.status == 2}">Lỗi</option>
+                    </select>
+                </div>
+
+                <button id="saveDeviceBtn" class="btn btn-primary">Lưu</button>
             </div>
 
-            <div>
-                <label><strong>Loại:</strong></label>
-                <select class="form-control" id="deviceTypeSelect">
-                    <option value="1" th:selected="${deviceDto.type == 1}">Bàn phím</option>
-                    <option value="2" th:selected="${deviceDto.type == 2}">Chuột</option>
-                    <option value="3" th:selected="${deviceDto.type == 3}">Màn hình</option>
-                    <option value="4" th:selected="${deviceDto.type == 4}">Thùng máy</option>
-                    <option value="5" th:selected="${deviceDto.type == 5}">Khác</option>
-                </select>
-            </div>
+            <!-- Nếu deviceDto là null, hiển thị thông tin của phần mềm -->
+            <div th:if="${deviceDto == null}">
+                <h3>Thông tin Phần mềm</h3>
 
-            <div>
-                <label><strong>Trạng thái:</strong></label>
-                <select class="form-control" id="deviceStatusSelect">
-                    <option value="1" th:selected="${deviceDto.status == 1}">Bình thường</option>
-                    <option value="2" th:selected="${deviceDto.status == 2}">Lỗi</option>
-                </select>
-            </div>
+                <div>
+                    <label><strong>Tên phần mềm:</strong></label>
+                    <input type="text" class="form-control" th:value="${softWareDto.name}" id="softwareNameInput"  />
+                </div>
 
-            <button id="saveDeviceBtn" class="btn btn-primary">Lưu</button>
+                <div>
+                    <label><strong>Phiên bản:</strong></label>
+                    <input type="text" class="form-control" th:value="${softWareDto.version}" id="softwareVersionInput"  />
+                </div>
+
+                <div>
+                    <label><strong>Thời gian cài đặt:</strong></label>
+                    <input type="text" class="form-control" th:value="${#temporals.format(softWareDto.setupTime, 'dd/MM/yyyy HH:mm')}" id="softwareSetupTimeInput"  />
+                </div>
+
+                <div>
+                    <label><strong>Trạng thái:</strong></label>
+                    <select class="form-control" id="softwareStatusSelect" >
+                        <option value="1" th:selected="${softWareDto.status == 1}">Hoạt động</option>
+                        <option value="2" th:selected="${softWareDto.status == 2}">Không hoạt động</option>
+                    </select>
+                </div>
+                <button id="saveSoftWareBtn" class="btn btn-primary">Lưu</button>
+            </div>
         </div>
 
+
         <div class="col-md-8 column">
-            <h3>Thông tin Incident</h3>
-            <button id="addIncidentBtn" class="btn btn-success">Thêm Incident</button>
-
-            <!-- Hiển thị danh sách các incident đã có -->
-            <div th:each="incident : ${incidentDtoList}" class="incident-item">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <p><strong>Mô tả:</strong> <span th:text="${incident.description}"></span></p>
-                        <p>
-                            <strong>Trạng thái:</strong>
-                            <span th:if="${incident.status == 1}">Bình thường</span>
-                            <span th:if="${incident.status == 2}">Lỗi</span>
-                        </p>
-                        <p><strong>Ngày báo cáo:</strong> <span th:text="${#temporals.format(incident.reportDate, 'dd/MM/yyyy HH:mm')}"></span></p>
-                    </div>
-                </div>
-            </div>
-
+            <h3>Thông tin Sự Cố</h3>
+            <button id="addIncidentBtn" class="btn btn-success">Thêm Sự Cố</button>
             <!-- Form nhập incident -->
             <div class="incident-form">
                 <h4>Nhập thông tin sự cố</h4>
                 <form id="incidentForm" th:action="@{/device/incident/add}" method="post">
-                    <input type="hidden" name="deviceId" th:value="${deviceDto.id}"/>
+                    <input type="hidden" name="deviceId" th:if="${deviceDto != null}" th:value="${deviceDto.id}"/>
+
+                    <input type="hidden" name="softwareId" th:if="${softWareDto != null}" th:value="${softWareDto.id}"/>
                     <div class="form-group">
                         <label>Mô tả sự cố:</label>
                         <textarea class="form-control" name="description" required></textarea>
@@ -115,6 +133,24 @@
                     <button type="submit" class="btn btn-primary">Thêm Sự cố</button>
                     <button type="button" class="btn btn-danger cancel-btn">Hủy</button>
                 </form>
+            </div>
+
+            <!-- Hiển thị danh sách các incident đã có -->
+            <div th:if="${incidentDtoList == null || incidentDtoList.isEmpty()}" class="col-12">
+                <p class="text-center text-muted">Không có sự cố.</p>
+            </div>
+            <div th:each="incident : ${incidentDtoList}" class="incident-item">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p><strong>Mô tả:</strong> <span th:text="${incident.description}"></span></p>
+                        <p>
+                            <strong>Trạng thái:</strong>
+                            <span th:if="${incident.status == 1}">Bình thường</span>
+                            <span th:if="${incident.status == 2}">Lỗi</span>
+                        </p>
+                        <p><strong>Ngày báo cáo:</strong> <span th:text="${#temporals.format(incident.reportDate, 'dd/MM/yyyy HH:mm')}"></span></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -153,6 +189,43 @@
                 },
                 error: function (error) {
                     alert("Lỗi khi cập nhật thiết bị.");
+                }
+            });
+        });
+
+        $('#saveSoftWareBtn').click(function() {
+            let softWareId = $('#softwareId').val();
+            let name = $('#softwareNameInput').val();
+            let version = $('#softwareVersionInput').val();
+            let setupTime = $('#softwareSetupTimeInput').val();
+            let status = $('#softwareStatusSelect').val();
+
+
+            // Kiểm tra thông tin nhập liệu
+            if (name.trim() === "") {
+                alert("Vui lòng nhập tên phần mềm.");
+                return;
+            }
+
+            let requestMap = {
+                softwareId: softWareId,
+                name: name,
+                setupTime: setupTime,
+                version: version,
+                status: status
+            };
+
+            // Gửi AJAX request để cập nhật thông tin thiết bị
+            $.ajax({
+                type: "post",
+                async: false,
+                url: "/software/update/" + softWareId,
+                data: requestMap,
+                success: function (result) {
+                    alert("Cập phần mềm bị thành công.");
+                },
+                error: function (error) {
+                    alert("Lỗi khi cập nhật phần mềm.");
                 }
             });
         });

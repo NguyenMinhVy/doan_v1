@@ -29,8 +29,5 @@ public class Device extends AbstractEntity{
     private int status;
 
     @Column
-    private int computerId;
-
-    @Column
     private Boolean delFlag = false;
 }

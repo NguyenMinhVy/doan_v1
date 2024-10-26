@@ -15,23 +15,31 @@
     <h1 class="text-center">Chi tiết Máy Tính</h1>
 
     <h2>Danh sách Thiết Bị</h2>
+    <div th:if="${deviceDtoList == null || deviceDtoList.isEmpty()}" class="col-12">
+        <p class="text-center text-muted">Không có thiết bị.</p>
+    </div>
     <div class="row mt-4">
         <div th:each="device : ${deviceDtoList}" class="col-md-4">
             <div th:class="'device-card ' + (${device.status == 1} ? 'normal' : 'error')">
+                <a th:href="@{/incident/device/{deviceId}(deviceId=${device.id})}" class="software-link">
                 <div class="title" th:text="${device.name}">Tên Thiết Bị</div>
                 <p><strong>Trạng thái:</strong>
                     <span th:text="${device.status == 1} ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
                 </p>
                 <!-- Nút "Chi tiết" với điều hướng đến incident của thiết bị -->
-                <a th:href="@{/incident/device/{deviceId}(deviceId=${device.id})}" class="btn btn-primary">Chi tiết</a>
+                </a>
             </div>
         </div>
     </div>
 
     <h2>Danh sách Phần Mềm</h2>
     <div class="row mt-4">
+        <div th:if="${softWareDtoList == null || softWareDtoList.isEmpty()}" class="col-12">
+            <p class="text-center text-muted">Không có phần mềm.</p>
+        </div>
         <div th:each="software : ${softWareDtoList}" class="col-md-4">
             <div th:class="'software-card ' + (${software.status == 1} ? 'normal' : 'error')">
+                <a th:href="@{/incident/software/{softwareId}(softwareId=${software.id})}" class="software-link">
                 <div class="title" th:text="${software.name}">Tên Phần Mềm</div>
                 <p><strong>Phiên bản:</strong> <span th:text="${software.version}">Phiên bản</span></p>
                 <p>
@@ -42,7 +50,7 @@
                     <span th:text="${software.status == 1} ? 'Hoạt động' : 'Không hoạt động'">Trạng thái</span>
                 </p>
                 <!-- Nút "Chi tiết" với điều hướng đến incident của phần mềm -->
-                <a th:href="@{/incident/software/{softwareId}(softwareId=${software.id})}" class="btn btn-primary">Chi tiết</a>
+                </a>
             </div>
         </div>
     </div>

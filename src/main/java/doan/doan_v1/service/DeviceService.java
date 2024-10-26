@@ -11,4 +11,7 @@ public interface DeviceService {
     DeviceDto findDeviceDtoById(int deviceId);
 
     DeviceDto updateDeviceDto(DeviceDto deviceDto);
+
+    List<DeviceDto> findAllDeviceDtoList();
+
 }

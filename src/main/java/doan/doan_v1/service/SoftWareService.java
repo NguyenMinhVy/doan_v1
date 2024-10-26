@@ -16,5 +16,5 @@ public interface SoftWareService {
 
     SoftWareDto getSoftWareDtoById(int softWareId);
 
-
+    List<SoftWareDto> getAllSoftWareDtoList();
 }

@@ -8,6 +8,9 @@ import doan.doan_v1.service.RoomTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class RoomTypeServiceImpl implements RoomTypeService {
 
@@ -25,5 +28,12 @@ public class RoomTypeServiceImpl implements RoomTypeService {
             return null;
         }
         return roomTypeMapper.roomTypeToRoomTypeDto(roomType);
+    }
+
+    @Override
+    public List<RoomTypeDto> getAllRoomTypesSortedByName() {
+        return roomTypeRepository.findAllByOrderByNameAsc().stream()
+                .map(roomTypeMapper::roomTypeToRoomTypeDto)
+                .collect(Collectors.toList());
     }
 }
