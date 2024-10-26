@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Phòng Mới</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mt-5">
+
+    <div th:if="${param.error}">
+        <div class="alert alert-danger">Tạo phòng thất bại</div>
+    </div>
+    <h1 class="text-center">Tạo Phòng Mới</h1>
+
+    <form th:action="@{/room/create}" th:object="${roomDto}" method="post" class="mt-4">
+        <!-- Nhập tên phòng -->
+        <div class="form-group">
+            <label for="name">Tên Phòng</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Nhập tên phòng" required>
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+        </div>
+
+        <!-- Chọn Địa điểm (Location) -->
+        <div class="form-group">
+            <label for="location">Địa điểm</label>
+            <select id="location" name="locationDto.id" class="form-control" required>
+                <option value="" disabled selected>Chọn địa điểm</option>
+                <option th:each="location : ${locationDtoList}"
+                        th:value="${location.id}"
+                        th:text="${location.name}">Địa điểm</option>
+            </select>
+        </div>
+
+        <!-- Chọn Loại phòng (RoomType) -->
+        <div class="form-group">
+            <label for="roomType">Loại Phòng</label>
+            <select id="roomType" name="roomTypeDto.id" class="form-control" required>
+                <option value="" disabled selected>Chọn loại phòng</option>
+                <option th:each="roomType : ${roomTypeDtoList}"
+                        th:value="${roomType.id}"
+                        th:text="${roomType.name}">loại phòng</option>
+            </select>
+        </div>
+
+        <!-- Nút submit -->
+        <button type="submit" class="btn btn-primary">Tạo Phòng</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

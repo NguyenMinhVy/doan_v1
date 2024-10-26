@@ -9,4 +9,8 @@ public interface ComputerService {
     List<ComputerDto> getComputerListByRoomId(int roomId);
 
     ComputerDto getComputerById(int id);
+
+    boolean isComputerNameExist (String name);
+
+    ComputerDto createComputer(ComputerDto computerDto);
 }

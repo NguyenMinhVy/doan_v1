@@ -24,11 +24,12 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public List<DeviceDto> findAllDeviceDtoByComputerId(int computerId) {
 
-        List<Device> deviceList = deviceRepository.findByComputerIdAndDelFlagFalse(computerId);
-        if (deviceList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return deviceMapper.deviceListToDeviceDtoList(deviceList);
+//        List<Device> deviceList = deviceRepository.findByComputerIdAndDelFlagFalse(computerId);
+//        if (deviceList.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//        return deviceMapper.deviceListToDeviceDtoList(deviceList);
+        return null;
     }
 
     @Override
@@ -48,5 +49,14 @@ public class DeviceServiceImpl implements DeviceService {
             deviceRepository.save(deviceUpdate);
         }
         return deviceDto;
+    }
+
+    @Override
+    public List<DeviceDto> findAllDeviceDtoList() {
+        List<Device> deviceList = deviceRepository.findByDelFlagFalse();
+        if (deviceList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return deviceMapper.deviceListToDeviceDtoList(deviceList);
     }
 }

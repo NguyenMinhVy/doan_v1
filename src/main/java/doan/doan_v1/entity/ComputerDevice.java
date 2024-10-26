@@ -7,27 +7,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "device")
+@Table(name = "computer_device")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Device extends AbstractEntity{
-
+public class ComputerDevice extends AbstractEntity{
     @Id
     @Column(nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column
-    private String name;
+    private int computerId;
 
     @Column
-    private int type;
+    private int deviceId;
 
     @Column
     private int status;
 
     @Column
-    private Boolean delFlag = false;
+    private String deviceCode;
 }

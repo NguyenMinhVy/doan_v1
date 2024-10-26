@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SoftWareServiceImpl implements SoftWareService {
@@ -44,5 +45,14 @@ public class SoftWareServiceImpl implements SoftWareService {
     public SoftWareDto getSoftWareDtoById(int softWareId) {
         Software software = softWareRepository.findById(softWareId).orElse(null);
         return softWareMapper.softWareToSoftWareDto(software);
+    }
+
+    @Override
+    public List<SoftWareDto> getAllSoftWareDtoList() {
+
+        return softWareRepository.findByDelFlagFalse()
+                .stream()
+                .map(softWareMapper::softWareToSoftWareDto)
+                .collect(Collectors.toList());
     }
 }

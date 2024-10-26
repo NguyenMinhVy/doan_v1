@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Máy Tính Mới</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mt-5">
+    <h1 class="text-center">Tạo Máy Tính Mới</h1>
+
+    <form th:action="@{/computer/create}" th:object="${computerDto}" method="post">
+        <!-- Nhập tên máy tính -->
+        <div class="form-group">
+            <label for="name">Tên Máy Tính</label>
+            <input type="text" id="name" name="name" class="form-control" th:field="*{name}" required />
+        </div>
+
+        <!-- Chọn trạng thái -->
+        <div class="form-group">
+            <label for="status">Trạng Thái</label>
+            <select id="status" name="status" class="form-control" th:field="*{status}">
+                <option value="1" th:selected="*{status == 1}">Bình Thường</option>
+                <option value="2" th:selected="*{status == 2}">Lỗi</option>
+            </select>
+        </div>
+
+        <!-- Thiết bị - Dựa trên từng type -->
+        <div class="form-group">
+            <label>Bàn phím</label>
+            <select name="keyboardId" class="form-control" required>
+                <option value="">Chọn bàn phím</option>
+                <option th:each="device : ${computerDto.deviceDtoList}"
+                        th:if="${device.type == 1}"
+                        th:value="${device.id}"
+                        th:text="${device.name}">Tên Bàn phím</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Chuột</label>
+            <select name="mouseId" class="form-control" required>
+                <option value="">Chọn chuột</option>
+                <option th:each="device : ${computerDto.deviceDtoList}"
+                        th:if="${device.type == 2}"
+                        th:value="${device.id}"
+                        th:text="${device.name}">Tên Chuột</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Màn hình</label>
+            <select name="monitorId" class="form-control" required>
+                <option value="">Chọn màn hình</option>
+                <option th:each="device : ${computerDto.deviceDtoList}"
+                        th:if="${device.type == 3}"
+                        th:value="${device.id}"
+                        th:text="${device.name}">Tên Màn hình</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Thùng máy</label>
+            <select name="caseId" class="form-control" required>
+                <option value="">Chọn thùng máy</option>
+                <option th:each="device : ${computerDto.deviceDtoList}"
+                        th:if="${device.type == 4}"
+                        th:value="${device.id}"
+                        th:text="${device.name}">Tên Thùng máy</option>
+            </select>
+        </div>
+
+        <!-- Chọn nhiều phần mềm -->
+        <div class="form-group">
+            <label for="softwares">Phần mềm</label>
+            <select id="softwares" name="softwareIds" class="form-control" multiple>
+                <option th:each="software : ${computerDto.softWareDtoList}"
+                        th:value="${software.id}"
+                        th:text="${software.name}">Tên Phần mềm</option>
+            </select>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary">Tạo Máy Tính</button>
+    </form>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

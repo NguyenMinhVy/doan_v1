@@ -1,15 +1,23 @@
 <header th:fragment="header" class="header-fragment"> <!-- Thêm class cho fragment -->
     <nav class="header-nav"> <!-- Thêm class cho nav -->
         <ul class="header-menu">
-            <li><a th:href="@{/home}">Room</a></li>
-            <li><a th:href="@{/incident/list}">Incidents</a></li>
-            <li><a th:href="@{/employees}">Technician</a></li>
+            <li class="dropdown"> <!-- Thêm class dropdown -->
+                <span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Phòng</span>
+                <ul class="dropdown-menu">
+                    <li><a th:href="@{/home}">Danh sách Phòng</a></li>
+                    <li th:if="${#authentication.authorities.?[authority == 'ROLE_ADMIN']}">
+                        <a th:href="@{/room/createRoomForm}">Thêm Phòng</a>
+                    </li>
+                </ul>
+            </li>
+            <li><a th:href="@{/incident/list}">Sự Cố</a></li>
+            <li><a th:href="@{/employees}">Kỹ Thuật Viên</a></li>
         </ul>
         <div class="header-user-info">
             <span th:text="${#authentication.name}">Tên Người Dùng</span>
             <span th:text="'(' + ${#authentication.principal.authorities[0].authority} + ')'"> (Role) </span>
             <form th:action="@{/logout}" method="post" style="margin: 0;">
-                <button type="submit" class="header-logout-button">Logout</button>
+                <button type="submit" class="header-logout-button">Đăng Xuất</button>
             </form>
         </div>
     </nav>

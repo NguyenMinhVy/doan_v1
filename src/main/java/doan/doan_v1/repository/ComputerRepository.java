@@ -10,4 +10,6 @@ import java.util.List;
 public interface ComputerRepository extends JpaRepository<Computer,Integer> {
 
     List<Computer> findByRoomIdAndDelFlagFalse(Integer roomId);
+
+    Computer findComputerByNameAndDelFlagFalse(String name);
 }

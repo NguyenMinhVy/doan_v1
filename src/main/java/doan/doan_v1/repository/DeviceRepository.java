@@ -9,5 +9,8 @@ import java.util.List;
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Integer> {
 
-    List<Device> findByComputerIdAndDelFlagFalse(int computerId);
+//    List<Device> findByComputerIdAndDelFlagFalse(int computerId);
+
+    List<Device> findByDelFlagFalse();
+
 }

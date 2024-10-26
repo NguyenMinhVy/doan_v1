@@ -1,53 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết Phòng</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
-
-    <style>
-        .computer-card {
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease;
-        }
-
-        .computer-card.normal {
-            background-color: #d4edda; /* Màu xanh lá nhạt */
-        }
-
-        .computer-card.error {
-            background-color: #ffeeba; /* Màu cam nhạt */
-        }
-
-        .computer-card:hover {
-            transform: translateY(-5px);
-            background-color: #f1f1f1; /* Giữ màu nền của card khi hover */
-        }
-
-        .computer-title {
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .computer-link {
-            text-decoration: none; /* Xóa gạch chân */
-            color: inherit; /* Giữ nguyên màu văn bản */
-            transition: color 0.2s ease, background-color 0.2s ease; /* Thêm hiệu ứng chuyển màu nền */
-        }
-
-        .computer-link:hover {
-            text-decoration: none; /* Xóa gạch chân */
-            color: #000; /* Đổi màu văn bản thành màu đen khi hover */
-            background-color: grey; /* Đặt màu nền cho thẻ a khi hover */
-        }
-    </style>
 
 </head>
 <body>
@@ -57,6 +15,10 @@
     <h1 class="text-center">Chi tiết Phòng</h1>
 
     <div class="row mt-4">
+
+        <div th:if="${computerDtoList == null || computerDtoList.isEmpty()}" class="col-12">
+            <p class="text-center text-muted">Không có máy tính cho phòng này.</p>
+        </div>
         <!-- Duyệt qua danh sách các máy tính -->
         <div th:each="computer : ${computerDtoList}" class="col-md-3">
             <a th:href="@{'/computer/' + ${computer.id}}" class="computer-link">
@@ -69,10 +31,23 @@
             </a>
         </div>
     </div>
+
+    <button sec:authorize="hasAuthority('ADMIN')"
+            th:onclick="|window.location.href='/computer/createComputerForm?roomId=' + getRoomIdFromUrl()|"
+            class="btn btn-primary">
+        Thêm máy
+    </button>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function getRoomIdFromUrl() {
+        const url = window.location.href;
+        const match = url.match(/\/room\/(\d+)/);
+        return match ? match[1] : null;
+    }
+</script>
 </body>
 </html>

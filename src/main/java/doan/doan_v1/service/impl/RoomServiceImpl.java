@@ -3,6 +3,7 @@ package doan.doan_v1.service.impl;
 import doan.doan_v1.dto.LocationDto;
 import doan.doan_v1.dto.RoomDto;
 import doan.doan_v1.dto.RoomTypeDto;
+import doan.doan_v1.entity.Location;
 import doan.doan_v1.entity.Room;
 import doan.doan_v1.mapper.RoomMapper;
 import doan.doan_v1.repository.RoomRepository;
@@ -57,6 +58,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDto createRoom(RoomDto roomDto) {
         Room room = roomMapper.roomDtoToRoom(roomDto);
+        room.setRoomTypeId(roomDto.getRoomTypeDto().getId());
+        room.setLocationId(roomDto.getLocationDto().getId());
         return roomMapper.roomToRoomDto(roomRepository.save(room));
     }
 
@@ -77,5 +80,9 @@ public class RoomServiceImpl implements RoomService {
         return roomsByLocation;
     }
 
-
+    @Override
+    public boolean isRoomNameExist(String name) {
+        Room room = roomRepository.findRoomByNameAndDelFlagFalse(name);
+        return room != null;
+    }
 }
