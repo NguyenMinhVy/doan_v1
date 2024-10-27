@@ -9,8 +9,10 @@ import java.util.List;
 @Repository
 public interface IncidentRepository extends JpaRepository<Incident, Integer> {
 
-    List<Incident> findByDeviceIdAndDelFlagFalse(int deviceId);
+    List<Incident> findByComputerDeviceIdAndDelFlagFalse(int deviceId);
 
-    List<Incident> findBySoftwareIdAndDelFlagFalse(int softwareId);
+    List<Incident> findByComputerSoftwareIdAndDelFlagFalse(int softwareId);
+
+    List<Incident> findByComputerIdAndDelFlagFalse(int softwareId);
 
 }

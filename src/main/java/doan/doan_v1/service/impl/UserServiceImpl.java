@@ -8,8 +8,10 @@ import doan.doan_v1.repository.RoleRepository;
 import doan.doan_v1.repository.UserRepository;
 import doan.doan_v1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -75,11 +77,20 @@ public class UserServiceImpl implements UserService {
 
     public User getCurrentUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            if (!(authentication instanceof AnonymousAuthenticationToken)) {
+                Object principal = authentication.getPrincipal();
 
-        if (authentication != null && authentication.getPrincipal() instanceof User) {
-            return (User) authentication.getPrincipal();
+                if (principal instanceof UserDetails) {
+                    UserDetails userDetails = (UserDetails) principal;
+                    return convertToUser(userDetails);
+                }
+            }
         }
-
         return new User();
+    }
+
+    private User convertToUser(UserDetails userDetails) {
+        return userRepository.findByUsername(userDetails.getUsername());
     }
 }

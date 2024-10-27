@@ -48,14 +48,14 @@ public class DeviceController {
         incident.setInsertDate(LocalDateTime.now());
         incidentRepository.save(incident);
 
-        DeviceDto deviceDto = deviceService.findDeviceDtoById(incidentDto.getDeviceId());
+        DeviceDto deviceDto = deviceService.findDeviceDtoById(incidentDto.getComputerDeviceId());
         deviceDto.setStatus(incidentDto.getStatus());
         deviceService.updateDeviceDto(deviceDto);
         // Thêm thông báo thành công
         redirectAttributes.addFlashAttribute("message", "Thêm sự cố thành công!");
 
         // Điều hướng trở lại trang chi tiết thiết bị
-        return "redirect:/incident/device/" + incidentDto.getDeviceId();
+        return "redirect:/incident/device/" + incidentDto.getComputerDeviceId();
     }
 
 

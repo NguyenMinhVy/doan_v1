@@ -33,13 +33,22 @@ public class Incident extends AbstractEntity{
     private LocalDateTime reportDate;
 
     @Column
+    private LocalDateTime completionDate;
+
+    @Column
     private int reportUser;
 
     @Column
-    private int softwareId;
+    private int computerSoftwareId;
 
     @Column
-    private int deviceId;
+    private int computerDeviceId;
+
+    @Column
+    private int computerId;
+
+    @Column
+    private int technicianId;
 
     @Column
     private Boolean delFlag = false;

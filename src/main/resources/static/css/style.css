@@ -112,7 +112,7 @@ h1, h2 {
 }
 
 /* Định dạng thẻ card chung cho thiết bị, phần mềm và máy tính */
-.device-card, .software-card, .room-card, .computer-card {
+.device-card, .software-card, .room-card, .computer-card, .incident-card {
     background-color: #f8f9fa;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -123,12 +123,12 @@ h1, h2 {
 }
 
 /* Hiệu ứng hover cho card */
-.device-card:hover, .software-card:hover, .room-card:hover, .computer-card:hover {
+.device-card:hover, .software-card:hover, .room-card:hover, .computer-card:hover, .incident-card {
     transform: scale(1.05);
 }
 
 /* Định dạng tiêu đề trong thẻ card */
-.device-card .title, .software-card .title, .room-card .room-title, .computer-card .computer-title {
+.device-card .title, .software-card .title, .room-card .room-title, .computer-card .computer-title, .incident-card .incident-title {
     font-size: 1.2em;
     font-weight: bold;
     margin-bottom: 10px;
@@ -277,5 +277,20 @@ a:hover {
 .room-card:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.status-processing {
+    background-color: #ffeb3b; /* Màu vàng nhạt */
+    padding: 5px;
+    border-radius: 5px;
+    color: #333; /* Màu chữ */
+}
+
+.status-unprocessed {
+    background-color: #ff9800; /* Màu cam */
+    padding: 5px;
+    border-radius: 5px;
+    color: #fff; /* Màu chữ */
+}
+
 
 

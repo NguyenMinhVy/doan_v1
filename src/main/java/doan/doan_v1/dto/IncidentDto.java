@@ -22,11 +22,17 @@ public class IncidentDto extends AbstractDto implements Serializable {
 
     private LocalDateTime reportDate;
 
+    private LocalDateTime completionDate;
+
     private int reportUser;
 
     private String reportUserName;
 
-    private int softwareId;
+    private int computerSoftwareId;
 
-    private int deviceId;
+    private int computerDeviceId;
+
+    private int computerId;
+
+    private TechnicianDto technicianDto;
 }

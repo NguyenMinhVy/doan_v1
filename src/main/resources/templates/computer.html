@@ -6,7 +6,6 @@
     <title>Chi tiết Máy Tính</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
-
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -14,46 +13,81 @@
 <div class="container mt-5">
     <h1 class="text-center">Chi tiết Máy Tính</h1>
 
-    <h2>Danh sách Thiết Bị</h2>
-    <div th:if="${deviceDtoList == null || deviceDtoList.isEmpty()}" class="col-12">
-        <p class="text-center text-muted">Không có thiết bị.</p>
-    </div>
-    <div class="row mt-4">
-        <div th:each="device : ${deviceDtoList}" class="col-md-4">
-            <div th:class="'device-card ' + (${device.status == 1} ? 'normal' : 'error')">
-                <a th:href="@{/incident/device/{deviceId}/{computerId}(deviceId=${device.id}, computerId=${device.computerId})}" class="software-link">
-                <div class="title" th:text="${device.name}">Tên Thiết Bị</div>
-                <p><strong>Trạng thái:</strong>
-                    <span th:text="${device.status == 1} ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
-                </p>
-                <p><strong>Mã:</strong>
-                    <span th:text="${device.deviceCode}">Trạng thái</span>
-                </p>
-                <!-- Nút "Chi tiết" với điều hướng đến incident của thiết bị -->
-                </a>
+    <div class="row">
+        <!-- Cột bên trái chứa danh sách Thiết Bị và Phần Mềm -->
+        <div class="col-md-8">
+            <h2>Danh sách Thiết Bị</h2>
+            <div th:if="${deviceDtoList == null || deviceDtoList.isEmpty()}" class="col-12">
+                <p class="text-center text-muted">Không có thiết bị.</p>
+            </div>
+            <div class="row mt-4">
+                <div th:each="device : ${deviceDtoList}" class="col-md-6">
+                    <div th:class="'device-card ' + (${device.status == 1} ? 'normal' : 'error')">
+                        <a th:href="@{/incident/device/{deviceId}/{computerId}(deviceId=${device.id}, computerId=${device.computerId})}" class="software-link">
+                            <div class="title" th:text="${device.name}">Tên Thiết Bị</div>
+                            <p><strong>Trạng thái:</strong>
+                                <span th:text="${device.status == 1} ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
+                            </p>
+                            <p><strong>Mã:</strong>
+                                <span th:text="${device.deviceCode}">Mã</span>
+                            </p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Danh sách Phần Mềm</h2>
+            <div th:if="${softWareDtoList == null || softWareDtoList.isEmpty()}" class="col-12">
+                <p class="text-center text-muted">Không có phần mềm.</p>
+            </div>
+            <div class="row mt-4">
+                <div th:each="software : ${softWareDtoList}" class="col-md-6">
+                    <div th:class="'software-card ' + (${software.status == 1} ? 'normal' : 'error')">
+                        <a th:href="@{/incident/software/{softwareId}/{computerId}(softwareId=${software.id}, computerId=${software.computerId})}" class="software-link">
+                            <div class="title" th:text="${software.name}">Tên Phần Mềm</div>
+                            <p><strong>Phiên bản:</strong> <span th:text="${software.version}">Phiên bản</span></p>
+                            <p>
+                                <strong>Thời gian cài đặt:</strong>
+                                <span th:text="${#temporals.format(software.setupTime, 'dd/MM/yyyy HH:mm')}">Thời gian</span>
+                            </p>
+                            <p><strong>Trạng thái:</strong>
+                                <span th:text="${software.status == 1} ? 'Hoạt động' : 'Không hoạt động'">Trạng thái</span>
+                            </p>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <h2>Danh sách Phần Mềm</h2>
-    <div class="row mt-4">
-        <div th:if="${softWareDtoList == null || softWareDtoList.isEmpty()}" class="col-12">
-            <p class="text-center text-muted">Không có phần mềm.</p>
-        </div>
-        <div th:each="software : ${softWareDtoList}" class="col-md-4">
-            <div th:class="'software-card ' + (${software.status == 1} ? 'normal' : 'error')">
-                <a th:href="@{/incident/software/{softwareId}/{computerId}(softwareId=${software.id}, computerId=${software.computerId})}" class="software-link">
-                <div class="title" th:text="${software.name}">Tên Phần Mềm</div>
-                <p><strong>Phiên bản:</strong> <span th:text="${software.version}">Phiên bản</span></p>
-                <p>
-                    <strong>Thời gian cài đặt:</strong>
-                    <span th:text="${#temporals.format(software.setupTime, 'dd/MM/yyyy HH:mm')}">Thời gian</span>
+        <!-- Cột bên phải chứa danh sách Sự Cố -->
+        <div class="col-md-4">
+            <h2>Danh sách Sự Cố</h2>
+            <div th:if="${incidentDtoListByStatus == null || incidentDtoListByStatus.isEmpty()}" class="col-12">
+                <p class="text-center text-muted">Không có sự cố.</p>
+            </div>
+            <button th:onclick="|window.location.href='/incident/computer/add?computerId=' + getComputerIdFromUrl()|"
+                    class="btn btn-primary">
+                Thêm sự cố
+            </button>
+            <div th:each="incident : ${incidentDtoListByStatus}" class="incident-card mt-3">
+                <div class="title" th:text="${incident.description}">Mô tả Sự Cố</div>
+                <p><strong>Mô tả:</strong>
+                    <span th:text="${incident.description}">Mô tả sự cố</span>
                 </p>
                 <p><strong>Trạng thái:</strong>
-                    <span th:text="${software.status == 1} ? 'Hoạt động' : 'Không hoạt động'">Trạng thái</span>
+                    <span th:class="${incident.status == 1 ? 'status-unprocessed' : 'status-processing'}"
+                          th:text="${incident.status == 1} ? 'Chưa xử lý' : 'Đang xử lý'">
+            </span>
                 </p>
-                <!-- Nút "Chi tiết" với điều hướng đến incident của phần mềm -->
-                </a>
+                <p><strong>Ngày báo cáo:</strong>
+                    <span th:text="${#temporals.format(incident.reportDate, 'dd/MM/yyyy HH:mm')}"></span>
+                </p>
+                <p><strong>Ngày hoàn thành mong muốn:</strong>
+                    <span th:text="${#temporals.format(incident.completionDate, 'dd/MM/yyyy HH:mm')}"></span>
+                </p>
+                <p><strong>Kỹ thuật viên:</strong>
+                    <span th:text="${incident.technicianDto.userDto.name}">Kỹ thuật viên</span>
+                </p>
             </div>
         </div>
     </div>
@@ -62,5 +96,12 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function getComputerIdFromUrl() {
+        const url = window.location.href;
+        const match = url.match(/\/computer\/(\d+)/);
+        return match ? match[1] : null;
+    }
+</script>
 </body>
 </html>

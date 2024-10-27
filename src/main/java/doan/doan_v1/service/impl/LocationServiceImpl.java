@@ -1,10 +1,13 @@
 package doan.doan_v1.service.impl;
 
 import doan.doan_v1.dto.LocationDto;
+import doan.doan_v1.dto.RoomDto;
 import doan.doan_v1.entity.Location;
+import doan.doan_v1.entity.Room;
 import doan.doan_v1.mapper.LocationMapper;
 import doan.doan_v1.repository.LocationRepository;
 import doan.doan_v1.service.LocationService;
+import doan.doan_v1.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Autowired
     private LocationMapper locationMapper;
+
 
     @Override
     public LocationDto getLocationById(int id) {
@@ -36,9 +40,9 @@ public class LocationServiceImpl implements LocationService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public LocationDto getLocationByRoomId(int roomId) {
-        Location location = locationRepository.findByIdAndDelFlagFalse(roomId);
-        return null;
-    }
+//    @Override
+//    public LocationDto getLocationByRoomId(int roomId) {
+//        RoomDto roomDto = roomService.getRoomById(roomId);
+//        return roomDto.getLocationDto();
+//    }
 }

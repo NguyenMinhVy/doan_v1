@@ -20,4 +20,10 @@ public interface Constant {
         int OK = 1;
         int ERROR = 2;
     }
+
+    interface INCIDENT_STATUS {
+        int UNPROCESSED = 1;
+        int PROCESSING = 2;
+        int PROCESSED = 3;
+    }
 }

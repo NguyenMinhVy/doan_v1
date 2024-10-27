@@ -1,18 +1,17 @@
 package doan.doan_v1.controller;
 
-import doan.doan_v1.dto.DeviceDto;
-import doan.doan_v1.dto.IncidentDto;
-import doan.doan_v1.dto.SoftWareDto;
-import doan.doan_v1.service.DeviceService;
-import doan.doan_v1.service.IncidentService;
-import doan.doan_v1.service.SoftWareService;
+import doan.doan_v1.Constant.Constant;
+import doan.doan_v1.dto.*;
+import doan.doan_v1.entity.User;
+import doan.doan_v1.repository.TechnicianRepository;
+import doan.doan_v1.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -27,6 +26,18 @@ public class IncidentController {
 
     @Autowired
     private SoftWareService softWareService;
+
+    @Autowired
+    private TechnicianService technicianService;
+
+    @Autowired
+    private ComputerService computerService;
+
+    @Autowired
+    private RoomService roomService;
+
+    @Autowired
+    private UserService userService;
 
 
     @GetMapping("/device/{deviceId}/{computerId}")
@@ -60,4 +71,44 @@ public class IncidentController {
         model.addAttribute("incidentDtoList", incidentDtoList);
         return "incidentList";
     }
+
+    @GetMapping("/computer/add")
+    public String getAddIncidentForComputerForm (@RequestParam("computerId") int computerId, Model model) {
+        IncidentDto incidentDto = new IncidentDto();
+        incidentDto.setComputerId(computerId);
+        ComputerDto computerDto = computerService.getComputerById(computerId);
+        RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
+        LocationDto locationDto= roomDto.getLocationDto();
+        TechnicianDto technicianDto = technicianService.getTechnicianDtoListByLocationId(locationDto.getId()).get(0);
+        List<TechnicianDto> technicianDtoList = technicianService.getAllTechnicianDto();
+        model.addAttribute("technicianDto", technicianDto);
+        model.addAttribute("incidentDto", incidentDto);
+        model.addAttribute("technicianDtoList", technicianDtoList);
+        return "addIncidentForm";
+    }
+
+    @PostMapping("/computer/add")
+    public String addIncidentForComputer (@ModelAttribute IncidentDto incidentDto, RedirectAttributes redirectAttributes, Model model) {
+        try {
+            incidentDto.setStatus(Constant.INCIDENT_STATUS.UNPROCESSED);
+            User user = userService.getCurrentUserInfo();
+            incidentDto.setReportUser(user.getId());
+            incidentDto.setReportUserName(user.getUsername());
+            incidentDto.setReportDate(LocalDateTime.now());
+            if (incidentDto.getTechnicianDto() == null) {
+                ComputerDto computerDto = computerService.getComputerById(incidentDto.getComputerId());
+                RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
+                LocationDto locationDto= roomDto.getLocationDto();
+                TechnicianDto technicianDto = technicianService.getTechnicianDtoListByLocationId(locationDto.getId()).get(0);
+                incidentDto.setTechnicianDto(technicianDto);
+            }
+            IncidentDto createdIncidentDto = incidentService.addIncidentForComputer(incidentDto);
+            redirectAttributes.addFlashAttribute("message", "Thêm phòng thành công!");
+            return "redirect:/computer/" + createdIncidentDto.getComputerId();
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi thêm phòng");
+            return "redirect:/computer/add?computerId=" + incidentDto.getComputerId() + "&error=true";
+        }
+    }
+
 }

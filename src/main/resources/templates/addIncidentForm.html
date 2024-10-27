@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Sự Cố Cho Máy Tính</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mt-5">
+    <h1 class="text-center">Thêm Sự Cố Cho Máy Tính</h1>
+    <div class="incident-form mt-4">
+        <h4>Nhập thông tin sự cố</h4>
+        <form id="incidentForm" th:action="@{/incident/computer/add}" th:object="${incidentDto}" method="post">
+            <!-- ID máy tính được truyền ẩn vào form -->
+            <input type="hidden" th:field="*{computerId}" />
+
+            <!-- Mô tả sự cố -->
+            <div class="form-group">
+                <label>Mô tả sự cố:</label>
+                <textarea class="form-control" th:field="*{description}" required></textarea>
+            </div>
+
+            <!-- Trạng thái sự cố -->
+            <div class="form-group">
+                <label>Trạng thái:</label>
+                <select class="form-control" th:field="*{status}" required disabled>
+                    <option value="1" selected>Chưa xử lý</option>
+                    <option value="2">Đang xử lý</option>
+                    <option value="3">Đã xử lý</option>
+                </select>
+            </div>
+
+            <!-- Ngày báo cáo -->
+            <div class="form-group">
+                <label>Ngày hoàn thành mong muốn:</label>
+                <input type="datetime-local" class="form-control" th:field="*{completionDate}" required />
+            </div>
+
+            <!-- Kỹ thuật viên phụ trách -->
+            <div class="form-group" sec:authorize="hasAuthority('ADMIN')">
+                <label>Kỹ thuật viên phụ trách:</label>
+                <select class="form-control" th:field="*{technicianDto.id}">
+                    <!-- Mặc định kỹ thuật viên phụ trách là kỹ thuật viên hiện tại -->
+                    <option th:value="${technicianDto.id}"
+                            th:text="${technicianDto.userDto.name}"
+                            selected></option>
+
+                    <!-- Hiển thị danh sách kỹ thuật viên cho ADMIN -->
+                    <option th:each="tech : ${technicianDtoList}"
+                            th:value="${tech.id}"
+                            th:text="${tech.userDto.name}"></option>
+                </select>
+            </div>
+
+            <div class="form-group" sec:authorize="!hasAuthority('ADMIN')">
+                <label>Kỹ thuật viên phụ trách:</label>
+                <select class="form-control" th:field="*{technicianDto.id}" disabled>
+                    <!-- Mặc định kỹ thuật viên phụ trách là kỹ thuật viên hiện tại -->
+                    <option th:value="${technicianDto.id}"
+                            th:text="${technicianDto.userDto.name}"
+                            selected></option>
+
+                    <!-- Hiển thị một lựa chọn không thể chọn cho người dùng không phải ADMIN -->
+                    <option th:value="${technicianDto.id}" th:text="${technicianDto.userDto.name}" disabled></option>
+                </select>
+            </div>
+
+
+            <!-- Nút hành động -->
+            <button type="submit" class="btn btn-primary">Thêm Sự Cố</button>
+            <button type="button" class="btn btn-danger cancel-btn">Hủy</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

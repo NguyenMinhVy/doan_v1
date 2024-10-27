@@ -13,5 +13,11 @@ public interface IncidentService {
 
     IncidentDto addIncident(IncidentDto incidentDto);
 
+    IncidentDto addIncidentForComputer(IncidentDto incidentDto);
+
     List<IncidentDto> getIncidentDtoList();
+
+    List<IncidentDto> getIncidentDtoListByComputerId(int computerId);
+
+    List<IncidentDto> getIncidentDtoListByStatus(List<IncidentDto> incidentDtoList, int status);
 }

@@ -1,11 +1,11 @@
-<header th:fragment="header" class="header-fragment"> <!-- Thêm class cho fragment -->
+<header th:fragment="header" class="header-fragment" xmlns:sec="http://www.w3.org/1999/xhtml"> <!-- Thêm class cho fragment -->
     <nav class="header-nav"> <!-- Thêm class cho nav -->
         <ul class="header-menu">
             <li class="dropdown"> <!-- Thêm class dropdown -->
                 <span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Phòng</span>
                 <ul class="dropdown-menu">
                     <li><a th:href="@{/home}">Danh sách Phòng</a></li>
-                    <li th:if="${#authentication.authorities.?[authority == 'ROLE_ADMIN']}">
+                    <li sec:authorize="hasAuthority('ADMIN')">
                         <a th:href="@{/room/createRoomForm}">Thêm Phòng</a>
                     </li>
                 </ul>

@@ -10,6 +10,6 @@ public interface LocationService {
 
     List<LocationDto> getAllLocationsSortedByName();
 
-    LocationDto getLocationByRoomId(int roomId);
+//    LocationDto getLocationByRoomId(int roomId);
 
 }

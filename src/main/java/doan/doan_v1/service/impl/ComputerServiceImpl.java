@@ -60,11 +60,8 @@ public class ComputerServiceImpl implements ComputerService {
     public ComputerDto getComputerById(int id) {
 
         Computer computer = computerRepository.findById(id).orElse(null);
-        if (computer == null) {
-            return null;
-        }
 
-        return null;
+        return computerMapper.computerToComputerDto(computer);
     }
 
     @Override
