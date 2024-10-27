@@ -3,7 +3,6 @@ package doan.doan_v1.service.impl;
 import doan.doan_v1.dto.LocationDto;
 import doan.doan_v1.dto.RoomDto;
 import doan.doan_v1.dto.RoomTypeDto;
-import doan.doan_v1.entity.Location;
 import doan.doan_v1.entity.Room;
 import doan.doan_v1.mapper.RoomMapper;
 import doan.doan_v1.repository.RoomRepository;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomServiceImpl implements RoomService {
@@ -95,5 +93,11 @@ public class RoomServiceImpl implements RoomService {
         room.setRoomTypeId(roomDto.getRoomTypeDto().getId());
         room.setLocationId(roomDto.getLocationDto().getId());
         return roomMapper.roomToRoomDto(roomRepository.save(room));
+    }
+
+    @Override
+    public List<RoomDto> getAllRooms() {
+        List<Room> rooms = roomRepository.findAll();
+        return roomMapper.roomListToRoomDtoList(rooms);
     }
 }

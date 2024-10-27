@@ -1,5 +1,6 @@
 package doan.doan_v1.service.impl;
 
+import doan.doan_v1.Constant.Constant;
 import doan.doan_v1.dto.DeviceDto;
 import doan.doan_v1.entity.ComputerDevice;
 import doan.doan_v1.entity.Device;
@@ -32,7 +33,7 @@ public class DeviceServiceImpl implements DeviceService {
     public List<DeviceDto> findAllDeviceDtoByComputerId(int computerId) {
         List<ComputerDevice> computerDeviceList = computerDeviceRepository.findByComputerId(computerId);
         List<DeviceDto> deviceDtoList = new ArrayList<>();
-        for (ComputerDevice computerDevice: computerDeviceList) {
+        for (ComputerDevice computerDevice : computerDeviceList) {
             DeviceDto deviceDto = findDeviceDtoById(computerDevice.getDeviceId());
             deviceDto.setDeviceCode(computerDevice.getDeviceCode());
             deviceDto.setComputerId(computerDevice.getComputerId());
