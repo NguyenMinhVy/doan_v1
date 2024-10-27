@@ -15,4 +15,9 @@ public interface Constant {
         String SCREEN = "SCREEN";
         String CASE = "CASE";
     }
+
+    interface STATUS {
+        int OK = 1;
+        int ERROR = 2;
+    }
 }

@@ -35,6 +35,7 @@ public class SoftWareServiceImpl implements SoftWareService {
             if (software != null) {
                 SoftWareDto softWareDto = softWareMapper.softWareToSoftWareDto(software);
                 softWareDto.setStatus(computerSoftware.getStatus());
+                softWareDto.setComputerId(computerSoftware.getComputerId());
                 softWareDtoList.add(softWareDto);
             }
         }

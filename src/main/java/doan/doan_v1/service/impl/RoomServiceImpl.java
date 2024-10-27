@@ -52,7 +52,10 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDto getRoomById(int id) {
         Room room = roomRepository.findById(id).orElse(null);
-        return roomMapper.roomToRoomDto(room);
+        RoomDto roomDto= roomMapper.roomToRoomDto(room);
+        roomDto.setLocationDto(locationService.getLocationById(room.getLocationId()));
+        roomDto.setRoomTypeDto(roomTypeService.getRoomTypeById(room.getRoomTypeId()));
+        return roomDto;
     }
 
     @Override
@@ -84,5 +87,13 @@ public class RoomServiceImpl implements RoomService {
     public boolean isRoomNameExist(String name) {
         Room room = roomRepository.findRoomByNameAndDelFlagFalse(name);
         return room != null;
+    }
+
+    @Override
+    public RoomDto updateRoom(RoomDto roomDto) {
+        Room room = roomMapper.roomDtoToRoom(roomDto);
+        room.setRoomTypeId(roomDto.getRoomTypeDto().getId());
+        room.setLocationId(roomDto.getLocationDto().getId());
+        return roomMapper.roomToRoomDto(roomRepository.save(room));
     }
 }

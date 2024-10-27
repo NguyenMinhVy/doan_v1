@@ -18,6 +18,8 @@ public class DeviceDto extends AbstractDto implements Serializable {
 
     private int status;
 
+    private String deviceCode;
+
     private int computerId;
 
 }

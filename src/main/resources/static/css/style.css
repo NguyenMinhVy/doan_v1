@@ -178,7 +178,104 @@ a:hover {
 
 /* Thay đổi màu nền và màu viền khi hover */
 .btn.btn-primary-outline:hover {
-    background-color: mediumpurple; /* Màu nền khi hover */
-    border-color: mediumpurple; /* Màu viền khi hover (nếu cần) */
+    background-color: #dcd3ff; /* Màu nền khi hover */
+    border-color: #dcd3ff; /* Màu viền khi hover (nếu cần) */
 }
+
+.room-card {
+    position: relative;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.tooltip-container {
+    position: relative;
+}
+
+/* Nút Xóa */
+.btn-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #b67a7a;
+    border-radius: 50%;
+    color: #b67a7a;
+    background-color: #b67a7a;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-delete:hover {
+    background-color: #b67a7a;
+    color: white;
+}
+
+/* Nút Cập nhật */
+.btn-update {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #dcd3ff;
+    border-radius: 50%;
+    color: #dcd3ff;
+    background-color: #dcd3ff;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-update:hover {
+    background-color: #dcd3ff;
+    color: white;
+}
+
+/* Tooltip */
+/* Tooltip */
+.tooltip {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s linear;
+    position: absolute;
+    top: -25px; /* Dịch lên cao hơn */
+    left: 60%; /* Dịch sang bên phải */
+    transform: translateX(-50%);
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 10;
+    white-space: nowrap; /* Ngăn không cho chữ xuống dòng */
+}
+
+
+.tooltip-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.room-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.room-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 

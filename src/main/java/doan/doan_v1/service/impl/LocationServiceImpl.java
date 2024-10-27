@@ -35,4 +35,10 @@ public class LocationServiceImpl implements LocationService {
                 .map(locationMapper::locationToLocationDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public LocationDto getLocationByRoomId(int roomId) {
+        Location location = locationRepository.findByIdAndDelFlagFalse(roomId);
+        return null;
+    }
 }

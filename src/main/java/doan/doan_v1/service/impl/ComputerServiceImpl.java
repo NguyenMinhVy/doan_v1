@@ -2,6 +2,8 @@ package doan.doan_v1.service.impl;
 
 import doan.doan_v1.Constant.Constant;
 import doan.doan_v1.dto.ComputerDto;
+import doan.doan_v1.dto.DeviceDto;
+import doan.doan_v1.dto.SoftWareDto;
 import doan.doan_v1.entity.*;
 import doan.doan_v1.mapper.ComputerMapper;
 import doan.doan_v1.mapper.DeviceMapper;
@@ -10,9 +12,12 @@ import doan.doan_v1.repository.ComputerDeviceRepository;
 import doan.doan_v1.repository.ComputerRepository;
 import doan.doan_v1.repository.ComputerSoftWareRepository;
 import doan.doan_v1.service.ComputerService;
+import doan.doan_v1.service.DeviceService;
+import doan.doan_v1.service.SoftWareService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 @Service
@@ -35,6 +40,12 @@ public class ComputerServiceImpl implements ComputerService {
 
     @Autowired
     private ComputerSoftWareRepository computerSoftWareRepository;
+
+    @Autowired
+    private DeviceService deviceService;
+
+    @Autowired
+    private SoftWareService softWareService;
 
     @Override
     public List<ComputerDto> getComputerListByRoomId(int roomId) {
@@ -65,11 +76,22 @@ public class ComputerServiceImpl implements ComputerService {
     @Override
     public ComputerDto createComputer(ComputerDto computerDto) {
         Computer computer = computerMapper.computerDtoToComputer(computerDto);
-        List<Device> deviceList = deviceMapper.deviceDtoListToDeviceList(computerDto.getDeviceDtoList());
-        List<Software> softwareList = softWareMapper.softWareDtoListToSoftWareList(computerDto.getSoftWareDtoList());
-        ComputerDevice computerDevice = new ComputerDevice();
-        ComputerSoftware computerSoftware = new ComputerSoftware();
-        for (Device device : deviceList) {
+        computerRepository.save(computer);
+        computer.setId(computer.getId());
+        List<DeviceDto> deviceDtoList = new ArrayList<>();
+        List<SoftWareDto> softwareDtoList = new ArrayList<>();
+        for (Integer deviceId : computerDto.getDeviceIdList()) {
+            DeviceDto deviceDto = deviceService.findDeviceDtoById(deviceId);
+            deviceDtoList.add(deviceDto);
+        }
+        for (Integer softWareId : computerDto.getSoftWareIdList()) {
+            SoftWareDto softWareDto = softWareService.getSoftWareDtoById(softWareId);
+            softWareDto.setStatus(Constant.STATUS.OK);
+            softwareDtoList.add(softWareDto);
+        }
+
+        for (DeviceDto device : deviceDtoList) {
+            ComputerDevice computerDevice = new ComputerDevice();
             computerDevice.setDeviceId(device.getId());
             computerDevice.setComputerId(computer.getId());
 
@@ -77,21 +99,26 @@ public class ComputerServiceImpl implements ComputerService {
             switch (type) {
                 case Constant.DEVICE_TYPE.KEY :
                     computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.KEY + "-" + computer.getId() + "-" + device.getId());
+                    break;
                 case Constant.DEVICE_TYPE.MOU :
                     computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.MOU + "-" + computer.getId() + "-" + device.getId());
+                    break;
                 case Constant.DEVICE_TYPE.SCREEN :
                     computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.SCREEN + "-" + computer.getId() + "-" + device.getId());
+                    break;
                 case Constant.DEVICE_TYPE.CASE :
                     computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.CASE + "-" + computer.getId() + "-" + device.getId());
+                    break;
             }
             computerDeviceRepository.save(computerDevice);
         }
-        for (Software software : softwareList) {
+        for (SoftWareDto software : softwareDtoList) {
+            ComputerSoftware computerSoftware = new ComputerSoftware();
             computerSoftware.setSoftwareId(software.getId());
             computerSoftware.setComputerId(computer.getId());
+            computerSoftware.setStatus(Constant.STATUS.OK);
             computerSoftWareRepository.save(computerSoftware);
         }
-        computerRepository.save(computer);
         return computerMapper.computerToComputerDto(computer);
     }
 }

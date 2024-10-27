@@ -17,4 +17,6 @@ public interface RoomService {
     Map<LocationDto, List<RoomDto>> getRoomsByLocation();
 
     boolean isRoomNameExist(String name);
+
+    RoomDto updateRoom(RoomDto roomDto);
 }

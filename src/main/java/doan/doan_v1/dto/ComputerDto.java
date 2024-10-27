@@ -18,7 +18,7 @@ public class ComputerDto extends AbstractDto implements Serializable {
 
     private int status;
 
-    private List<DeviceDto> deviceDtoList;
+    private List<Integer> deviceIdList;
 
-    private List<SoftWareDto> softWareDtoList;
+    private List<Integer> softWareIdList;
 }

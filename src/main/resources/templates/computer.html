@@ -21,10 +21,13 @@
     <div class="row mt-4">
         <div th:each="device : ${deviceDtoList}" class="col-md-4">
             <div th:class="'device-card ' + (${device.status == 1} ? 'normal' : 'error')">
-                <a th:href="@{/incident/device/{deviceId}(deviceId=${device.id})}" class="software-link">
+                <a th:href="@{/incident/device/{deviceId}/{computerId}(deviceId=${device.id}, computerId=${device.computerId})}" class="software-link">
                 <div class="title" th:text="${device.name}">Tên Thiết Bị</div>
                 <p><strong>Trạng thái:</strong>
                     <span th:text="${device.status == 1} ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
+                </p>
+                <p><strong>Mã:</strong>
+                    <span th:text="${device.deviceCode}">Trạng thái</span>
                 </p>
                 <!-- Nút "Chi tiết" với điều hướng đến incident của thiết bị -->
                 </a>
@@ -39,7 +42,7 @@
         </div>
         <div th:each="software : ${softWareDtoList}" class="col-md-4">
             <div th:class="'software-card ' + (${software.status == 1} ? 'normal' : 'error')">
-                <a th:href="@{/incident/software/{softwareId}(softwareId=${software.id})}" class="software-link">
+                <a th:href="@{/incident/software/{softwareId}/{computerId}(softwareId=${software.id}, computerId=${software.computerId})}" class="software-link">
                 <div class="title" th:text="${software.name}">Tên Phần Mềm</div>
                 <p><strong>Phiên bản:</strong> <span th:text="${software.version}">Phiên bản</span></p>
                 <p>

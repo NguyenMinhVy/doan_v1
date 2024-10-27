@@ -18,13 +18,32 @@
         <h2 th:text="${location.name}">Tên Địa điểm</h2>
         <div class="row">
             <div th:each="room : ${roomsByLocation.get(location)}" class="col-md-3">
-                <a th:href="@{'/room/' + ${room.id}}" class="room-link">
-                    <div class="room-card">
-                        <div class="room-title" th:text="${room.name}">Tên Phòng</div>
-                        <p><strong>Loại Phòng:</strong> <span th:text="${room.roomTypeDto.name}">MEDIUM</span></p>
-                        <p><strong>Số lượng máy:</strong> <span th:text="${room.roomTypeDto.capacity}">20</span></p>
+                <div class="room-card position-relative">
+                    <div class="admin-actions position-absolute" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
+                         style="top: 10px; right: 10px;">
+                        <div class="tooltip-container">
+                            <a th:href="@{'/room/updateRoomForm/' + ${room.id}}" class="btn-update">
+                                <span class="tooltip">Cập nhật</span>
+                                <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <div class="tooltip-container">
+                            <form th:action="@{/room/delete/{roomId}(roomId=${room.id})}" method="post" style="display: inline;">
+                                <button type="submit" class="btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này?')">
+                                    <span class="tooltip">Xóa</span>
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </a>
+                    <a th:href="@{'/room/' + ${room.id}}" class="room-link">
+                        <div class="room-card">
+                            <div class="room-title" th:text="${room.name}">Tên Phòng</div>
+                            <p><strong>Loại Phòng:</strong> <span th:text="${room.roomTypeDto.name}">MEDIUM</span></p>
+                            <p><strong>Số lượng máy:</strong> <span th:text="${room.roomTypeDto.capacity}">20</span></p>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

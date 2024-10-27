@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -30,8 +29,8 @@ public class IncidentController {
     private SoftWareService softWareService;
 
 
-    @GetMapping("/device/{deviceId}")
-    public String getIncidentDetailByDeviceId (@PathVariable("deviceId") int deviceId, Model model) {
+    @GetMapping("/device/{deviceId}/{computerId}")
+    public String getIncidentDetailByDeviceId (@PathVariable("deviceId") int deviceId, @PathVariable("computerId") int computerId, Model model) {
         List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoListByDeviceId(deviceId);
         DeviceDto deviceDto = deviceService.findDeviceDtoById(deviceId);
         model.addAttribute("deviceDto", deviceDto);
@@ -39,8 +38,8 @@ public class IncidentController {
         return "incident";
     }
 
-    @GetMapping("/software/{softwareId}")
-    public String getIncidentDetailBySoftwareId (@PathVariable("softwareId") int softwareId, Model model) {
+    @GetMapping("/software/{softwareId}/{computerId}")
+    public String getIncidentDetailBySoftwareId (@PathVariable("softwareId") int softwareId, @PathVariable("computerId") int computerId, Model model) {
         List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoListBySoftwareId(softwareId);
         SoftWareDto softWareDto = softWareService.getSoftWareDtoById(softwareId);
         model.addAttribute("softWareDto", softWareDto);

@@ -40,18 +40,18 @@ public class ComputerController {
 
     @GetMapping("/createComputerForm")
     public String createComputerForm (@RequestParam("roomId") int roomId, Model model) {
-        setComputerModel(roomId, model);
+        ComputerDto computerDto = new ComputerDto();
+        computerDto.setRoomId(roomId);
+        model.addAttribute("computerDto", computerDto);
+        setComputerModel(model);
         return "createComputerForm";
     }
 
-    private void setComputerModel(int roomId, Model model) {
-        ComputerDto computerDto = new ComputerDto();
-        List<DeviceDto> deviceDto = deviceService.findAllDeviceDtoList();
-        List<SoftWareDto> softWareDto = softWareService.getAllSoftWareDtoList();
-        computerDto.setRoomId(roomId);
-        computerDto.setDeviceDtoList(deviceDto);
-        computerDto.setSoftWareDtoList(softWareDto);
-        model.addAttribute("computerDto", computerDto);
+    private void setComputerModel(Model model) {
+        List<DeviceDto> deviceDtoList = deviceService.findAllDeviceDtoList();
+        List<SoftWareDto> softWareDtoList = softWareService.getAllSoftWareDtoList();
+        model.addAttribute("deviceDtos", deviceDtoList);
+        model.addAttribute("softWareDtos", softWareDtoList);
     }
 
     @PostMapping("/create")
@@ -64,6 +64,7 @@ public class ComputerController {
 
             // Nếu có lỗi, trả về form `createRoomForm` và hiển thị lỗi
             if (bindingResult.hasErrors()) {
+                setComputerModel(model);
                 return "createComputerForm";
             }
 
@@ -74,7 +75,7 @@ public class ComputerController {
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi thêm máy tính");
-            return "redirect:/computer/createComputerForm?error=true";
+            return "redirect:/computer/createComputerForm?error=true&roomId=" + computerDto.getRoomId();
         }
     }
 }
