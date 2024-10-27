@@ -21,14 +21,36 @@
         </div>
         <!-- Duyệt qua danh sách các máy tính -->
         <div th:each="computer : ${computerDtoList}" class="col-md-3">
-            <a th:href="@{'/computer/' + ${computer.id}}" class="computer-link">
-                <div th:class="'computer-card ' + (${computer.status} == 1 ? 'normal' : 'error')">
-                    <div class="computer-title" th:text="${computer.name}">Tên Máy</div>
-                    <p><strong>Trạng thái:</strong>
-                        <span th:text="${computer.status} == 1 ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
-                    </p>
+            <div class="computer-card position-relative">
+                <div class="admin-actions position-absolute"
+                     th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
+                     style="top: 10px; right: 10px;">
+                    <div class="tooltip-container">
+                        <a th:href="@{'/computer/update/' + ${computer.id}}" class="btn-update">
+                            <span class="tooltip">Cập nhật</span>
+                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <div class="tooltip-container">
+                        <form th:action="@{/computer/delete/{computerId}(computerId=${computer.id})}" method="post"
+                              style="display: inline;">
+                            <button type="submit" class="btn-delete"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa máy này?')">
+                                <span class="tooltip">Xóa</span>
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </a>
+                <a th:href="@{'/computer/' + ${computer.id}}" class="computer-link">
+                    <div th:class="'computer-card ' + (${computer.status} == 1 ? 'normal' : 'error')">
+                        <div class="computer-title" th:text="${computer.name}">Tên Máy</div>
+                        <p><strong>Trạng thái:</strong>
+                            <span th:text="${computer.status} == 1 ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
+                        </p>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 

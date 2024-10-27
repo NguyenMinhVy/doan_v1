@@ -19,4 +19,6 @@ public interface RoomService {
     boolean isRoomNameExist(String name);
 
     RoomDto updateRoom(RoomDto roomDto);
+
+    List<RoomDto> getAllRooms();
 }

@@ -6,20 +6,22 @@ import doan.doan_v1.dto.DeviceDto;
 import doan.doan_v1.dto.SoftWareDto;
 import doan.doan_v1.entity.*;
 import doan.doan_v1.mapper.ComputerMapper;
-import doan.doan_v1.mapper.DeviceMapper;
-import doan.doan_v1.mapper.SoftWareMapper;
 import doan.doan_v1.repository.ComputerDeviceRepository;
 import doan.doan_v1.repository.ComputerRepository;
 import doan.doan_v1.repository.ComputerSoftWareRepository;
+import doan.doan_v1.repository.RoomRepository;
 import doan.doan_v1.service.ComputerService;
 import doan.doan_v1.service.DeviceService;
 import doan.doan_v1.service.SoftWareService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ComputerServiceImpl implements ComputerService {
 
@@ -28,12 +30,6 @@ public class ComputerServiceImpl implements ComputerService {
 
     @Autowired
     private ComputerMapper computerMapper;
-
-    @Autowired
-    private DeviceMapper deviceMapper;
-
-    @Autowired
-    private SoftWareMapper softWareMapper;
 
     @Autowired
     private ComputerDeviceRepository computerDeviceRepository;
@@ -47,6 +43,9 @@ public class ComputerServiceImpl implements ComputerService {
     @Autowired
     private SoftWareService softWareService;
 
+    @Autowired
+    private RoomRepository roomRepository;
+
     @Override
     public List<ComputerDto> getComputerListByRoomId(int roomId) {
         List<Computer> computerList = computerRepository.findByRoomIdAndDelFlagFalse(roomId);
@@ -58,13 +57,18 @@ public class ComputerServiceImpl implements ComputerService {
 
     @Override
     public ComputerDto getComputerById(int id) {
-
+//        ComputerDto computerDto = new ComputerDto();
         Computer computer = computerRepository.findById(id).orElse(null);
         if (computer == null) {
             return null;
         }
+//        List<DeviceDto> deviceDtos = deviceService.findAllDeviceDtoByComputerId(id);
+//        List<SoftWareDto> softWareDtos = softWareService.getSoftWareDtoListByComputerId(id);
+//
+//        computerDto.setDeviceIdList(deviceDtos.stream().map(DeviceDto::getId).collect(Collectors.toList()));
+//        computerDto.setSoftWareIdList(softWareDtos.stream().map(SoftWareDto::getId).collect(Collectors.toList()));
 
-        return null;
+        return computerMapper.computerToComputerDto(computer);
     }
 
     @Override
@@ -90,28 +94,59 @@ public class ComputerServiceImpl implements ComputerService {
             softwareDtoList.add(softWareDto);
         }
 
-        for (DeviceDto device : deviceDtoList) {
-            ComputerDevice computerDevice = new ComputerDevice();
-            computerDevice.setDeviceId(device.getId());
-            computerDevice.setComputerId(computer.getId());
+        saveComputerDeviceList(deviceDtoList, computer);
+        saveComputerSoftwareList(softwareDtoList, computer);
+        return computerMapper.computerToComputerDto(computer);
+    }
 
-            int type = device.getType();
-            switch (type) {
-                case Constant.DEVICE_TYPE.KEY :
-                    computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.KEY + "-" + computer.getId() + "-" + device.getId());
-                    break;
-                case Constant.DEVICE_TYPE.MOU :
-                    computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.MOU + "-" + computer.getId() + "-" + device.getId());
-                    break;
-                case Constant.DEVICE_TYPE.SCREEN :
-                    computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.SCREEN + "-" + computer.getId() + "-" + device.getId());
-                    break;
-                case Constant.DEVICE_TYPE.CASE :
-                    computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.CASE + "-" + computer.getId() + "-" + device.getId());
-                    break;
-            }
-            computerDeviceRepository.save(computerDevice);
+    @Override
+    public void updateComputer(int id, ComputerDto computerDto) {
+        List<DeviceDto> deviceDtoList = new ArrayList<>();
+        List<SoftWareDto> softwareDtoList = new ArrayList<>();
+
+        Computer computer = computerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy máy tính với ID: " + id));
+
+        computer.setName(computerDto.getName());
+        computer.setStatus(computerDto.getStatus());
+
+        Room room = roomRepository.findById(computerDto.getRoomId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng với ID: " + computerDto.getRoomId()));
+        computer.setRoomId(room.getId());
+
+        List<ComputerDevice> oldComputerDevicesInactive = computerDeviceRepository.findByComputerId(computer.getId()).stream()
+                .filter(item -> !computerDto.getDeviceIdList().contains(item.getComputerId())).collect(Collectors.toList());
+
+        List<ComputerSoftware> oldComputerSoftwaresInactive = computerSoftWareRepository.findByComputerId(computer.getId()).stream()
+                .filter(item -> !computerDto.getSoftWareIdList().contains(item.getSoftwareId())).collect(Collectors.toList());
+
+        computerDeviceRepository.deleteAll(oldComputerDevicesInactive);
+        computerSoftWareRepository.deleteAll(oldComputerSoftwaresInactive);
+
+
+        List<Integer> oldComputerDeviceId = oldComputerDevicesInactive.stream().map(ComputerDevice::getDeviceId).toList();
+        List<Integer> oldSoftwareDeviceId = oldComputerSoftwaresInactive.stream().map(ComputerSoftware::getSoftwareId).toList();
+
+        List<Integer> newComputerDeviceId = computerDto.getDeviceIdList().stream().filter(item -> !oldComputerDeviceId.contains(item)).toList();
+        List<Integer> newSoftwareDeviceId = computerDto.getSoftWareIdList().stream().filter(item -> !oldSoftwareDeviceId.contains(item)).toList();
+
+
+        for (Integer deviceId : newComputerDeviceId) {
+            DeviceDto deviceDto = deviceService.findDeviceDtoById(deviceId);
+            deviceDtoList.add(deviceDto);
         }
+        for (Integer softWareId : newSoftwareDeviceId) {
+            SoftWareDto softWareDto = softWareService.getSoftWareDtoById(softWareId);
+            softwareDtoList.add(softWareDto);
+        }
+
+        saveComputerDeviceList(deviceDtoList, computer);
+        saveComputerSoftwareList(softwareDtoList, computer);
+
+        computerRepository.save(computer);
+    }
+
+    private void saveComputerSoftwareList(List<SoftWareDto> softwareDtoList, Computer computer) {
         for (SoftWareDto software : softwareDtoList) {
             ComputerSoftware computerSoftware = new ComputerSoftware();
             computerSoftware.setSoftwareId(software.getId());
@@ -119,6 +154,45 @@ public class ComputerServiceImpl implements ComputerService {
             computerSoftware.setStatus(Constant.STATUS.OK);
             computerSoftWareRepository.save(computerSoftware);
         }
-        return computerMapper.computerToComputerDto(computer);
     }
+
+    private void saveComputerDeviceList(List<DeviceDto> deviceDtoList, Computer computer) {
+        for (DeviceDto device : deviceDtoList) {
+            ComputerDevice computerDevice = new ComputerDevice();
+            computerDevice.setDeviceId(device.getId());
+            computerDevice.setComputerId(computer.getId());
+            computerDevice.setStatus(Constant.STATUS.OK);
+            int type = device.getType();
+            setDeviceCode(device, type, computerDevice, computer);
+            computerDeviceRepository.save(computerDevice);
+        }
+    }
+
+    @Override
+    public void deleteComputer(int id) {
+        Computer computer = computerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy máy tính với ID: " + id));
+        computer.setDelFlag(true);
+        computerRepository.save(computer);
+    }
+
+
+    private static void setDeviceCode(DeviceDto device, int type, ComputerDevice computerDevice, Computer computer) {
+        switch (type) {
+            case Constant.DEVICE_TYPE.KEY:
+                computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.KEY + "-" + computer.getId() + "-" + device.getId());
+                break;
+            case Constant.DEVICE_TYPE.MOU:
+                computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.MOU + "-" + computer.getId() + "-" + device.getId());
+                break;
+            case Constant.DEVICE_TYPE.SCREEN:
+                computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.SCREEN + "-" + computer.getId() + "-" + device.getId());
+                break;
+            case Constant.DEVICE_TYPE.CASE:
+                computerDevice.setDeviceCode(Constant.DEVICE_TYPE_STR.CASE + "-" + computer.getId() + "-" + device.getId());
+                break;
+        }
+    }
+
 }
+

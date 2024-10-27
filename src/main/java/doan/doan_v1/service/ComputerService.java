@@ -13,4 +13,8 @@ public interface ComputerService {
     boolean isComputerNameExist (String name);
 
     ComputerDto createComputer(ComputerDto computerDto);
+
+    void updateComputer(int id, ComputerDto computerDto);
+
+    void deleteComputer(int id);
 }

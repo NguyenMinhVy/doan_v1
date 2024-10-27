@@ -17,7 +17,7 @@ public abstract class AbstractEntity implements Serializable {
 
     @JsonIgnore
     @Column(name="insert_id", length = 16, nullable = true, unique = false)
-    private int insertId;
+    private Integer insertId;
 
     @JsonIgnore
     @Column(name="insert_date", nullable = true, unique = false)
@@ -25,7 +25,7 @@ public abstract class AbstractEntity implements Serializable {
 
     @JsonIgnore
     @Column(name="update_id", length = 16, nullable = true, unique = false)
-    private int updateId;
+    private Integer updateId;
 
     @JsonIgnore
     @Column(name="update_date", nullable = true, unique = false)

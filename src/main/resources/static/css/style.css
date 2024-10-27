@@ -205,16 +205,26 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border: 2px solid #b67a7a;
     border-radius: 50%;
-    color: #b67a7a;
+    color: #dcd3ff;
     background-color: #b67a7a;
     font-size: 16px;
     font-weight: bold;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.btn-delete::before {
+    content: "×";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #dcd3ff;
+    font-size: 14px;
 }
 
 .btn-delete:hover {
@@ -227,16 +237,27 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #dcd3ff;
+    width: 22px;
+    height: 22px;
+    /*border: 2px solid #dcd3ff;*/
     border-radius: 50%;
     color: #dcd3ff;
-    background-color: #dcd3ff;
+    background-color: #6c5ce7;
     font-size: 16px;
     font-weight: bold;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.btn-update::before {
+    content: "✎";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #dcd3ff;
+    font-size: 14px;
 }
 
 .btn-update:hover {
