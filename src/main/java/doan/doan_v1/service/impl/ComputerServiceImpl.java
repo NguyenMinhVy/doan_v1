@@ -114,8 +114,11 @@ public class ComputerServiceImpl implements ComputerService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng với ID: " + computerDto.getRoomId()));
         computer.setRoomId(room.getId());
 
+        List<Integer> oldComputerDeviceID = computerDeviceRepository.findByComputerId(computer.getId()).stream().map(ComputerDevice::getDeviceId).toList();
+        List<Integer> oldComputerSoftwareID = computerSoftWareRepository.findByComputerId(computer.getId()).stream().map(ComputerSoftware::getSoftwareId).toList();
+
         List<ComputerDevice> oldComputerDevicesInactive = computerDeviceRepository.findByComputerId(computer.getId()).stream()
-                .filter(item -> !computerDto.getDeviceIdList().contains(item.getComputerId())).collect(Collectors.toList());
+                .filter(item -> !computerDto.getDeviceIdList().contains(item.getDeviceId())).collect(Collectors.toList());
 
         List<ComputerSoftware> oldComputerSoftwaresInactive = computerSoftWareRepository.findByComputerId(computer.getId()).stream()
                 .filter(item -> !computerDto.getSoftWareIdList().contains(item.getSoftwareId())).collect(Collectors.toList());
@@ -123,13 +126,8 @@ public class ComputerServiceImpl implements ComputerService {
         computerDeviceRepository.deleteAll(oldComputerDevicesInactive);
         computerSoftWareRepository.deleteAll(oldComputerSoftwaresInactive);
 
-
-        List<Integer> oldComputerDeviceId = oldComputerDevicesInactive.stream().map(ComputerDevice::getDeviceId).toList();
-        List<Integer> oldSoftwareDeviceId = oldComputerSoftwaresInactive.stream().map(ComputerSoftware::getSoftwareId).toList();
-
-        List<Integer> newComputerDeviceId = computerDto.getDeviceIdList().stream().filter(item -> !oldComputerDeviceId.contains(item)).toList();
-        List<Integer> newSoftwareDeviceId = computerDto.getSoftWareIdList().stream().filter(item -> !oldSoftwareDeviceId.contains(item)).toList();
-
+        List<Integer> newComputerDeviceId = computerDto.getDeviceIdList().stream().filter(item -> !oldComputerDeviceID.contains(item)).toList();
+        List<Integer> newSoftwareDeviceId = computerDto.getSoftWareIdList().stream().filter(item -> !oldComputerSoftwareID.contains(item)).toList();
 
         for (Integer deviceId : newComputerDeviceId) {
             DeviceDto deviceDto = deviceService.findDeviceDtoById(deviceId);
