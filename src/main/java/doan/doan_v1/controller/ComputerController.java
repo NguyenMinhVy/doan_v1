@@ -8,7 +8,6 @@ import doan.doan_v1.repository.ComputerRepository;
 import doan.doan_v1.service.ComputerService;
 import doan.doan_v1.service.DeviceService;
 import doan.doan_v1.service.IncidentService;
-import doan.doan_v1.service.RoomService;
 import doan.doan_v1.service.SoftWareService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
