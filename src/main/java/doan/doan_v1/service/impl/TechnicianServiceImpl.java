@@ -1,18 +1,23 @@
 package doan.doan_v1.service.impl;
 
+import doan.doan_v1.Constant.Constant;
 import doan.doan_v1.dto.TechnicianDto;
 import doan.doan_v1.entity.Technician;
 import doan.doan_v1.entity.User;
 import doan.doan_v1.mapper.TechnicianMapper;
 import doan.doan_v1.mapper.UserMapper;
+import doan.doan_v1.repository.LocationRepository;
 import doan.doan_v1.repository.TechnicianRepository;
 import doan.doan_v1.repository.UserRepository;
 import doan.doan_v1.service.TechnicianService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
 @Service
 public class TechnicianServiceImpl implements TechnicianService {
 
@@ -27,6 +32,73 @@ public class TechnicianServiceImpl implements TechnicianService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private LocationRepository locationRepository;
+
+    @Override
+    public String createTechnician(TechnicianDto technicianDto) {
+        // Kiểm tra mã kỹ thuật viên đã tồn tại chưa
+        if (technicianRepository.existsByTechnicianCodeAndDelFlagFalse(technicianDto.getTechnicianCode())) {
+            throw new RuntimeException("Mã kỹ thuật viên đã tồn tại");
+        }
+
+        // Tạo username từ họ tên
+        String username = generateUsername(technicianDto.getUserDto().getName());
+
+        // Tạo mới User
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode("123456"));
+        user.setRoleId(Constant.ROLE_ID.ROLE_TECHNICIAN);
+        user.setName(technicianDto.getUserDto().getName());
+        userRepository.save(user);
+
+        // Tạo mới Technician
+        Technician technician = new Technician();
+        technician.setTechnicianCode(technicianDto.getTechnicianCode());
+        technician.setUserId(user.getId());
+        technician.setLocationId(locationRepository.findByIdAndDelFlagFalse(technicianDto.getLocationDto().getId()).getId());
+        technician.setDelFlag(false);
+
+        technicianRepository.save(technician);
+
+        return username;
+    }
+
+    private String generateUsername(String fullName) {
+        // Tách họ tên thành các phần
+        String[] parts = fullName.toLowerCase()
+                .replaceAll("đ", "d")
+                .replaceAll("[áàảãạâấầẩẫậăắằẳẵặ]", "a")
+                .replaceAll("[éèẻẽẹêếềểễệ]", "e")
+                .replaceAll("[íìỉĩị]", "i")
+                .replaceAll("[óòỏõọôốồổỗộơớờởỡợ]", "o")
+                .replaceAll("[úùủũụưứừửữự]", "u")
+                .replaceAll("[ýỳỷỹỵ]", "y")
+                .split("\\s+");
+
+        // Lấy tên và họ
+        String firstName = parts[parts.length - 1];
+        String lastName = parts[0];
+
+        // Tạo username cơ bản
+        String baseUsername = firstName + "." + lastName;
+
+        // Kiểm tra và thêm số nếu username đã tồn tại
+        String username = baseUsername;
+        int counter = 1;
+        while (userRepository.existsByUsername(username)) {
+            username = baseUsername + counter;
+            counter++;
+        }
+
+        return username;
+    }
+
 
     @Override
     public List<TechnicianDto> getTechnicianDtoListByLocationId(int locationId) {

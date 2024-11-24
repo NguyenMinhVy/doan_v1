@@ -10,4 +10,6 @@ public interface TechnicianService {
     List<TechnicianDto> getAllTechnicianDto();
 
     TechnicianDto getTechnicianDtoById(int id);
+
+    String createTechnician(TechnicianDto technicianDto);
 }
