@@ -1,7 +1,7 @@
-<header th:fragment="header" class="header-fragment" xmlns:sec="http://www.w3.org/1999/xhtml"> <!-- Thêm class cho fragment -->
-    <nav class="header-nav"> <!-- Thêm class cho nav -->
+<header th:fragment="header" class="header-fragment" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <nav class="header-nav">
         <ul class="header-menu">
-            <li class="dropdown"> <!-- Thêm class dropdown -->
+            <li class="dropdown">
                 <span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Phòng</span>
                 <ul class="dropdown-menu">
                     <li><a th:href="@{/home}">Danh sách Phòng</a></li>
@@ -11,21 +11,16 @@
                 </ul>
             </li>
             <li><a th:href="@{/incident/list}">Sự Cố</a></li>
-            <li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')">
-                <a class="nav-link dropdown-toggle" href="#" id="technicianDropdown" role="button" data-toggle="dropdown">
-                    Kỹ thuật viên
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" th:href="@{/technician/create}">Thêm kỹ thuật viên</a>
-                </div>
+            <li class="dropdown" sec:authorize="hasAuthority('ADMIN')">
+                <span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Kỹ thuật viên</span>
+                <ul class="dropdown-menu">
+                    <li><a th:href="@{/technician/create}">Thêm kỹ thuật viên</a></li>
+                </ul>
             </li>
-            <li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')">
-                <a class="nav-link dropdown-toggle" href="#" id="lecturerDropdown"
-                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Giảng viên
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="lecturerDropdown">
-                    <li><a class="dropdown-item" th:href="@{/lecturer/create}">Thêm giảng viên</a></li>
+            <li class="dropdown" sec:authorize="hasAuthority('ADMIN')">
+                <span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Giảng viên</span>
+                <ul class="dropdown-menu">
+                    <li><a th:href="@{/lecturer/create}">Thêm giảng viên</a></li>
                 </ul>
             </li>
         </ul>
