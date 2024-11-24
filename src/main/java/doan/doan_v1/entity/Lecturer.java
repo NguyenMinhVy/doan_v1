@@ -20,9 +20,6 @@ public class Lecturer extends AbstractEntity{
     private int id;
 
     @Column
-    private String name;
-
-    @Column
     private String lectureCode;
 
     @Column

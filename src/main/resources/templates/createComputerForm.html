@@ -6,11 +6,89 @@
     <title>Tạo Máy Tính Mới</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <style>
+        /* CSS tùy chỉnh */
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        h1.text-center {
+            color: #343a40;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Định dạng thẻ label */
+        label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        /* Định dạng các nhóm radio và checkbox */
+        .form-group div {
+            margin-bottom: 10px;
+        }
+
+        /* Định dạng nút submit */
+        button.btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button.btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        /* Căn chỉnh thông báo lỗi */
+        .alert {
+            font-size: 0.9rem;
+            border-radius: 5px;
+        }
+
+        /* Khoảng cách giữa các nhóm form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Định dạng input radio và checkbox */
+        input[type="radio"], input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2); /* Tăng kích thước */
+        }
+
+        /* Thông báo lỗi phần mềm */
+        #softwareAlert {
+            font-size: 0.9rem;
+            color: #dc3545;
+            font-weight: bold;
+            padding: 5px;
+            margin-top: 10px;
+        }
+
+        /* Hiệu ứng hover cho label */
+        label:hover {
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        /* Container chính */
+        .container {
+            background-color: #f8f9fa;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div class="container mt-5">
+<div class="container mt-5 form-container">
     <div th:if="${param.error}">
         <div class="alert alert-danger">Tạo máy tính thất bại</div>
     </div>
@@ -21,78 +99,62 @@
 
         <input type="hidden" id="roomId" name="roomId" th:value="${computerDto.roomId}">
 
-        <!-- Nhập tên máy tính -->
-<!--        <div class="form-group">-->
-<!--            <label for="name">Tên Máy Tính</label>-->
-<!--            <input type="text" id="name" name="name" class="form-control" placeholder="Nhập tên máy" required>-->
-<!--            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>-->
-<!--        </div>-->
-
-        <!-- Chọn trạng thái máy tính -->
-<!--        <div class="form-group">-->
-<!--            <label for="status">Trạng thái</label>-->
-<!--            <select id="status" name="status" class="form-control" required>-->
-<!--                <option value="" disabled selected>Chọn trạng thái</option>-->
-<!--                <option value="1">Bình thường</option>-->
-<!--                <option value="2">Lỗi</option>-->
-<!--            </select>-->
-<!--        </div>-->
-
         <!-- Chọn thiết bị -->
-        <h5>Chọn Thiết Bị</h5>
+        <h5>Chọn Thiết Bị:</h5>
 
+        <!-- Bàn phím -->
         <div class="form-group">
-            <label for="keyboard">Bàn phím</label>
-            <select id="keyboard" name="deviceIdList[0]" class="form-control" required>
-                <option value="" disabled selected>Chọn bàn phím</option>
-                <option th:each="device : ${deviceDtos}" th:if="${device.type == 1}"
-                        th:value="${device.id}" th:text="${device.name}"></option>
-            </select>
+            <label>Bàn phím</label>
+            <div th:each="device : ${deviceDtos}" th:if="${device.type == 1}">
+                <input type="radio" th:id="'keyboard-' + ${device.id}" name="deviceIdList[0]" th:value="${device.id}" required>
+                <label th:for="'keyboard-' + ${device.id}" th:text="${device.name}"></label>
+            </div>
         </div>
 
+        <!-- Chuột -->
         <div class="form-group">
-            <label for="mouse">Chuột</label>
-            <select id="mouse" name="deviceIdList[1]" class="form-control" required>
-                <option value="" disabled selected>Chọn chuột</option>
-                <option th:each="device : ${deviceDtos}" th:if="${device.type == 2}"
-                        th:value="${device.id}" th:text="${device.name}"></option>
-            </select>
+            <label>Chuột</label>
+            <div th:each="device : ${deviceDtos}" th:if="${device.type == 2}">
+                <input type="radio" th:id="'mouse-' + ${device.id}" name="deviceIdList[1]" th:value="${device.id}" required>
+                <label th:for="'mouse-' + ${device.id}" th:text="${device.name}"></label>
+            </div>
         </div>
 
+        <!-- Màn hình -->
         <div class="form-group">
-            <label for="monitor">Màn hình</label>
-            <select id="monitor" name="deviceIdList[2]" class="form-control" required>
-                <option value="" disabled selected>Chọn màn hình</option>
-                <option th:each="device : ${deviceDtos}" th:if="${device.type == 3}"
-                        th:value="${device.id}" th:text="${device.name}"></option>
-            </select>
+            <label>Màn hình</label>
+            <div th:each="device : ${deviceDtos}" th:if="${device.type == 3}">
+                <input type="radio" th:id="'monitor-' + ${device.id}" name="deviceIdList[2]" th:value="${device.id}" required>
+                <label th:for="'monitor-' + ${device.id}" th:text="${device.name}"></label>
+            </div>
         </div>
 
+        <!-- Thùng máy -->
         <div class="form-group">
-            <label for="cpu">Thùng máy</label>
-            <select id="cpu" name="deviceIdList[3]" class="form-control" required>
-                <option value="" disabled selected>Chọn thùng máy</option>
-                <option th:each="device : ${deviceDtos}" th:if="${device.type == 4}"
-                        th:value="${device.id}" th:text="${device.name}"></option>
-            </select>
+            <label>Thùng máy</label>
+            <div th:each="device : ${deviceDtos}" th:if="${device.type == 4}">
+                <input type="radio" th:id="'cpu-' + ${device.id}" name="deviceIdList[3]" th:value="${device.id}" required>
+                <label th:for="'cpu-' + ${device.id}" th:text="${device.name}"></label>
+            </div>
         </div>
 
         <!-- Chọn phần mềm -->
         <div class="form-group">
-            <label for="software">Phần mềm:</label>
-            <select id="software" class="form-control" multiple>
-                <option th:each="software : ${softWareDtos}"
-                        th:value="${software.id}"
-                        th:text="${software.name}"></option>
-            </select>
+            <label>Chọn phần mềm :</label>
+            <div th:each="software : ${softWareDtos}">
+                <input type="checkbox" th:id="'software-' + ${software.id}" name="softWareIdList" th:value="${software.id}">
+                <label th:for="'software-' + ${software.id}" th:text="${software.name}"></label>
+            </div>
         </div>
-
-        <div id="softwareIdsContainer"></div>
+<!--        <div id="softwareAlert" class="alert alert-danger">-->
+<!--            Bạn phải chọn ít nhất một phần mềm!-->
+<!--        </div>-->
 
         <!-- Nút submit -->
         <button type="submit" class="btn btn-primary">Tạo Máy Tính</button>
     </form>
 </div>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -100,30 +162,37 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-    document.getElementById('software').addEventListener('change', function() {
-        const selectElement = this;
-        const selectedOptions = Array.from(selectElement.selectedOptions);
-        const softwareIdsContainer = document.getElementById('softwareIdsContainer');
+    // Kiểm tra lựa chọn thiết bị và phần mềm
+    document.querySelector('form').addEventListener('submit', function (event) {
+        const requiredGroups = ['deviceIdList[0]', 'deviceIdList[1]', 'deviceIdList[2]', 'deviceIdList[3]'];
+        let valid = true;
 
-        // Xóa tất cả các trường ẩn trước đó
-        softwareIdsContainer.innerHTML = '';
+        // Kiểm tra các thiết bị
+        requiredGroups.forEach((groupName) => {
+            const radios = document.getElementsByName(groupName);
+            const isChecked = Array.from(radios).some(radio => radio.checked);
 
-        // Nếu không chọn gì thì cũng tạo trường ẩn rỗng
-        if (selectedOptions.length === 0) {
-            const emptyInput = document.createElement('input');
-            emptyInput.type = 'hidden';
-            emptyInput.name = 'softWareIdList';
-            emptyInput.value = '';
-            softwareIdsContainer.appendChild(emptyInput);
+            if (!isChecked) {
+                valid = false;
+                alert('Bạn phải chọn đầy đủ thiết bị cho tất cả các loại!');
+                return false;
+            }
+        });
+
+        // Kiểm tra phần mềm
+        const softwareCheckboxes = document.getElementsByName('softWareIdList');
+        const isSoftwareChecked = Array.from(softwareCheckboxes).some(checkbox => checkbox.checked);
+
+        if (!isSoftwareChecked) {
+            event.preventDefault();
+            document.getElementById('softwareAlert').style.display = 'block';
+            valid = false;
         } else {
-            // Tạo trường ẩn cho từng ID phần mềm đã chọn
-            selectedOptions.forEach((option) => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'softWareIdList';
-                input.value = option.value;
-                softwareIdsContainer.appendChild(input);
-            });
+            document.getElementById('softwareAlert').style.display = 'none';
+        }
+
+        if (!valid) {
+            event.preventDefault(); // Ngăn form submit nếu không hợp lệ
         }
     });
 </script>
