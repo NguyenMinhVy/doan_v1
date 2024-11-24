@@ -1,5 +1,6 @@
 package doan.doan_v1.controller;
 
+import doan.doan_v1.Constant.Constant;
 import doan.doan_v1.dto.DeviceDto;
 import doan.doan_v1.dto.IncidentDto;
 import doan.doan_v1.dto.LocationDto;
@@ -46,10 +47,11 @@ public class DeviceController {
         incident.setUpdateId(userDto.getId());
         incident.setUpdateDate(LocalDateTime.now());
         incident.setInsertDate(LocalDateTime.now());
+        incident.setStatus(Constant.STATUS.ERROR);
         incidentRepository.save(incident);
 
         DeviceDto deviceDto = deviceService.findDeviceDtoById(incidentDto.getComputerDeviceId());
-        deviceDto.setStatus(incidentDto.getStatus());
+        deviceDto.setStatus(incident.getStatus());
         deviceService.updateDeviceDto(deviceDto);
         // Thêm thông báo thành công
         redirectAttributes.addFlashAttribute("message", "Thêm sự cố thành công!");

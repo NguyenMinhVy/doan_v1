@@ -300,18 +300,150 @@ a:hover {
 }
 
 .status-processing {
-    background-color: #ffeb3b; /* Màu vàng nhạt */
+    background-color: #ffeb3b; 
     padding: 5px;
     border-radius: 5px;
-    color: #333; /* Màu chữ */
+    color: #333;
 }
 
 .status-unprocessed {
-    background-color: #ff9800; /* Màu cam */
+    background-color: #ff9800;
     padding: 5px;
     border-radius: 5px;
-    color: #fff; /* Màu chữ */
+    color: #fff;
 }
+
+/*footer*/
+.footer-fragment {
+    background-color: #343a40;
+    color: #f8f9fa;
+    padding: 20px 0;
+    font-size: 14px;
+    border-top: 3px solid #007bff;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-content .col-md-6 p {
+    margin: 0;
+}
+
+.footer-social {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.footer-social li {
+    display: inline-block;
+}
+
+.footer-social li a {
+    color: #f8f9fa;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.footer-social li a:hover {
+    color: #ffc107;
+}
+
+.footer-nav {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+    display: inline-flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.footer-nav li {
+    display: inline-block;
+}
+
+.footer-nav li a {
+    color: #f8f9fa;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.footer-nav li a:hover {
+    color: #007bff;
+}
+
+.footer-content .row {
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .footer-social {
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    .footer-content .col-md-6 {
+        text-align: center;
+    }
+}
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+}
+
+/* Footer */
+.footer-fragment {
+    background-color: #343a40;
+    color: #f8f9fa;
+    padding: 20px 0;
+    text-align: center;
+    margin-top: 20px;
+    border-top: 3px solid #007bff;
+}
+
+/*description*/
+.status-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.green-border {
+    background-color: #e6f4ea;
+    border: 2px solid #28a745;
+}
+
+.orange-border {
+    background-color: #fde9d9;
+    border: 2px solid #dc3545;
+}
+
+.status-legend p {
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+}
+.fragment-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
 
 
 

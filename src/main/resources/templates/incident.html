@@ -116,9 +116,21 @@
 
                     <input type="hidden" name="softwareId" th:if="${softWareDto != null}" th:value="${softWareDto.id}"/>
                     <div class="form-group">
-                        <label>Mô tả sự cố:</label>
-                        <textarea class="form-control" name="description" required></textarea>
+                        <label for="description">Mô tả sự cố:</label>
+                        <select id="description" name="description" class="form-control" required>
+                            <option value="" disabled selected>Chọn một lỗi thường gặp</option>
+                            <option value="Không khởi động được">Không khởi động được</option>
+                            <option value="Màn hình xanh (BSOD)">Màn hình xanh (BSOD)</option>
+                            <option value="Máy tính chạy chậm">Máy tính chạy chậm</option>
+                            <option value="Không kết nối được mạng">Không kết nối được mạng</option>
+                            <option value="Phần mềm không hoạt động">Phần mềm không hoạt động</option>
+                            <option value="Máy tính tự khởi động lại">Máy tính tự khởi động lại</option>
+                            <option value="Lỗi phần cứng">Lỗi phần cứng</option>
+                            <option value="Lỗi phần mềm">Lỗi phần mềm</option>
+                            <option value="Khác">Khác</option>
+                        </select>
                     </div>
+
                     <div class="form-group">
                         <label>Trạng thái:</label>
                         <select class="form-control" name="status" required disabled>
@@ -127,8 +139,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Ngày báo cáo:</label>
-                        <input type="datetime-local" class="form-control" name="reportDate" required />
+                        <label>Ngày hoàn thành mong muốn:</label>
+                        <input type="datetime-local" class="form-control" name="completionDate" required />
                     </div>
                     <button type="submit" class="btn btn-primary">Thêm Sự cố</button>
                     <button type="button" class="btn btn-danger cancel-btn">Hủy</button>
@@ -148,13 +160,14 @@
                             <span th:if="${incident.status == 1}">Bình thường</span>
                             <span th:if="${incident.status == 2}">Lỗi</span>
                         </p>
-                        <p><strong>Ngày báo cáo:</strong> <span th:text="${#temporals.format(incident.reportDate, 'dd/MM/yyyy HH:mm')}"></span></p>
+                        <p><strong>Ngày hoàn thành mong muốn:</strong> <span th:text="${#temporals.format(incident.completionDate, 'dd/MM/yyyy HH:mm')}"></span></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 <script>
     $(document).ready(function() {

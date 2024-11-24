@@ -1,0 +1,28 @@
+<footer th:fragment="footer" class="footer-fragment">
+    <div class="footer-content container">
+        <div class="row">
+            <!-- Thông tin bản quyền -->
+            <div class="col-md-6">
+                <p>&copy; 2024 Công ty của bạn. Mọi quyền được bảo lưu.</p>
+            </div>
+            <!-- Liên kết xã hội -->
+            <div class="col-md-6 text-right">
+                <ul class="footer-social">
+                    <li><a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+                    <li><a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a></li>
+                    <li><a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <!-- Liên kết điều hướng -->
+            <div class="col-md-12 text-center">
+                <ul class="footer-nav">
+                    <li><a th:href="@{/home}">Trang chủ</a></li>
+                    <li><a th:href="@{/about}">Giới thiệu</a></li>
+                    <li><a th:href="@{/contact}">Liên hệ</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
