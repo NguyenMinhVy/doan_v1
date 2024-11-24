@@ -11,7 +11,14 @@
                 </ul>
             </li>
             <li><a th:href="@{/incident/list}">Sự Cố</a></li>
-            <li><a th:href="@{/employees}">Kỹ Thuật Viên</a></li>
+            <li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')">
+                <a class="nav-link dropdown-toggle" href="#" id="technicianDropdown" role="button" data-toggle="dropdown">
+                    Kỹ thuật viên
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" th:href="@{/technician/create}">Thêm kỹ thuật viên</a>
+                </div>
+            </li>
         </ul>
         <div class="header-user-info">
             <span th:text="${#authentication.name}">Tên Người Dùng</span>
@@ -22,3 +29,4 @@
         </div>
     </nav>
 </header>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">

@@ -26,4 +26,10 @@ public interface Constant {
         int PROCESSING = 2;
         int PROCESSED = 3;
     }
+
+    interface ROLE_ID {
+        int ROLE_ADMIN = 1;
+        int ROLE_LECTURE = 2;
+        int ROLE_TECHNICIAN = 3;
+    }
 }
