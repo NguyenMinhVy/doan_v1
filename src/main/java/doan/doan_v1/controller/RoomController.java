@@ -1,16 +1,10 @@
 package doan.doan_v1.controller;
 
-import doan.doan_v1.dto.ComputerDto;
-import doan.doan_v1.dto.LocationDto;
-import doan.doan_v1.dto.RoomDto;
-import doan.doan_v1.dto.RoomTypeDto;
+import doan.doan_v1.dto.*;
 import doan.doan_v1.entity.Room;
 import doan.doan_v1.mapper.RoomMapper;
 import doan.doan_v1.repository.RoomRepository;
-import doan.doan_v1.service.ComputerService;
-import doan.doan_v1.service.LocationService;
-import doan.doan_v1.service.RoomService;
-import doan.doan_v1.service.RoomTypeService;
+import doan.doan_v1.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,6 +35,9 @@ public class RoomController {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private TechnicianService technicianService;
 
 
     @GetMapping(value = "/{roomId}")
@@ -89,6 +86,12 @@ public class RoomController {
         model.addAttribute("locationDtoList", locationDtoList);
         model.addAttribute("roomTypeDtoList", roomTypeDtoList);
         return "createRoomForm";
+    }
+
+    @GetMapping("/getTechnicianListByLocationId")
+    @ResponseBody
+    public List<TechnicianDto> getTechnicianListByLocationId (@RequestParam("locationId") int locationId) {
+        return technicianService.getTechnicianDtoListByLocationId(locationId);
     }
 
     @PostMapping("/delete/{roomId}")

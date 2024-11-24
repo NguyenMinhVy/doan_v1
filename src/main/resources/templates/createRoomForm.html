@@ -46,6 +46,13 @@
                         th:text="${roomType.name}">loại phòng</option>
             </select>
         </div>
+        <!-- Chọn kỹ thuât vin -->
+        <div class="form-group">
+            <label for="technician">Kỹ thuật viên</label>
+            <select id="technician" name="technicianDto.id" class="form-control" required>
+                <option value="" disabled selected>Chọn kỹ thuật viên</option>
+            </select>
+        </div>
 
         <!-- Nút submit -->
         <button type="submit" class="btn btn-primary">Tạo Phòng</button>
@@ -55,5 +62,28 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.getElementById('location').addEventListener('change', function () {
+        const locationId = this.value;
+        const technicianSelect = document.getElementById('technician');
+
+        // Xóa các option hiện tại
+        technicianSelect.innerHTML = '<option value="" disabled selected>Chọn kỹ thuật viên</option>';
+
+        if (locationId) {
+            fetch(`/room/getTechnicianListByLocationId?locationId=${locationId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(technician => {
+                        const option = document.createElement('option');
+                        option.value = technician.id;
+                        option.textContent = `${technician.userDto.name} (${technician.technicianCode})`;
+                        technicianSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching technicians:', error));
+        }
+    });
+</script>
 </body>
 </html>

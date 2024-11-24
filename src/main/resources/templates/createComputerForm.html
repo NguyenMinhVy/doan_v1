@@ -17,26 +17,26 @@
 
     <h1 class="text-center">Tạo Máy Tính Mới</h1>
 
-    <form th:action="@{/computer/create}" th:object="${computerDto}" method="post" class="mt-4">
+    <form th:action="@{/computer/createManyComputer}" th:object="${computerDto}" method="post" class="mt-4">
 
         <input type="hidden" id="roomId" name="roomId" th:value="${computerDto.roomId}">
 
         <!-- Nhập tên máy tính -->
-        <div class="form-group">
-            <label for="name">Tên Máy Tính</label>
-            <input type="text" id="name" name="name" class="form-control" placeholder="Nhập tên máy" required>
-            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
-        </div>
+<!--        <div class="form-group">-->
+<!--            <label for="name">Tên Máy Tính</label>-->
+<!--            <input type="text" id="name" name="name" class="form-control" placeholder="Nhập tên máy" required>-->
+<!--            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>-->
+<!--        </div>-->
 
         <!-- Chọn trạng thái máy tính -->
-        <div class="form-group">
-            <label for="status">Trạng thái</label>
-            <select id="status" name="status" class="form-control" required>
-                <option value="" disabled selected>Chọn trạng thái</option>
-                <option value="1">Bình thường</option>
-                <option value="2">Lỗi</option>
-            </select>
-        </div>
+<!--        <div class="form-group">-->
+<!--            <label for="status">Trạng thái</label>-->
+<!--            <select id="status" name="status" class="form-control" required>-->
+<!--                <option value="" disabled selected>Chọn trạng thái</option>-->
+<!--                <option value="1">Bình thường</option>-->
+<!--                <option value="2">Lỗi</option>-->
+<!--            </select>-->
+<!--        </div>-->
 
         <!-- Chọn thiết bị -->
         <h5>Chọn Thiết Bị</h5>

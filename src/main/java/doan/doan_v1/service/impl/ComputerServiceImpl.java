@@ -1,18 +1,14 @@
 package doan.doan_v1.service.impl;
 
 import doan.doan_v1.Constant.Constant;
-import doan.doan_v1.dto.ComputerDto;
-import doan.doan_v1.dto.DeviceDto;
-import doan.doan_v1.dto.SoftWareDto;
+import doan.doan_v1.dto.*;
 import doan.doan_v1.entity.*;
 import doan.doan_v1.mapper.ComputerMapper;
 import doan.doan_v1.repository.ComputerDeviceRepository;
 import doan.doan_v1.repository.ComputerRepository;
 import doan.doan_v1.repository.ComputerSoftWareRepository;
 import doan.doan_v1.repository.RoomRepository;
-import doan.doan_v1.service.ComputerService;
-import doan.doan_v1.service.DeviceService;
-import doan.doan_v1.service.SoftWareService;
+import doan.doan_v1.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +40,12 @@ public class ComputerServiceImpl implements ComputerService {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private RoomService roomService;
+
+    @Autowired
+    private RoomTypeService roomTypeService;
 
     @Override
     public List<ComputerDto> getComputerListByRoomId(int roomId) {
@@ -96,6 +98,42 @@ public class ComputerServiceImpl implements ComputerService {
         saveComputerDeviceList(deviceDtoList, computer);
         saveComputerSoftwareList(softwareDtoList, computer);
         return computerMapper.computerToComputerDto(computer);
+    }
+
+    @Override
+    public List<ComputerDto> createManyComputer(ComputerDto computerDto) {
+        RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
+        int quantity = roomDto.getRoomTypeDto().getCapacity();
+        List<Computer> computerList = new ArrayList<>();
+        for (int i = 0; i < quantity; i++) {
+            Computer computer = new Computer();
+            String formattedIndex = String.format("%02d", i + 1);
+
+            computer.setName(roomDto.getName().replace(".", "")+ "M" + formattedIndex);
+            computer.setStatus(Constant.STATUS.OK);
+            computer.setRoomId(roomDto.getId());
+            computerList.add(computer);
+        }
+        computerRepository.saveAll(computerList);
+
+        List<DeviceDto> deviceDtoList = new ArrayList<>();
+        List<SoftWareDto> softwareDtoList = new ArrayList<>();
+        for (Integer deviceId : computerDto.getDeviceIdList()) {
+            DeviceDto deviceDto = deviceService.findDeviceDtoById(deviceId);
+            deviceDtoList.add(deviceDto);
+        }
+        for (Integer softWareId : computerDto.getSoftWareIdList()) {
+            SoftWareDto softWareDto = softWareService.getSoftWareDtoById(softWareId);
+            softWareDto.setStatus(Constant.STATUS.OK);
+            softwareDtoList.add(softWareDto);
+        }
+
+        for (Computer computer : computerList) {
+            saveComputerDeviceList(deviceDtoList, computer);
+            saveComputerSoftwareList(softwareDtoList, computer);
+        }
+
+        return computerMapper.computerListToComputerDtoList(computerList);
     }
 
     @Override

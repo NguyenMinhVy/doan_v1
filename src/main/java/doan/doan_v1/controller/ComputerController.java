@@ -97,6 +97,32 @@ public class ComputerController {
         }
     }
 
+    @PostMapping("/createManyComputer")
+    public String createManyComputer(@ModelAttribute ComputerDto computerDto, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+        try {
+            // Kiểm tra nếu tên phòng đã tồn tại
+//            if (computerService.isComputerNameExist(computerDto.getName())) {
+//                bindingResult.rejectValue("name", "error.name", "Tên máy đã tồn tại");
+//            }
+
+            // Nếu có lỗi, trả về form `createRoomForm` và hiển thị lỗi
+            if (bindingResult.hasErrors()) {
+                setComputerModel(model);
+                return "createComputerForm";
+            }
+
+//            ComputerDto createdComputer = computerService.createComputer(computerDto);
+            List<ComputerDto> computerDtoList = computerService.createManyComputer(computerDto);
+
+            redirectAttributes.addFlashAttribute("message", "Thêm máy tính thành công!");
+            return "redirect:/room/" + computerDto.getRoomId();
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi thêm máy tính");
+            return "redirect:/computer/createComputerForm?error=true&roomId=" + computerDto.getRoomId();
+        }
+    }
+
     @PostMapping("/delete/{computerId}")
     public String deleteRoom(@PathVariable("computerId") int computerId) {
         ComputerDto computerDto = computerService.getComputerById(computerId);

@@ -19,4 +19,6 @@ public class RoomDto extends AbstractDto implements Serializable {
     private RoomTypeDto roomTypeDto;
 
     private List<ComputerDto> computerDtoList;
+
+    private TechnicianDto technicianDto;
 }

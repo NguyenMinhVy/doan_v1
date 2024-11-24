@@ -12,5 +12,5 @@ public class RoomTypeDto extends AbstractDto implements Serializable {
 
     private String name;
 
-    private String capacity;
+    private int capacity;
 }

@@ -61,6 +61,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomMapper.roomDtoToRoom(roomDto);
         room.setRoomTypeId(roomDto.getRoomTypeDto().getId());
         room.setLocationId(roomDto.getLocationDto().getId());
+        room.setTechnicianId(roomDto.getRoomTypeDto().getId());
         return roomMapper.roomToRoomDto(roomRepository.save(room));
     }
 
