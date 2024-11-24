@@ -7,38 +7,6 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 
-<!--    <style>-->
-<!--        .incident-card {-->
-<!--            border: 1px solid #ddd;-->
-<!--            padding: 20px;-->
-<!--            margin-bottom: 20px;-->
-<!--            border-radius: 10px;-->
-<!--            background-color: #f9f9f9;-->
-<!--            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);-->
-<!--            transition: transform 0.2s ease;-->
-<!--        }-->
-
-<!--        .incident-card:hover {-->
-<!--            transform: translateY(-5px);-->
-<!--            background-color: #f1f1f1;-->
-<!--        }-->
-
-<!--        .incident-title {-->
-<!--            font-weight: bold;-->
-<!--            font-size: 1.2rem;-->
-<!--        }-->
-
-<!--        /* Xóa gạch chân và giữ màu sắc cho tất cả các liên kết */-->
-<!--        a {-->
-<!--            text-decoration: none !important;-->
-<!--            color: inherit !important;-->
-<!--        }-->
-
-<!--        .incident-link:hover {-->
-<!--            color: black !important;-->
-<!--            background-color: grey;-->
-<!--        }-->
-<!--    </style>-->
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -46,23 +14,29 @@
 <div class="container mt-5">
     <h1 class="text-center">Danh sách Sự Cố</h1>
 
-    <div class="row mt-4" th:each="incident : ${incidentDtoList}">
-        <div class="col-md-4">
-            <div class="incident-card">
+    <div class="row">
+        <div class="col-md-2 mb-4" th:each="incident : ${incidentDtoList}">
+            <div class="incident-card h-100">
                 <div class="incident-title" th:text="${incident.description}">Tiêu Đề Sự Cố</div>
-                <p><strong>Người Báo Cáo:</strong> <span th:text="${incident.reportUserName}">Tên Người Báo Cáo</span></p>
-                <p><strong>Trạng Thái:</strong> <span th:text="${incident.status}">TRẠNG THÁI</span></p>
-                <p><strong>Ngày Báo Cáo:</strong> <span th:text="${incident.reportDate}">Ngày Báo Cáo</span></p>
-
-                <!-- Kiểm tra nếu softwareId null hoặc bằng 0 thì hiển thị link đến device, ngược lại đến software -->
-                <a th:href="${incident.softwareId == null || incident.softwareId == 0} ?
-                    @{/incident/device/{deviceId}(deviceId=${incident.deviceId})} :
-                    @{/incident/software/{softwareId}(softwareId=${incident.softwareId})}"
-                   class="btn btn-primary">Chi tiết</a>
+                <p>
+                    <strong>Người Báo Cáo:</strong>
+                    <span th:text="${incident.reportUserName}">Tên Người Báo Cáo</span>
+                </p>
+                <p>
+                    <strong>Trạng Thái:</strong>
+                    <span th:class="${incident.status == 1 ? 'status-unprocessed' : 'status-processing'}"
+                          th:text="${incident.status == 1 ? 'Chưa xử lý' : 'Đang xử lý'}">TRẠNG THÁI</span>
+                </p>
+                <p>
+                    <strong>Ngày Báo Cáo:</strong>
+                    <span th:text="${incident.reportDate}">Ngày Báo Cáo</span>
+                </p>
             </div>
         </div>
     </div>
 </div>
+
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

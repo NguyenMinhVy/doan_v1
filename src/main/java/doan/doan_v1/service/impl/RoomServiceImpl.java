@@ -9,6 +9,7 @@ import doan.doan_v1.repository.RoomRepository;
 import doan.doan_v1.service.LocationService;
 import doan.doan_v1.service.RoomService;
 import doan.doan_v1.service.RoomTypeService;
+import doan.doan_v1.service.TechnicianService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Autowired
     private RoomTypeService roomTypeService;
+
+    @Autowired
+    private TechnicianService technicianService;
 
     @Override
     public List<RoomDto> getAllRoomList() {
@@ -53,6 +57,7 @@ public class RoomServiceImpl implements RoomService {
         RoomDto roomDto= roomMapper.roomToRoomDto(room);
         roomDto.setLocationDto(locationService.getLocationById(room.getLocationId()));
         roomDto.setRoomTypeDto(roomTypeService.getRoomTypeById(room.getRoomTypeId()));
+        roomDto.setTechnicianDto(technicianService.getTechnicianDtoById(room.getTechnicianId()));
         return roomDto;
     }
 
@@ -61,7 +66,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomMapper.roomDtoToRoom(roomDto);
         room.setRoomTypeId(roomDto.getRoomTypeDto().getId());
         room.setLocationId(roomDto.getLocationDto().getId());
-        room.setTechnicianId(roomDto.getRoomTypeDto().getId());
+        room.setTechnicianId(roomDto.getTechnicianDto().getId());
         return roomMapper.roomToRoomDto(roomRepository.save(room));
     }
 
@@ -93,6 +98,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomMapper.roomDtoToRoom(roomDto);
         room.setRoomTypeId(roomDto.getRoomTypeDto().getId());
         room.setLocationId(roomDto.getLocationDto().getId());
+        room.setTechnicianId(roomDto.getTechnicianDto().getId());
         return roomMapper.roomToRoomDto(roomRepository.save(room));
     }
 

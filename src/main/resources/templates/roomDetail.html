@@ -6,6 +6,14 @@
     <title>Chi tiết Phòng</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <style>
+        @media (min-width: 1200px) {
+            .custom-width {
+                flex: 0 0 14.2857%; /* 100% / 7 phần tử */
+                max-width: 14.2857%;
+            }
+        }
+    </style>
 
 </head>
 <body>
@@ -18,11 +26,13 @@
 
     <div class="row mt-4">
 
+        <!-- Hiển thị thông báo nếu không có máy tính -->
         <div th:if="${computerDtoList == null || computerDtoList.isEmpty()}" class="col-12">
             <p class="text-center text-muted">Không có máy tính cho phòng này.</p>
         </div>
+
         <!-- Duyệt qua danh sách các máy tính -->
-        <div th:each="computer : ${computerDtoList}" class="col-md-3">
+        <div th:each="computer : ${computerDtoList}" class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3 custom-width">
             <div class="computer-card position-relative">
                 <div class="admin-actions position-absolute"
                      th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
@@ -55,6 +65,8 @@
             </div>
         </div>
     </div>
+
+
 
     <button sec:authorize="hasAuthority('ADMIN')"
             th:onclick="|window.location.href='/computer/createComputerForm?roomId=' + getRoomIdFromUrl()|"

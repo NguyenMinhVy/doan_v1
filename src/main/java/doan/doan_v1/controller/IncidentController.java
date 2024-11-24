@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/incident")
@@ -68,6 +70,10 @@ public class IncidentController {
     @GetMapping("/list")
     public String getIncidentList (Model model) {
         List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoList();
+        incidentDtoList = incidentDtoList.stream()
+                .sorted(Comparator.comparing(IncidentDto::getId).reversed()) // Sắp xếp giảm dần
+                .collect(Collectors.toList());
+
         model.addAttribute("incidentDtoList", incidentDtoList);
         return "incidentList";
     }

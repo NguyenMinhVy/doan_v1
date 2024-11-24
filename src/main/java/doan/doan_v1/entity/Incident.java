@@ -39,6 +39,9 @@ public class Incident extends AbstractEntity{
     private int reportUser;
 
     @Column
+    private String reportUserName;
+
+    @Column
     private int computerSoftwareId;
 
     @Column

@@ -78,7 +78,7 @@
                     data.forEach(technician => {
                         const option = document.createElement('option');
                         option.value = technician.id;
-                        option.textContent = `${technician.userDto.name} (${technician.technicianCode})`;
+                        option.textContent = `${technician.userDto.name}`;
                         technicianSelect.appendChild(option);
                     });
                 })

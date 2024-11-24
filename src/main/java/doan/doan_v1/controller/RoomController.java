@@ -108,10 +108,12 @@ public class RoomController {
         RoomDto roomDto = roomService.getRoomById(roomId);
         List<LocationDto> locationDtoList = locationService.getAllLocationsSortedByName();
         List<RoomTypeDto> roomTypeDtoList = roomTypeService.getAllRoomTypesSortedByName();
+        List<TechnicianDto> technicianDtoList = technicianService.getTechnicianDtoListByLocationId(roomDto.getLocationDto().getId());
 
         model.addAttribute("roomDto", roomDto);
         model.addAttribute("locationDtoList", locationDtoList);
         model.addAttribute("roomTypeDtoList", roomTypeDtoList);
+        model.addAttribute("technicianDtoList", technicianDtoList);
         return "updateRoomForm";
     }
 
