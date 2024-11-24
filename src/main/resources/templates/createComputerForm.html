@@ -7,81 +7,31 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <style>
-        /* CSS tùy chỉnh */
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-        h1.text-center {
-            color: #343a40;
+        .section-title {
+            font-size: 1.5rem;
             font-weight: bold;
+            color: #5a2d81; /* Màu tím đẹp */
             margin-bottom: 20px;
         }
-
-        /* Định dạng thẻ label */
-        label {
-            font-size: 1rem;
-            font-weight: 500;
-            color: #495057;
+        .form-group > label {
+            font-weight: bold; /* Chỉ áp dụng cho nhãn trực tiếp bên trong form-group */
         }
 
-        /* Định dạng các nhóm radio và checkbox */
-        .form-group div {
-            margin-bottom: 10px;
+        /* Các nhãn khác, ví dụ như nhãn của các thiết bị, sẽ không bị ảnh hưởng */
+        .form-group input + label {
+            font-weight: normal;
+            color: #333; /* Màu chữ bình thường */
         }
-
-        /* Định dạng nút submit */
-        button.btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            font-size: 1rem;
-            padding: 10px 20px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+        .software-checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
         }
-
-        button.btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        /* Căn chỉnh thông báo lỗi */
-        .alert {
-            font-size: 0.9rem;
-            border-radius: 5px;
-        }
-
-        /* Khoảng cách giữa các nhóm form */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        /* Định dạng input radio và checkbox */
-        input[type="radio"], input[type="checkbox"] {
-            margin-right: 10px;
-            transform: scale(1.2); /* Tăng kích thước */
-        }
-
-        /* Thông báo lỗi phần mềm */
-        #softwareAlert {
-            font-size: 0.9rem;
-            color: #dc3545;
-            font-weight: bold;
+        .software-checkbox-group div {
+            width: 20%; /* 5 phần tử trên mỗi hàng */
             padding: 5px;
-            margin-top: 10px;
         }
-
-        /* Hiệu ứng hover cho label */
-        label:hover {
-            color: #007bff;
-            cursor: pointer;
-        }
-
-        /* Container chính */
-        .container {
-            background-color: #f8f9fa;
-            padding: 20px 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        .software-checkbox-group input {
+            margin-right: 5px;
         }
     </style>
 </head>
@@ -100,55 +50,54 @@
         <input type="hidden" id="roomId" name="roomId" th:value="${computerDto.roomId}">
 
         <!-- Chọn thiết bị -->
-        <h5>Chọn Thiết Bị:</h5>
+        <h5 class="section-title">Chọn Thiết Bị:</h5>
 
-        <!-- Bàn phím -->
-        <div class="form-group">
-            <label>Bàn phím</label>
-            <div th:each="device : ${deviceDtos}" th:if="${device.type == 1}">
-                <input type="radio" th:id="'keyboard-' + ${device.id}" name="deviceIdList[0]" th:value="${device.id}" required>
-                <label th:for="'keyboard-' + ${device.id}" th:text="${device.name}"></label>
+        <div class="row"> <!-- Tạo một hàng để các mục chọn thiết bị nằm ngang nhau -->
+            <!-- Bàn phím -->
+            <div class="col-md-3 form-group">
+                <label>Bàn phím</label>
+                <div th:each="device : ${deviceDtos}" th:if="${device.type == 1}">
+                    <input type="radio" th:id="'keyboard-' + ${device.id}" name="deviceIdList[0]" th:value="${device.id}" required>
+                    <label th:for="'keyboard-' + ${device.id}" th:text="${device.name}"></label>
+                </div>
             </div>
-        </div>
 
-        <!-- Chuột -->
-        <div class="form-group">
-            <label>Chuột</label>
-            <div th:each="device : ${deviceDtos}" th:if="${device.type == 2}">
-                <input type="radio" th:id="'mouse-' + ${device.id}" name="deviceIdList[1]" th:value="${device.id}" required>
-                <label th:for="'mouse-' + ${device.id}" th:text="${device.name}"></label>
+            <!-- Chuột -->
+            <div class="col-md-3 form-group">
+                <label>Chuột</label>
+                <div th:each="device : ${deviceDtos}" th:if="${device.type == 2}">
+                    <input type="radio" th:id="'mouse-' + ${device.id}" name="deviceIdList[1]" th:value="${device.id}" required>
+                    <label th:for="'mouse-' + ${device.id}" th:text="${device.name}"></label>
+                </div>
             </div>
-        </div>
 
-        <!-- Màn hình -->
-        <div class="form-group">
-            <label>Màn hình</label>
-            <div th:each="device : ${deviceDtos}" th:if="${device.type == 3}">
-                <input type="radio" th:id="'monitor-' + ${device.id}" name="deviceIdList[2]" th:value="${device.id}" required>
-                <label th:for="'monitor-' + ${device.id}" th:text="${device.name}"></label>
+            <!-- Màn hình -->
+            <div class="col-md-3 form-group">
+                <label>Màn hình</label>
+                <div th:each="device : ${deviceDtos}" th:if="${device.type == 3}">
+                    <input type="radio" th:id="'monitor-' + ${device.id}" name="deviceIdList[2]" th:value="${device.id}" required>
+                    <label th:for="'monitor-' + ${device.id}" th:text="${device.name}"></label>
+                </div>
             </div>
-        </div>
 
-        <!-- Thùng máy -->
-        <div class="form-group">
-            <label>Thùng máy</label>
-            <div th:each="device : ${deviceDtos}" th:if="${device.type == 4}">
-                <input type="radio" th:id="'cpu-' + ${device.id}" name="deviceIdList[3]" th:value="${device.id}" required>
-                <label th:for="'cpu-' + ${device.id}" th:text="${device.name}"></label>
+            <!-- Thùng máy -->
+            <div class="col-md-3 form-group">
+                <label>Thùng máy</label>
+                <div th:each="device : ${deviceDtos}" th:if="${device.type == 4}">
+                    <input type="radio" th:id="'cpu-' + ${device.id}" name="deviceIdList[3]" th:value="${device.id}" required>
+                    <label th:for="'cpu-' + ${device.id}" th:text="${device.name}"></label>
+                </div>
             </div>
-        </div>
+        </div> <!-- Kết thúc hàng -->
 
         <!-- Chọn phần mềm -->
-        <div class="form-group">
-            <label>Chọn phần mềm :</label>
+        <h5 class="section-title">Chọn Phần Mềm:</h5>
+        <div class="software-checkbox-group">
             <div th:each="software : ${softWareDtos}">
                 <input type="checkbox" th:id="'software-' + ${software.id}" name="softWareIdList" th:value="${software.id}">
                 <label th:for="'software-' + ${software.id}" th:text="${software.name}"></label>
             </div>
         </div>
-<!--        <div id="softwareAlert" class="alert alert-danger">-->
-<!--            Bạn phải chọn ít nhất một phần mềm!-->
-<!--        </div>-->
 
         <!-- Nút submit -->
         <button type="submit" class="btn btn-primary">Tạo Máy Tính</button>

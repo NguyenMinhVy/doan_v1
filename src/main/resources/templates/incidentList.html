@@ -29,8 +29,9 @@
                 </p>
                 <p>
                     <strong>Ngày Báo Cáo:</strong>
-                    <span th:text="${incident.reportDate}">Ngày Báo Cáo</span>
+                    <span th:text="${#temporals.format(incident.reportDate, 'yyyy-MM-dd HH:mm')}">Ngày Báo Cáo</span>
                 </p>
+
             </div>
         </div>
     </div>
