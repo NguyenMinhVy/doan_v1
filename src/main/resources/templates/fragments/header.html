@@ -19,6 +19,15 @@
                     <a class="dropdown-item" th:href="@{/technician/create}">Thêm kỹ thuật viên</a>
                 </div>
             </li>
+            <li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')">
+                <a class="nav-link dropdown-toggle" href="#" id="lecturerDropdown"
+                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Giảng viên
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="lecturerDropdown">
+                    <li><a class="dropdown-item" th:href="@{/lecturer/create}">Thêm giảng viên</a></li>
+                </ul>
+            </li>
         </ul>
         <div class="header-user-info">
             <span th:text="${#authentication.name}">Tên Người Dùng</span>
