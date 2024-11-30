@@ -34,7 +34,7 @@
         <!-- Duyệt qua danh sách các máy tính -->
         <div th:each="computer : ${computerDtoList}" class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3 custom-width">
             <div class="computer-card position-relative">
-                <div class="admin-actions position-absolute"
+                <div class="admin-actions position-absolute"S
                      th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
                      style="top: 10px; right: 10px;">
                     <div class="tooltip-container">
@@ -57,9 +57,9 @@
                 <a th:href="@{'/computer/' + ${computer.id}}" class="computer-link">
                     <div th:class="'computer-card ' + (${computer.status} == 1 ? 'normal' : 'error')">
                         <div class="computer-title" th:text="${computer.name}">Tên Máy</div>
-                        <p><strong>Trạng thái:</strong>
-                            <span th:text="${computer.status} == 1 ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
-                        </p>
+<!--                        <p><strong>Trạng thái:</strong>-->
+<!--                            <span th:text="${computer.status} == 1 ? 'Bình thường' : 'Lỗi'">Trạng thái</span>-->
+<!--                        </p>-->
                     </div>
                 </a>
             </div>

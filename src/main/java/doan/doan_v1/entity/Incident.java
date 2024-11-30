@@ -55,4 +55,7 @@ public class Incident extends AbstractEntity{
 
     @Column
     private Boolean delFlag = false;
+
+    @Column
+    private int locationId;
 }

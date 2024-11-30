@@ -1,22 +1,17 @@
 package doan.doan_v1.service.impl;
 
 import doan.doan_v1.Constant.Constant;
-import doan.doan_v1.dto.ComputerDto;
 import doan.doan_v1.dto.IncidentDto;
 import doan.doan_v1.dto.TechnicianDto;
-import doan.doan_v1.dto.UserDto;
 import doan.doan_v1.entity.Computer;
 import doan.doan_v1.entity.Incident;
 import doan.doan_v1.entity.User;
 import doan.doan_v1.mapper.IncidentMapper;
-import doan.doan_v1.mapper.UserMapper;
 import doan.doan_v1.repository.ComputerRepository;
 import doan.doan_v1.repository.IncidentRepository;
-import doan.doan_v1.repository.TechnicianRepository;
 import doan.doan_v1.repository.UserRepository;
 import doan.doan_v1.service.IncidentService;
 import doan.doan_v1.service.TechnicianService;
-import doan.doan_v1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,15 +86,11 @@ public class IncidentServiceImpl implements IncidentService {
         if (incidentList.isEmpty()) {
             return Collections.emptyList();
         }
-        return incidentMapper.incidentListToIncidentDtoList(incidentList);
+
+        return getTechnicianDtoToIncidentDto(incidentList);
     }
 
-    @Override
-    public List<IncidentDto> getIncidentDtoListByComputerId(int computerId) {
-        List<Incident> incidentList = incidentRepository.findByComputerIdAndDelFlagFalse(computerId);
-        if (incidentList.isEmpty()) {
-            return Collections.emptyList();
-        }
+    private List<IncidentDto> getTechnicianDtoToIncidentDto(List<Incident> incidentList) {
         List<IncidentDto> incidentDtoList = new ArrayList<>();
         for (Incident incident : incidentList) {
             IncidentDto incidentDto = incidentMapper.incidentToIncidentDto(incident);
@@ -108,6 +99,15 @@ public class IncidentServiceImpl implements IncidentService {
             incidentDtoList.add(incidentDto);
         }
         return incidentDtoList;
+    }
+
+    @Override
+    public List<IncidentDto> getIncidentDtoListByComputerId(int computerId) {
+        List<Incident> incidentList = incidentRepository.findByComputerIdAndDelFlagFalse(computerId);
+        if (incidentList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return getTechnicianDtoToIncidentDto(incidentList);
     }
 
     @Override
