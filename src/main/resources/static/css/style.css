@@ -29,6 +29,17 @@
     color: #7a62a5; /* Màu chữ khi hover */
 }
 
+.header-logo {
+    margin-right: 20px;
+    height: 70px;
+    width: 100px;
+}
+
+.logo-img {
+    height: 70px;
+    width: 100px;
+}
+
 .header-user-info {
     display: flex;
     align-items: center;
@@ -122,6 +133,15 @@ h1, h2 {
     transition: transform 0.2s;
 }
 
+.device-card{
+    height: 205px;
+}
+
+.software-card{
+    height: 300px;
+}
+
+
 /* Hiệu ứng hover cho card */
 .device-card:hover, .software-card:hover, .room-card:hover, .computer-card:hover, .incident-card {
     transform: scale(1.05);
@@ -143,9 +163,18 @@ h1, h2 {
 
 .device-card.error, .software-card.error, .room-card.error, .computer-card.error {
     border-color: #dc3545;
-    background-color: #fde9d9; /* Nền cam nhạt */
-
+    background-color: #fde9d9;
 }
+
+.device-card.empty, .software-card.empty, .room-card.empty, .computer-card.empty {
+    border-color: #dc3545;
+    background-color: white;
+}
+
+/*.room-card.background {*/
+/*    border-color: #7a62a5;*/
+/*    background-color: #dcd3ff;*/
+/*}*/
 
 /* Định dạng cho các thẻ a để trông giống văn bản */
 a {
@@ -184,7 +213,7 @@ a:hover {
 
 .room-card {
     position: relative;
-    padding: 15px;
+    padding: 20px;
     border: 1px solid #ddd;
     border-radius: 5px;
     margin-bottom: 15px;
@@ -430,6 +459,11 @@ html, body {
 
 .orange-border {
     background-color: #fde9d9;
+    border: 2px solid #dc3545;
+}
+
+.red-border {
+    background-color: white;
     border: 2px solid #dc3545;
 }
 

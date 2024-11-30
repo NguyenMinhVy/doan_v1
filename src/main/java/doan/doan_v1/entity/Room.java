@@ -33,4 +33,7 @@ public class Room extends AbstractEntity{
 
     @Column
     private Boolean delFlag = false;
+
+    @Column
+    private int status;
 }

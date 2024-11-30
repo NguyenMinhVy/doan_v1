@@ -19,6 +19,7 @@ public interface Constant {
     interface STATUS {
         int OK = 1;
         int ERROR = 2;
+        int EMPTY = 3;
     }
 
     interface INCIDENT_STATUS {

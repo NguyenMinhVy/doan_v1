@@ -1,16 +1,16 @@
 package doan.doan_v1.service.impl;
 
+import doan.doan_v1.Constant.Constant;
+import doan.doan_v1.dto.ComputerDto;
 import doan.doan_v1.dto.LocationDto;
 import doan.doan_v1.dto.RoomDto;
 import doan.doan_v1.dto.RoomTypeDto;
 import doan.doan_v1.entity.Room;
 import doan.doan_v1.mapper.RoomMapper;
 import doan.doan_v1.repository.RoomRepository;
-import doan.doan_v1.service.LocationService;
-import doan.doan_v1.service.RoomService;
-import doan.doan_v1.service.RoomTypeService;
-import doan.doan_v1.service.TechnicianService;
+import doan.doan_v1.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -33,6 +33,10 @@ public class RoomServiceImpl implements RoomService {
     @Autowired
     private TechnicianService technicianService;
 
+    @Autowired
+    @Lazy
+    private ComputerService computerService;
+
     @Override
     public List<RoomDto> getAllRoomList() {
         List<Room> roomList = roomRepository.findByDelFlagFalse();
@@ -42,10 +46,33 @@ public class RoomServiceImpl implements RoomService {
         List<RoomDto> roomDtoList = new ArrayList<>();
         for (Room room : roomList) {
             RoomDto roomDto = roomMapper.roomToRoomDto(room);
+            List<ComputerDto> computerDtoList = computerService.getComputerListByRoomId(roomDto.getId());
+            int actualQuantity = 0;
+            int status = Constant.STATUS.EMPTY;
+            if (!computerDtoList.isEmpty()) {
+                actualQuantity = computerDtoList
+                        .stream()
+                        .filter(computerDto -> computerDto.getStatus() != Constant.STATUS.EMPTY)
+                        .toList()
+                        .size();
+
+                var computerDtoListError = computerDtoList
+                        .stream()
+                        .filter(computerDto -> computerDto.getStatus() == Constant.STATUS.ERROR)
+                        .toList();
+
+                if (actualQuantity != 0) {
+                    status = computerDtoListError.isEmpty() ? Constant.STATUS.OK : Constant.STATUS.ERROR;
+                } else {
+                    status = Constant.STATUS.EMPTY;
+                }
+            }
             LocationDto locationDto = locationService.getLocationById(room.getLocationId());
             RoomTypeDto roomTypeDto = roomTypeService.getRoomTypeById(room.getRoomTypeId());
             roomDto.setLocationDto(locationDto);
             roomDto.setRoomTypeDto(roomTypeDto);
+            roomDto.setActualQuantity(actualQuantity);
+            roomDto.setStatus(status);
             roomDtoList.add(roomDto);
         }
         return roomDtoList;

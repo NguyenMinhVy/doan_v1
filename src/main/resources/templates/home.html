@@ -9,8 +9,8 @@
     <style>
         @media (min-width: 1200px) {
             .custom-width {
-                flex: 0 0 14.2857%; /* 100% / 7 phần tử */
-                max-width: 14.2857%;
+                flex: 0 0 16.6667%; /* 100% / 6 phần tử */
+                max-width: 16.6667%;
             }
         }
     </style>
@@ -20,11 +20,12 @@
 
 <div class="container mt-5">
     <h1 class="text-center">Danh sách Phòng theo Địa điểm</h1>
+    <div th:replace="~{fragments/description :: description}"></div>
 
     <div th:each="location : ${locations}" class="mt-4">
         <h2 th:text="${location.name}">Tên Địa điểm</h2>
         <div class="row">
-            <div th:each="room : ${roomsByLocation.get(location)}" class="custom-width">
+            <div th:each="room : ${roomsByLocation.get(location)}" class="custom-width" style="padding-left: 15px; padding-right: 15px">
                 <div class="room-card position-relative">
                     <div class="admin-actions position-absolute" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
                          style="top: 10px; right: 10px;">
@@ -44,10 +45,13 @@
                         </div>
                     </div>
                     <a th:href="@{'/room/' + ${room.id}}" class="room-link">
-                        <div class="room-card">
+                        <div th:class="'room-card ' +
+                                    (${room.status} == 1 ? 'normal' :
+                                    (${room.status} == 2 ? 'error' :
+                                    (${room.status} == 3 ? 'empty' : 'unknown')))">
                             <div class="room-title" th:text="${room.name}">Tên Phòng</div>
-                            <p><strong>Loại Phòng:</strong> <span th:text="${room.roomTypeDto.name}">MEDIUM</span></p>
-                            <p><strong>Số lượng máy:</strong> <span th:text="${room.roomTypeDto.capacity}">20</span></p>
+<!--                            <p><strong>Loại Phòng:</strong> <span th:text="${room.roomTypeDto.name}">MEDIUM</span></p>-->
+                            <p><strong>Số lượng máy:</strong> <span th:text="${room.actualQuantity}">20</span></p>
                         </div>
                     </a>
                 </div>

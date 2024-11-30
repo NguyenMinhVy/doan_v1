@@ -36,7 +36,7 @@
                         <a th:href="@{/incident/device/{deviceId}/{computerId}(deviceId=${device.id}, computerId=${device.computerId})}" class="software-link">
                             <div class="title" th:text="${device.name}">Tên Thiết Bị</div>
                             <p><strong>Trạng thái:</strong>
-                                <span th:text="${device.status == 1} ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
+                                <span th:text="${device.status == 1} ? 'Tốt' : 'Lỗi'">Trạng thái</span>
                             </p>
                             <p><strong>Mã:</strong>
                                 <span th:text="${device.deviceCode}">Mã</span>

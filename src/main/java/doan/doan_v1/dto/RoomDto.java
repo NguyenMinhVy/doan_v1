@@ -12,6 +12,10 @@ public class RoomDto extends AbstractDto implements Serializable {
 
     private int id;
 
+    private int status;
+
+    private int actualQuantity;
+
     private String name;
 
     private LocationDto locationDto;

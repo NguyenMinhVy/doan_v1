@@ -66,7 +66,7 @@
                 <div>
                     <label><strong>Trạng thái:</strong></label>
                     <select class="form-control" id="deviceStatusSelect">
-                        <option value="1" th:selected="${deviceDto.status == 1}">Bình thường</option>
+                        <option value="1" th:selected="${deviceDto.status == 1}">Tốt</option>
                         <option value="2" th:selected="${deviceDto.status == 2}">Lỗi</option>
                     </select>
                 </div>
@@ -157,7 +157,7 @@
                         <p><strong>Mô tả:</strong> <span th:text="${incident.description}"></span></p>
                         <p>
                             <strong>Trạng thái:</strong>
-                            <span th:if="${incident.status == 1}">Bình thường</span>
+                            <span th:if="${incident.status == 1}">Tốt</span>
                             <span th:if="${incident.status == 2}">Lỗi</span>
                         </p>
                         <p><strong>Ngày hoàn thành mong muốn:</strong> <span th:text="${#temporals.format(incident.completionDate, 'dd/MM/yyyy HH:mm')}"></span></p>

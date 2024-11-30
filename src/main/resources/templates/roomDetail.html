@@ -55,10 +55,17 @@
                     </div>
                 </div>
                 <a th:href="@{'/computer/' + ${computer.id}}" class="computer-link">
-                    <div th:class="'computer-card ' + (${computer.status} == 1 ? 'normal' : 'error')">
+                    <div th:class="'computer-card ' +
+                                (${computer.status} == 1 ? 'normal' :
+                                (${computer.status} == 2 ? 'error' :
+                                (${computer.status} == 3 ? 'empty' : 'unknown')))">
                         <div class="computer-title" th:text="${computer.name}">Tên Máy</div>
                         <p><strong>Trạng thái:</strong>
-                            <span th:text="${computer.status} == 1 ? 'Bình thường' : 'Lỗi'">Trạng thái</span>
+                            <span th:text="${computer.status} == 1 ? 'Tốt' :
+                                   (${computer.status} == 2 ? 'Lỗi' :
+                                   (${computer.status} == 3 ? 'Trống' : 'Không xác định'))">
+                                Trạng thái
+                            </span>
                         </p>
                     </div>
                 </a>
