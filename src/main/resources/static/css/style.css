@@ -149,9 +149,10 @@ h1, h2 {
 
 /* Định dạng tiêu đề trong thẻ card */
 .device-card .title, .software-card .title, .room-card .room-title, .computer-card .computer-title, .incident-card .incident-title {
-    font-size: 1.2em;
+    font-size: 1.0em;
     font-weight: bold;
     margin-bottom: 10px;
+    text-align: center;
 }
 
 /* Định dạng trạng thái */

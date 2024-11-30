@@ -35,12 +35,12 @@
                     <div th:class="'device-card ' + (${device.status == 1} ? 'normal' : 'error')">
                         <a th:href="@{/incident/device/{deviceId}/{computerId}(deviceId=${device.id}, computerId=${device.computerId})}" class="software-link">
                             <div class="title" th:text="${device.name}">Tên Thiết Bị</div>
-                            <p><strong>Trạng thái:</strong>
-                                <span th:text="${device.status == 1} ? 'Tốt' : 'Lỗi'">Trạng thái</span>
-                            </p>
-                            <p><strong>Mã:</strong>
-                                <span th:text="${device.deviceCode}">Mã</span>
-                            </p>
+<!--                            <p><strong>Trạng thái:</strong>-->
+<!--                                <span th:text="${device.status == 1} ? 'Bình thường' : 'Lỗi'">Trạng thái</span>-->
+<!--                            </p>-->
+<!--                            <p><strong>Mã:</strong>-->
+<!--                                <span th:text="${device.deviceCode}">Mã</span>-->
+<!--                            </p>-->
                         </a>
                     </div>
                 </div>
@@ -55,14 +55,14 @@
                     <div th:class="'software-card ' + (${software.status == 1} ? 'normal' : 'error')">
                         <a th:href="@{/incident/software/{softwareId}/{computerId}(softwareId=${software.id}, computerId=${software.computerId})}" class="software-link">
                             <div class="title" th:text="${software.name}">Tên Phần Mềm</div>
-                            <p><strong>Phiên bản:</strong> <span th:text="${software.version}">Phiên bản</span></p>
-                            <p>
-                                <strong>Thời gian cài đặt:</strong>
-                                <span th:text="${#temporals.format(software.setupTime, 'dd/MM/yyyy HH:mm')}">Thời gian</span>
-                            </p>
-                            <p><strong>Trạng thái:</strong>
-                                <span th:text="${software.status == 1} ? 'Hoạt động' : 'Không hoạt động'">Trạng thái</span>
-                            </p>
+<!--                            <p><strong>Phiên bản:</strong> <span th:text="${software.version}">Phiên bản</span></p>-->
+<!--                            <p>-->
+<!--                                <strong>Thời gian cài đặt:</strong>-->
+<!--                                <span th:text="${#temporals.format(software.setupTime, 'dd/MM/yyyy HH:mm')}">Thời gian</span>-->
+<!--                            </p>-->
+<!--                            <p><strong>Trạng thái:</strong>-->
+<!--                                <span th:text="${software.status == 1} ? 'Hoạt động' : 'Không hoạt động'">Trạng thái</span>-->
+<!--                            </p>-->
                         </a>
                     </div>
                 </div>
