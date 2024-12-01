@@ -33,4 +33,6 @@ public class IncidentDto extends AbstractDto implements Serializable {
     private int locationId;
 
     private TechnicianDto technicianDto;
+
+    private String computerName;
 }

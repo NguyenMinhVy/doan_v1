@@ -79,7 +79,7 @@ public class IncidentController {
             @RequestParam(required = false) Integer technicianId,
             Model model) {
         
-        List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoList();
+             List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoList();
         
         // Lọc theo locationId
         if (locationId != null) {

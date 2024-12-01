@@ -39,7 +39,7 @@
                     <!-- Gộp filter theo khoảng thời gian -->
                     <div class="col-md-3 mb-3">
                         <label>Ngày báo cáo</label>
-                        <input type="text" class="form-control" id="dateRange" name="dateRange" />
+                        <input type="text" class="form-control" id="dateRange" name="dateRange" readonly/>
                         <input type="hidden" name="startDate" id="startDate" th:value="${selectedStartDate}">
                         <input type="hidden" name="endDate" id="endDate" th:value="${selectedEndDate}">
                     </div>
@@ -83,8 +83,16 @@
             <div class="incident-card h-100">
                 <div class="incident-title" th:text="${incident.description}">Tiêu Đề Sự Cố</div>
                 <p>
+                    <strong>Máy tính:</strong>
+                    <span th:text="${incident.computerName != null ? incident.computerName : 'Không xác định'}">Tên Máy</span>
+                </p>
+                <p>
                     <strong>Người Báo Cáo:</strong>
                     <span th:text="${incident.reportUserName}">Tên Người Báo Cáo</span>
+                </p>
+                <p>
+                    <strong>Kỹ thuật viên:</strong>
+                    <span th:text="${incident.technicianDto != null ? incident.technicianDto.userDto.name : 'Chưa phân công'}">Tên Kỹ Thuật Viên</span>
                 </p>
                 <p>
                     <strong>Trạng Thái:</strong>

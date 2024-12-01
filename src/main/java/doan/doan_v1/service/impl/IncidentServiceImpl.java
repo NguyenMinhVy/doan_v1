@@ -10,6 +10,7 @@ import doan.doan_v1.mapper.IncidentMapper;
 import doan.doan_v1.repository.ComputerRepository;
 import doan.doan_v1.repository.IncidentRepository;
 import doan.doan_v1.repository.UserRepository;
+import doan.doan_v1.service.ComputerService;
 import doan.doan_v1.service.IncidentService;
 import doan.doan_v1.service.TechnicianService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Autowired
     private TechnicianService technicianService;
+
+    @Autowired
+    private ComputerService computerService;
 
     @Autowired
     private ComputerRepository computerRepository;
@@ -95,6 +99,8 @@ public class IncidentServiceImpl implements IncidentService {
         for (Incident incident : incidentList) {
             IncidentDto incidentDto = incidentMapper.incidentToIncidentDto(incident);
             TechnicianDto technicianDto = technicianService.getTechnicianDtoById(incident.getTechnicianId());
+            String computerName = computerService.getComputerById(incident.getComputerId()).getName();
+            incidentDto.setComputerName(computerName);
             incidentDto.setTechnicianDto(technicianDto);
             incidentDtoList.add(incidentDto);
         }
