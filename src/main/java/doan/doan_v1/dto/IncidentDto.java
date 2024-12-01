@@ -18,7 +18,9 @@ public class IncidentDto extends AbstractDto implements Serializable {
 
     private LocalDateTime reportDate;
 
-    private LocalDateTime completionDate;
+    private LocalDateTime expectCompleteDate;
+
+    private LocalDateTime completedDate;
 
     private int reportUser;
 

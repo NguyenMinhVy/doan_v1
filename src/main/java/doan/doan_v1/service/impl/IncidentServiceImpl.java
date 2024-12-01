@@ -13,6 +13,7 @@ import doan.doan_v1.repository.UserRepository;
 import doan.doan_v1.service.ComputerService;
 import doan.doan_v1.service.IncidentService;
 import doan.doan_v1.service.TechnicianService;
+import doan.doan_v1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ public class IncidentServiceImpl implements IncidentService {
     private IncidentMapper incidentMapper;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private TechnicianService technicianService;
@@ -63,7 +64,7 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     public IncidentDto addIncident(IncidentDto incidentDto) {
-        User user = userRepository.findById(incidentDto.getReportUser()).orElse(null);
+        User user = userService.getCurrentUserInfo();
         if (user == null) {
             return null;
         }

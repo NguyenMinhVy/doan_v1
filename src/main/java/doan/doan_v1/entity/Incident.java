@@ -33,7 +33,10 @@ public class Incident extends AbstractEntity{
     private LocalDateTime reportDate;
 
     @Column
-    private LocalDateTime completionDate;
+    private LocalDateTime expectCompleteDate;
+
+    @Column
+    private LocalDateTime completedDate;
 
     @Column
     private int reportUser;
