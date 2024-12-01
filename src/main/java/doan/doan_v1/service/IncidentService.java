@@ -20,4 +20,8 @@ public interface IncidentService {
     List<IncidentDto> getIncidentDtoListByComputerId(int computerId);
 
     List<IncidentDto> getIncidentDtoListByStatus(List<IncidentDto> incidentDtoList, int status);
+
+    IncidentDto getIncidentDtoById(Integer id);
+
+    void updateIncident(Integer id, IncidentDto incidentDto);
 }

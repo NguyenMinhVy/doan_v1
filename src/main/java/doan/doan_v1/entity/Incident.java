@@ -61,4 +61,7 @@ public class Incident extends AbstractEntity{
 
     @Column
     private int locationId;
+
+    @Column(name = "unprocessed_reason")
+    private String unprocessedReason;
 }

@@ -87,16 +87,15 @@
 
     <div class="row">
         <div class="col-md-2 mb-4" th:each="incident : ${incidentDtoList}">
-            <div class="incident-card h-100">
+            <div class="incident-card h-100" 
+                 th:onclick="'window.location.href=\'' + @{/incident/update/{id}(id=${incident.id})} + '\''"
+                 style="cursor: pointer">
+                <div class="computer-name" style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;"
+                     th:text="${incident.computerName != null ? incident.computerName : 'Không xác định'}">
+                </div>
+
                 <div class="incident-title" th:text="${incident.description}">Tiêu Đề Sự Cố</div>
-                <p>
-                    <strong>Máy tính:</strong>
-                    <span th:text="${incident.computerName != null ? incident.computerName : 'Không xác định'}">Tên Máy</span>
-                </p>
-                <p>
-                    <strong>Người Báo Cáo:</strong>
-                    <span th:text="${incident.reportUserName}">Tên Người Báo Cáo</span>
-                </p>
+
                 <p>
                     <strong>Kỹ thuật viên:</strong>
                     <span th:text="${incident.technicianDto != null ? incident.technicianDto.userDto.name : 'Chưa phân công'}">Tên Kỹ Thuật Viên</span>
@@ -109,6 +108,10 @@
                 <p>
                     <strong>Ngày Báo Cáo:</strong>
                     <span th:text="${#temporals.format(incident.reportDate, 'yyyy-MM-dd HH:mm')}">Ngày Báo Cáo</span>
+                </p>
+                <p>
+                    <strong>Ngày Hoàn Thành Mong Muốn:</strong>
+                    <span th:text="${#temporals.format(incident.expectCompleteDate, 'yyyy-MM-dd HH:mm')}">Ngày Hoàn Thành Mong Muốn</span>
                 </p>
             </div>
         </div>

@@ -26,6 +26,8 @@ public interface Constant {
         int UNPROCESSED = 1;
         int PROCESSING = 2;
         int PROCESSED = 3;
+        int OVERDUE_UNPROCESSED = 4;
+        int OVERDUE_PROCESSED = 5;
     }
 
     interface ROLE_ID {
