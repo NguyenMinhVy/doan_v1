@@ -231,8 +231,7 @@ public class IncidentController {
     }
 
     private User getRoleCurrentUser() {
-        User currentUser = userService.getCurrentUserInfo();
-        return currentUser;
+        return userService.getCurrentUserInfo();
     }
 
     @PostMapping("/update/{id}")
@@ -261,7 +260,7 @@ public class IncidentController {
 
         // Kiểm tra nếu quá hạn
         boolean isOverdue = currentIncident.getExpectCompleteDate().isBefore(LocalDateTime.now());
-        if (isOverdue && incidentDto.getStatus() != 4) { // 4 là trạng thái "Đã hoàn thành nhưng quá hạn"
+        if (isOverdue && incidentDto.getStatus() != 5) { // 5 là trạng thái "Đã hoàn thành nhưng quá hạn"
             return "redirect:/incident/update/" + id + "?error=overdue";
         }
 
@@ -276,6 +275,22 @@ public class IncidentController {
         } catch (Exception e) {
             return "redirect:/incident/update/" + id + "?error=true";
         }
+    }
+
+    @PostMapping("/incident/update/{id}")
+    public String updateIncident(@PathVariable Integer id,
+                               @ModelAttribute IncidentDto incidentDto,
+                               @RequestParam(value = "shouldUpdateCompletedDate", required = false) boolean shouldUpdateCompletedDate) {
+        
+        if (shouldUpdateCompletedDate) {
+            // Cập nhật thời gian hoàn thành là thời điểm hiện tại
+            incidentDto.setCompletedDate(LocalDateTime.now());
+        }
+        
+        // Gọi service để cập nhật
+        incidentService.updateIncident(id, incidentDto);
+        
+        return "redirect:/incident/list";
     }
 
 }

@@ -139,8 +139,12 @@ public class IncidentServiceImpl implements IncidentService {
     public IncidentDto getIncidentDtoById(Integer id) {
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sự cố với ID: " + id));
-                
-        return incidentMapper.incidentToIncidentDto(incident);
+        IncidentDto incidentDto = incidentMapper.incidentToIncidentDto(incident);
+        TechnicianDto technicianDto = technicianService.getTechnicianDtoById(incident.getTechnicianId());
+        String computerName = computerService.getComputerById(incident.getComputerId()).getName();
+        incidentDto.setComputerName(computerName);
+        incidentDto.setTechnicianDto(technicianDto);
+        return incidentDto;
     }
 
     @Override
