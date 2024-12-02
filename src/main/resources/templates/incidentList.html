@@ -57,9 +57,10 @@
                         <select class="form-control" name="status">
                             <option value="">Tất cả</option>
                             <option value="1" th:selected="${selectedStatus == 1}">Chưa xử lý</option>
-                            <option value="2" th:selected="${selectedStatus == 2}">Đã xử lý</option>
-                            <option value="3" th:selected="${selectedStatus == 3}">Quá hạn chưa xử lý</option>
-                            <option value="4" th:selected="${selectedStatus == 4}">Đã xử lý nhưng quá hạn</option>
+                            <option value="2" th:selected="${selectedStatus == 2}">Đang xử lý</option>
+                            <option value="3" th:selected="${selectedStatus == 3}">Đã xử lý</option>
+                            <option value="4" th:selected="${selectedStatus == 4}">Quá hạn chưa xử lý</option>
+                            <option value="5" th:selected="${selectedStatus == 5}">Đã xử lý nhưng quá hạn</option>
                         </select>
                     </div>
 
@@ -82,12 +83,27 @@
                     <a th:href="@{/incident/list}" class="btn btn-secondary">Đặt lại</a>
                 </div>
             </form>
+
+            <div th:fragment="description">
+                <div class="status-legend" style="display: flex; padding: 15px">
+                    <p style="padding: 15px"><span class="status-badge yellow-border"></span>Chưa xử lý</p>
+                    <p style="padding: 15px"><span class="status-badge blue-border"></span>Đang xử lý</p>
+                    <p style="padding: 15px"><span class="status-badge red-border-background"></span>Quá hạn chưa xử lý</p>
+                    <p style="padding: 15px"><span class="status-badge red-border"></span>Đã xử lý nhưng quá hạn</p>
+                    <p style="padding: 15px"><span class="status-badge green-border"></span>Đã xử lý</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-2 mb-4" th:each="incident : ${incidentDtoList}">
-            <div class="incident-card h-100">
+            <div th:class="'incident-card h-100 ' +
+               (${incident.status} == 1 ? 'yellow-border' :
+               (${incident.status} == 2 ? 'blue-border' :
+               (${incident.status} == 3 ? 'green-border' :
+               (${incident.status} == 4 ? 'red-border-background' :
+               (${incident.status} == 5 ? 'red-border' : 'status-class-default')))))">
                 <div class="incident-title" th:text="${incident.description}">Tiêu Đề Sự Cố</div>
                 <p>
                     <strong>Máy tính:</strong>
@@ -100,11 +116,6 @@
                 <p>
                     <strong>Kỹ thuật viên:</strong>
                     <span th:text="${incident.technicianDto != null ? incident.technicianDto.userDto.name : 'Chưa phân công'}">Tên Kỹ Thuật Viên</span>
-                </p>
-                <p>
-                    <strong>Trạng Thái:</strong>
-                    <span th:class="${incident.status == 1 ? 'status-unprocessed' : 'status-processing'}"
-                          th:text="${incident.status == 1 ? 'Chưa xử lý' : 'Đang xử lý'}">TRẠNG THÁI</span>
                 </p>
                 <p>
                     <strong>Ngày Báo Cáo:</strong>

@@ -19,6 +19,7 @@
             <li class="dropdown" sec:authorize="hasAuthority('ADMIN')">
                 <span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Kỹ thuật viên</span>
                 <ul class="dropdown-menu">
+                    <li><a th:href="@{/technician/list}">Danh sách kỹ thuật viên</a></li>
                     <li><a th:href="@{/technician/create}">Thêm kỹ thuật viên</a></li>
                 </ul>
             </li>

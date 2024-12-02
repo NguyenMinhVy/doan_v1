@@ -123,7 +123,7 @@ h1, h2 {
 }
 
 /* Định dạng thẻ card chung cho thiết bị, phần mềm và máy tính */
-.device-card, .software-card, .room-card, .computer-card, .incident-card {
+.device-card, .software-card, .room-card, .computer-card, .incident-card, .technician-card {
     background-color: #f8f9fa;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -143,12 +143,12 @@ h1, h2 {
 
 
 /* Hiệu ứng hover cho card */
-.device-card:hover, .software-card:hover, .room-card:hover, .computer-card:hover, .incident-card {
+.device-card:hover, .software-card:hover, .room-card:hover, .computer-card:hover, .incident-card, .technician-card:hover {
     transform: scale(1.05);
 }
 
 /* Định dạng tiêu đề trong thẻ card */
-.device-card .title, .software-card .title, .room-card .room-title, .computer-card .computer-title, .incident-card .incident-title {
+.device-card .title, .software-card .title, .room-card .room-title, .computer-card .computer-title, .incident-card .incident-title, .technician-card .technician-title {
     font-size: 1.0em;
     font-weight: bold;
     margin-bottom: 10px;
@@ -170,6 +170,11 @@ h1, h2 {
 .device-card.empty, .software-card.empty, .room-card.empty, .computer-card.empty {
     border-color: #dc3545;
     background-color: white;
+}
+
+.technician-card.purple {
+    border-color: #7a62a5;
+    background-color: #dcd3ff;
 }
 
 /*.room-card.background {*/
@@ -452,19 +457,34 @@ html, body {
     display: inline-block;
     margin-right: 10px;
 }
-
+.incident-card.green-border,
 .green-border {
     background-color: #e6f4ea;
     border: 2px solid #28a745;
 }
-
+.incident-card.orange-border,
 .orange-border {
     background-color: #fde9d9;
     border: 2px solid #dc3545;
 }
-
+.incident-card.red-border,
 .red-border {
     background-color: white;
+    border: 2px solid #dc3545;
+}
+.incident-card.yellow-border,
+.yellow-border {
+    background-color: #f8f7e9;
+    border: 2px solid #f4b341;
+}
+.incident-card.blue-border,
+.blue-border {
+    background-color: #ebfdd6;
+    border: 2px solid #6db606;
+}
+.incident-card.red-border-background,
+.red-border-background {
+    background-color: #fbd7da;
     border: 2px solid #dc3545;
 }
 

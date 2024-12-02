@@ -1,7 +1,9 @@
 package doan.doan_v1.service.impl;
 
 import doan.doan_v1.Constant.Constant;
+import doan.doan_v1.dto.LocationDto;
 import doan.doan_v1.dto.TechnicianDto;
+import doan.doan_v1.entity.Room;
 import doan.doan_v1.entity.Technician;
 import doan.doan_v1.entity.User;
 import doan.doan_v1.mapper.TechnicianMapper;
@@ -9,6 +11,7 @@ import doan.doan_v1.mapper.UserMapper;
 import doan.doan_v1.repository.LocationRepository;
 import doan.doan_v1.repository.TechnicianRepository;
 import doan.doan_v1.repository.UserRepository;
+import doan.doan_v1.service.LocationService;
 import doan.doan_v1.service.TechnicianService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +41,9 @@ public class TechnicianServiceImpl implements TechnicianService {
 
     @Autowired
     private LocationRepository locationRepository;
+
+    @Autowired
+    private LocationService locationService;
 
     @Override
     public String createTechnician(TechnicianDto technicianDto) {
@@ -69,7 +75,7 @@ public class TechnicianServiceImpl implements TechnicianService {
         return username;
     }
 
-    private String generateUsername(String fullName) {
+    public String generateUsername(String fullName) {
         // Tách họ tên thành các phần
         String[] parts = fullName.toLowerCase()
                 .replaceAll("đ", "d")
@@ -120,7 +126,9 @@ public class TechnicianServiceImpl implements TechnicianService {
         for (Technician technician : technicianList) {
             TechnicianDto technicianDto = technicianMapper.technicianToTechnicianDto(technician);
             User user = userRepository.findById(technician.getUserId()).orElseThrow();
+            LocationDto locationDto = locationService.getLocationById(technician.getLocationId());
             technicianDto.setUserDto(userMapper.userToUserDto(user));
+            technicianDto.setLocationDto(locationDto);
             technicianDtoList.add(technicianDto);
         }
         return technicianDtoList;
@@ -129,9 +137,37 @@ public class TechnicianServiceImpl implements TechnicianService {
     @Override
     public TechnicianDto getTechnicianDtoById(int id) {
         Technician technician = technicianRepository.findByIdAndDelFlagFalse(id);
+        if (technician == null) {
+            return null;
+        }
         TechnicianDto technicianDto = technicianMapper.technicianToTechnicianDto(technician);
+        LocationDto locationDto =locationService.getLocationById(technician.getLocationId());
         User user = userRepository.findById(technician.getUserId()).orElseThrow();
         technicianDto.setUserDto(userMapper.userToUserDto(user));
+        technicianDto.setLocationDto(locationDto);
+        return technicianDto;
+    }
+
+    @Override
+    public TechnicianDto getTechnicianDtoByUserId(int userId) {
+        Technician technician = technicianRepository.findByUserIdAndDelFlagFalse(userId);
+        if (technician == null) {
+            return null;
+        }
+        TechnicianDto technicianDto = technicianMapper.technicianToTechnicianDto(technician);
+        LocationDto locationDto =locationService.getLocationById(technician.getLocationId());
+        technicianDto.setLocationDto(locationDto);
+        User user = userRepository.findById(technician.getUserId()).orElseThrow();
+        technicianDto.setUserDto(userMapper.userToUserDto(user));
+        return technicianDto;
+    }
+
+    @Override
+    public TechnicianDto updateTechnician(TechnicianDto technicianDto) {
+        Technician technician = technicianMapper.technicianDtoToTechnician(technicianDto);
+        technician.setLocationId(technicianDto.getLocationDto().getId());
+        technician.setUserId(technicianDto.getUserDto().getId());
+        technicianRepository.save(technician);
         return technicianDto;
     }
 }

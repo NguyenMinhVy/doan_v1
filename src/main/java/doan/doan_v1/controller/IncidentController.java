@@ -106,9 +106,15 @@ public class IncidentController {
         }
         
         // Lọc theo technicianId
+        User user = userService.getCurrentUserInfo();
+        if (user != null && user.getRoleId() == Constant.ROLE_ID.ROLE_TECHNICIAN && technicianId == null) {
+            TechnicianDto technicianDto = technicianService.getTechnicianDtoByUserId(user.getId());
+            technicianId = technicianDto.getId();
+        }
         if (technicianId != null) {
+            Integer finalTechnicianId = technicianId;
             incidentDtoList = incidentDtoList.stream()
-                    .filter(incident -> incident.getTechnicianDto().getId() == technicianId)
+                    .filter(incident -> incident.getTechnicianDto() != null && incident.getTechnicianDto().getId() == finalTechnicianId)
                     .collect(Collectors.toList());
         }
 

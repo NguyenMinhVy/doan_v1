@@ -16,6 +16,8 @@ public interface TechnicianRepository extends JpaRepository<Technician, Integer>
 
     Technician findByIdAndDelFlagFalse(Integer id);
 
+    Technician findByUserIdAndDelFlagFalse(Integer userId);
+
     @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END FROM Technician t " +
             "WHERE t.technicianCode = :technicianCode AND t.delFlag = false")
     boolean existsByTechnicianCodeAndDelFlagFalse(@Param("technicianCode") String technicianCode);

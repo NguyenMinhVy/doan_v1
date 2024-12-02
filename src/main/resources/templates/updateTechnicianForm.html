@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cập nhật Kỹ thuật viên</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Cập nhật Kỹ thuật viên</h2>
+
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+
+    <form th:action="@{/technician/update}" method="post">
+        <!-- Hidden field to store technician ID -->
+        <input type="hidden" name="id" th:value="${technicianDto.id}"/>
+
+        <!--user name -->
+        <div class="form-group">
+            <label for="username">Tên đăng nhập:</label>
+            <input type="text" class="form-control" id="username" name="userDto.username"
+                   th:value="${technicianDto.userDto.username}" required readonly>
+        </div>
+
+        <!-- name -->
+        <div class="form-group">
+            <label for="fullName">Họ tên kỹ thuật viên:</label>
+            <input type="text" class="form-control" id="fullName" name="userDto.name"
+                   th:value="${technicianDto.userDto.name}" required>
+        </div>
+
+        <!-- Technician code -->
+        <div class="form-group">
+            <label for="technicianCode">Mã kỹ thuật viên:</label>
+            <input type="text" class="form-control" id="technicianCode" name="technicianCode"
+                   th:value="${technicianDto.technicianCode}" required>
+        </div>
+
+        <!-- Location selection -->
+        <div class="form-group">
+            <label for="locationId">Địa điểm:</label>
+            <select class="form-control" id="locationId" name="locationDto.id" required>
+                <option value="">Chọn địa điểm</option>
+                <option th:each="location : ${locationDtoList}"
+                        th:value="${location.id}"
+                        th:text="${location.name}"
+                        th:selected="${location.id == technicianDto.locationDto.id}">
+                </option>
+            </select>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Cập nhật kỹ thuật viên</button>
+        </div>
+    </form>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

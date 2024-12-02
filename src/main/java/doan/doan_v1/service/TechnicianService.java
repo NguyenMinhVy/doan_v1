@@ -12,4 +12,8 @@ public interface TechnicianService {
     TechnicianDto getTechnicianDtoById(int id);
 
     String createTechnician(TechnicianDto technicianDto);
+
+    TechnicianDto getTechnicianDtoByUserId(int id);
+
+    TechnicianDto updateTechnician(TechnicianDto technicianDto);
 }
