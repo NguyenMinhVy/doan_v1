@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -161,7 +162,7 @@ public class IncidentController {
     public String addIncidentForComputer (@ModelAttribute IncidentDto incidentDto, RedirectAttributes redirectAttributes, Model model) {
         try {
             incidentDto.setStatus(Constant.INCIDENT_STATUS.UNPROCESSED);
-            User user = userService.getCurrentUserInfo();
+            User user = getRoleCurrentUser();
             incidentDto.setReportUser(user.getId());
             incidentDto.setReportUserName(user.getName());
             incidentDto.setReportDate(LocalDateTime.now());
@@ -179,6 +180,123 @@ public class IncidentController {
             redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi thêm phòng");
             return "redirect:/computer/add?computerId=" + incidentDto.getComputerId() + "&error=true";
         }
+    }
+
+    @GetMapping("/update/{id}")
+    public String showUpdateIncidentForm(@PathVariable Integer id, Model model) {
+        IncidentDto incident = incidentService.getIncidentDtoById(id);
+        if (incident == null) {
+            return "redirect:/incident/list";
+        }
+
+        // Kiểm tra role của user hiện tại
+        User currentUser = getRoleCurrentUser();
+
+        boolean isAdmin = false;
+        boolean isTechnician = false;
+        if (currentUser.getRoleId() == Constant.ROLE_ID.ROLE_ADMIN){
+            isAdmin = true;
+        }
+
+        if (currentUser.getRoleId() == Constant.ROLE_ID.ROLE_TECHNICIAN){
+            isTechnician = true;
+        }
+        
+        if (!isAdmin && !isTechnician) {
+            return "redirect:/incident/list";
+        }
+
+        if (isAdmin) {
+            // Nếu là admin, thêm danh sách kỹ thuật viên để có thể chọn
+            List<TechnicianDto> technicianList = technicianService.getAllTechnicianDto();
+            model.addAttribute("technicianList", technicianList);
+        }
+
+        // Thêm các lý do chưa xử lý
+        List<String> unprocessedReasons = Arrays.asList(
+            "Chờ thiết bị mới",
+            "Việc cá nhân",
+            "Khác"
+        );
+        
+//        // Kiểm tra nếu kỹ thuật viên hiện tại có quyền xem incident này
+//        if (isTechnician) {
+//            Technician technician = technicianService.findByUserId(currentUser.getId());
+//            if (technician == null || !technician.getId().equals(incident.getTechnicianDto().getId())) {
+//                return "redirect:/incident/list";
+//            }
+//        }
+
+        model.addAttribute("incident", incident);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("isTechnician", isTechnician);
+        model.addAttribute("unprocessedReasons", unprocessedReasons);
+        model.addAttribute("isOverdue", incident.getExpectCompleteDate().isBefore(LocalDateTime.now()));
+        
+        return "updateIncident";
+    }
+
+    private User getRoleCurrentUser() {
+        return userService.getCurrentUserInfo();
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateIncident(@PathVariable Integer id, 
+                               @ModelAttribute IncidentDto incidentDto) {
+        User currentUser = getRoleCurrentUser();
+        boolean isAdmin = false;
+        boolean isTechnician = false;
+        if (currentUser.getRoleId() == Constant.ROLE_ID.ROLE_ADMIN){
+            isAdmin = true;
+        }
+
+        if (currentUser.getRoleId() == Constant.ROLE_ID.ROLE_TECHNICIAN){
+            isTechnician = true;
+        }
+        
+        if (!isAdmin && !isTechnician) {
+            return "redirect:/incident/list";
+        }
+
+        // Lấy incident hiện tại
+        IncidentDto currentIncident = incidentService.getIncidentDtoById(id);
+        if (currentIncident == null) {
+            return "redirect:/incident/list";
+        }
+
+        // Kiểm tra nếu quá hạn
+        boolean isOverdue = currentIncident.getExpectCompleteDate().isBefore(LocalDateTime.now());
+        if (isOverdue && incidentDto.getStatus() != 5) { // 5 là trạng thái "Đã hoàn thành nhưng quá hạn"
+            return "redirect:/incident/update/" + id + "?error=overdue";
+        }
+
+        // Nếu là technician, chỉ cho phép update status và lý do
+        if (isTechnician) {
+            incidentDto.setTechnicianDto(currentIncident.getTechnicianDto());
+        }
+
+        try {
+            incidentService.updateIncident(id, incidentDto);
+            return "redirect:/incident/list?success=true";
+        } catch (Exception e) {
+            return "redirect:/incident/update/" + id + "?error=true";
+        }
+    }
+
+    @PostMapping("/incident/update/{id}")
+    public String updateIncident(@PathVariable Integer id,
+                               @ModelAttribute IncidentDto incidentDto,
+                               @RequestParam(value = "shouldUpdateCompletedDate", required = false) boolean shouldUpdateCompletedDate) {
+        
+        if (shouldUpdateCompletedDate) {
+            // Cập nhật thời gian hoàn thành là thời điểm hiện tại
+            incidentDto.setCompletedDate(LocalDateTime.now());
+        }
+        
+        // Gọi service để cập nhật
+        incidentService.updateIncident(id, incidentDto);
+        
+        return "redirect:/incident/list";
     }
 
 }

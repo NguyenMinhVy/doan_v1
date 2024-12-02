@@ -267,7 +267,7 @@ a:hover {
     color: white;
 }
 
-/* Nút Cập nhật */
+/* Nút Cp nhật */
 .btn-update {
     display: flex;
     align-items: center;
@@ -511,7 +511,7 @@ html, body {
     margin-bottom: 30px;
 }
 
-/* Bố cục cho form tạo máy tính */
+/* Bcục cho form tạo máy tính */
 .create-computer-form {
     max-width: 800px;
     margin: 0 auto;
@@ -596,68 +596,111 @@ html, body {
 
 /* Incident Card Styles */
 .incident-card {
-    background: #fff;
-    border-radius: 8px;
+    width: 100%;
+    height: 350px;
     padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-    border: 1px solid #e0e0e0;
-    height: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
     display: flex;
     flex-direction: column;
 }
 
-.incident-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.incident-title {
-    font-size: 16px;
+/* Tên máy và mã */
+.computer-name {
     font-weight: bold;
-    color: #333;
-    margin-bottom: 15px;
-    line-height: 1.4;
-    flex-grow: 1;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    padding: 0 0 10px 0;
+    border-bottom: 1px solid #eee;
 }
 
-.incident-card p {
-    margin-bottom: 12px;
-    line-height: 1.5;
+/* Mô tả lỗi */
+.incident-title {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+    padding: 0 0 10px 0;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+
+/* Container cho tất cả thông tin */
+.info-container {
     display: flex;
     flex-direction: column;
+    gap: 15px;  /* Khoảng cách đều giữa các phần tử */
 }
 
-.incident-card strong {
-    color: #555;
+/* Style chung cho tất cả các dòng thông tin */
+.info-container p {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 0;
+}
+
+/* Label */
+.info-container strong {
+    color: #666;
     font-size: 14px;
-    margin-bottom: 3px;
 }
 
-.incident-card span {
+/* Giá trị */
+.info-container span {
     color: #333;
     font-size: 14px;
-    padding-left: 5px;
 }
 
-.status-unprocessed {
-    background: #ff9800;
-    color: white;
-    padding: 4px 8px;
+/* Trạng thái */
+.status-processing, .status-unprocessed {
+    padding: 6px 12px;
     border-radius: 4px;
     display: inline-block;
-    font-size: 12px;
-    align-self: flex-start;
+    font-size: 13px;
+    width: fit-content;
 }
 
 .status-processing {
-    background: #4caf50;
+    background-color: #4caf50;
     color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    display: inline-block;
-    font-size: 12px;
-    align-self: flex-start;
+}
+
+.status-unprocessed {
+    background-color: #ff9800;
+    color: white;
+}
+
+/* Ngăn chặn card trùng lặp */
+.incident-card:not(:first-child) {
+    display: none;
+}
+
+/* Container cho grid */
+.incident-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Đảm bảo khoảng cách cuối */
+.incident-card > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Xử lý responsive */
+@media (max-width: 768px) {
+    .incident-card {
+        height: auto;
+        min-height: 350px;
+    }
+}
+
+/* Container cho thông tin */
+.info-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 /* Grid Layout Adjustments */
