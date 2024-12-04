@@ -171,6 +171,22 @@ public class IncidentServiceImpl implements IncidentService {
         }
         
         incidentRepository.save(incident);
+        List<Incident> incidents = incidentRepository.findAllByComputerIdAndDelFlagFalse(incident.getComputerId());
+
+        boolean isUpdateStatusComputer = true;
+        for (Incident item : incidents){
+            if ((item.getStatus() != Constant.INCIDENT_STATUS.PROCESSED) && (item.getStatus() != Constant.INCIDENT_STATUS.OVERDUE_PROCESSED) ){
+                isUpdateStatusComputer = false;
+                break;
+            }
+        }
+        if (isUpdateStatusComputer){
+            Computer computer = computerRepository.findById(incident.getComputerId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy máy tính với ID: " + incident.getComputerId()));
+            computer.setStatus(Constant.STATUS.OK);
+            computerRepository.save(computer);
+        }
+
     }
 
 }
