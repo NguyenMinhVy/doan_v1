@@ -26,6 +26,7 @@
             <li class="dropdown" sec:authorize="hasAuthority('ADMIN')">
                 <span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Giảng viên</span>
                 <ul class="dropdown-menu">
+                    <li><a th:href="@{/lecturer/list}">Danh sách giảng viên</a></li>
                     <li><a th:href="@{/lecturer/create}">Thêm giảng viên</a></li>
                 </ul>
             </li>

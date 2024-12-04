@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -77,5 +78,53 @@ public class AuthController {
         model.addAttribute("roomsByLocation", roomsByLocation);
         return "home";
     }
+
+    @Controller
+    public class ForgotPasswordController {
+
+        @GetMapping("/forgot-password")
+        public String showForgotPasswordForm() {
+            return "forgot-password";
+        }
+
+        @PostMapping("/forgot-password")
+        public String verifyUserInfo(@RequestParam String username, @RequestParam String employeeCode,
+                                     @RequestParam String fullName, Model model) {
+            boolean isValid = userService.isUser(username, employeeCode, fullName);
+
+            if (isValid) {
+                return "redirect:/update-password?username=" + username;
+            } else {
+                model.addAttribute("error", "Thông tin cung cấp không hợp lệ.");
+                return "forgot-password";
+            }
+        }
+
+        @GetMapping("/update-password")
+        public String showUpdatePasswordForm(@RequestParam String username, Model model) {
+            model.addAttribute("username", username);
+            return "update-password";
+        }
+
+        @PostMapping("/update-password")
+        public String updatePassword(@RequestParam String username, @RequestParam String newPassword,
+                                     @RequestParam String confirmPassword, Model model) {
+            if (!newPassword.equals(confirmPassword)) {
+                model.addAttribute("error", "Mật khẩu không khớp.");
+                return "update-password";
+            }
+
+            // Xử lý cập nhật mật khẩu trong cơ sở dữ liệu
+            boolean isUpdated = userService.updatePassword(username, newPassword);
+            if (isUpdated) {
+                model.addAttribute("message", "Cập nhật thành công.");
+                return "login";
+            } else {
+                model.addAttribute("error", "Cập nhật thất bại.");
+                return "update-password";
+            }
+        }
+    }
+
 
 }

@@ -37,6 +37,8 @@ public class SpringSecurity {
         http.csrf(csrf -> csrf.disable()) // Đảm bảo gọi disable() đúng cách
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/register/**").permitAll()
+                        .requestMatchers("/forgot-password").permitAll()
+                        .requestMatchers("/update-password").permitAll()
                         .requestMatchers("/index").permitAll()
                         .requestMatchers("/users").hasRole("ADMIN") // Chỉ cho phép người dùng có vai trò ADMIN
                         .anyRequest().authenticated() // Tất cả yêu cầu khác phải được xác thực

@@ -168,6 +168,9 @@ public class TechnicianServiceImpl implements TechnicianService {
         technician.setLocationId(technicianDto.getLocationDto().getId());
         technician.setUserId(technicianDto.getUserDto().getId());
         technicianRepository.save(technician);
+        User user = userRepository.findById(technician.getUserId()).orElseThrow();
+        user.setName(technicianDto.getUserDto().getName());
+        userRepository.save(user);
         return technicianDto;
     }
 }

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Giảng viên</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mt-5">
+
+    <h1 class="text-center">Danh sách Giảng viên</h1>
+
+    <div class="row mt-4">
+
+        <!-- Hiển thị thông báo nếu không có Giảng viên -->
+        <div th:if="${lecturerDtoList == null || lecturerDtoList.isEmpty()}" class="col-12">
+            <p class="text-center text-muted">Không có Giảng viên nào được tìm thấy.</p>
+        </div>
+
+        <div th:each="lecturer : ${lecturerDtoList}" class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3">
+            <div class="lecturer-card position-relative">
+                <div class="admin-actions position-absolute"
+                     th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
+                     style="top: 10px; right: 10px;">
+                    <div class="tooltip-container">
+                        <a th:href="@{'/lecturer/updateLecturerForm/' + ${lecturer.id}}" class="btn-update">
+                            <span class="tooltip">Cập nhật</span>
+                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <div class="tooltip-container">
+                        <form th:action="@{/lecturer/delete/{lecturerId}(lecturerId=${lecturer.id})}" method="post"
+                              style="display: inline;">
+                            <button type="submit" class="btn-delete"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa Giảng viên này?')">
+                                <span class="tooltip">Xóa</span>
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="lecturer-link">
+                    <div class="lecturer-card purple">
+                        <div class="lecturer-title" th:text="${lecturer.userDto.name}">Tên Giảng Viên</div>
+                        <p><strong>Mã Giảng viên:</strong>
+                            <span th:text="${lecturer.lecturerCode}">Mã</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button sec:authorize="hasAuthority('ADMIN')"
+            th:onclick="|window.location.href='/lecturer/create'|"
+            class="btn btn-primary">
+        Thêm giảng viên
+    </button>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

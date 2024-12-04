@@ -1,11 +1,16 @@
 package doan.doan_v1.service.impl;
 
+import doan.doan_v1.Constant.Constant;
+import doan.doan_v1.dto.LecturerDto;
+import doan.doan_v1.dto.TechnicianDto;
 import doan.doan_v1.dto.UserDto;
 import doan.doan_v1.entity.Role;
 import doan.doan_v1.entity.User;
 import doan.doan_v1.mapper.UserMapper;
 import doan.doan_v1.repository.RoleRepository;
 import doan.doan_v1.repository.UserRepository;
+import doan.doan_v1.service.LecturerService;
+import doan.doan_v1.service.TechnicianService;
 import doan.doan_v1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -32,6 +37,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private TechnicianService technicianService;
+
+    @Autowired
+    private LecturerService lecturerService;
 
 
     @Override
@@ -88,6 +99,40 @@ public class UserServiceImpl implements UserService {
             }
         }
         return new User();
+    }
+
+    @Override
+    public boolean isUser(String username, String employeeCode, String fullName) {
+        User user = userRepository.findByUsername(username);
+        if(user!=null && user.getName().equals(fullName)) {
+            int roleId = user.getRoleId();
+            boolean isLecturer = roleId == Constant.ROLE_ID.ROLE_LECTURE;
+            boolean isTechnician = roleId == Constant.ROLE_ID.ROLE_TECHNICIAN;
+            if (isTechnician) {
+                TechnicianDto technicianDto = technicianService.getTechnicianDtoByUserId(user.getId());
+                if (technicianDto != null) {
+                    return technicianDto.getTechnicianCode().equals(employeeCode);
+                }
+            }
+            if (isLecturer) {
+                LecturerDto lecturerDto = lecturerService.getLecturerDtoByUserId(user.getId());
+                if (lecturerDto != null) {
+                    return lecturerDto.getLecturerCode().equals(employeeCode);
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updatePassword(String username, String newPassword) {
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
 
     private User convertToUser(UserDetails userDetails) {
