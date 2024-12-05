@@ -35,4 +35,19 @@ public interface Constant {
         int ROLE_LECTURE = 2;
         int ROLE_TECHNICIAN = 3;
     }
+
+    public static String getDeviceTypeName(int value) {
+        switch (value) {
+            case DEVICE_TYPE.KEY:
+                return "Bàn phím";
+            case DEVICE_TYPE.MOU:
+                return "Chuột";
+            case DEVICE_TYPE.SCREEN:
+                return "Màn hình";
+            case DEVICE_TYPE.CASE:
+                return "CPU";
+            default:
+                return "UNKNOWN";
+        }
+    }
 }

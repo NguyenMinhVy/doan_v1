@@ -84,9 +84,9 @@
                th:each="incident : ${incidentDtoListByStatus}">
                 <div class="incident-card mt-3">
                     <div class="title" th:text="${incident.description}">Mô tả Sự Cố</div>
-                    <p><strong>Mô tả:</strong>
-                        <span th:text="${incident.description}">Mô tả sự cố</span>
-                    </p>
+<!--                    <p><strong>Mô tả:</strong>-->
+<!--                        <span th:text="${incident.description}">Mô tả sự cố</span>-->
+<!--                    </p>-->
                     <p><strong>Trạng thái:</strong>
                         <span th:class="${incident.status == 1 ? 'status-unprocessed' : 'status-processing'}"
                               th:text="${incident.status == 1} ? 'Chưa xử lý' : 'Đang xử lý'">
@@ -96,10 +96,18 @@
                         <span th:text="${#temporals.format(incident.reportDate, 'dd/MM/yyyy HH:mm')}"></span>
                     </p>
                     <p><strong>Ngày hoàn thành mong muốn:</strong>
-                        <span th:text="${#temporals.format(incident.completionDate, 'dd/MM/yyyy HH:mm')}"></span>
+                        <span th:text="${#temporals.format(incident.expectCompleteDate, 'dd/MM/yyyy HH:mm')}"></span>
                     </p>
                     <p><strong>Kỹ thuật viên:</strong>
                         <span th:text="${incident.technicianDto.userDto.name}">Kỹ thuật viên</span>
+                    </p>
+                    <p th:if="${incident.computerDeviceId > 0}">
+                        <strong>Thiết bị:</strong>
+                        <span th:text="${incident.computerDeviceDto.getType()}"></span>
+                    </p>
+                    <p th:if="${incident.computerSoftwareId > 0}">
+                        <strong>Phần mềm:</strong>
+                        <span th:text="${incident.computerSoftwareDto.name}"></span>
                     </p>
                 </div>
             </a>

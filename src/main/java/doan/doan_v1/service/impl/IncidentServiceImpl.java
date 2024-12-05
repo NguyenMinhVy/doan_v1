@@ -1,6 +1,8 @@
 package doan.doan_v1.service.impl;
 
 import doan.doan_v1.Constant.Constant;
+import doan.doan_v1.dto.ComputerDeviceDto;
+import doan.doan_v1.dto.ComputerSoftwareDto;
 import doan.doan_v1.dto.IncidentDto;
 import doan.doan_v1.dto.TechnicianDto;
 import doan.doan_v1.entity.Computer;
@@ -12,10 +14,7 @@ import doan.doan_v1.repository.ComputerRepository;
 import doan.doan_v1.repository.IncidentRepository;
 import doan.doan_v1.repository.TechnicianRepository;
 import doan.doan_v1.repository.UserRepository;
-import doan.doan_v1.service.ComputerService;
-import doan.doan_v1.service.IncidentService;
-import doan.doan_v1.service.LocationService;
-import doan.doan_v1.service.TechnicianService;
+import doan.doan_v1.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +27,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class IncidentServiceImpl implements IncidentService {
@@ -51,7 +51,14 @@ public class IncidentServiceImpl implements IncidentService {
     private ComputerRepository computerRepository;
 
     @Autowired
+    private ComputerDeviceService computerDeviceService;
+
+    @Autowired
+    private ComputerSoftwareService computerSoftwareService;
+
+    @Autowired
     private TechnicianRepository technicianRepository;
+    private ComputerDeviceServiceImpl computerDeviceServiceImpl;
 
 
     @Override
@@ -79,7 +86,19 @@ public class IncidentServiceImpl implements IncidentService {
             TechnicianDto technicianDto = technicianService.getTechnicianDtoById(incident.getTechnicianId());
             String computerName = computerService.getComputerById(incident.getComputerId()).getName();
             incidentDto.setComputerName(computerName);
+            incidentDto.setTechnicianId(technicianDto.getId());
             incidentDto.setTechnicianDto(technicianDto);
+
+            if (incident.getComputerDeviceId()>0){
+                ComputerDeviceDto computerDeviceDto = computerDeviceService.getDeviceById(incident.getComputerDeviceId());
+                incidentDto.setComputerDeviceDto(computerDeviceDto);
+            }
+
+            if (incident.getComputerSoftwareId()>0){
+                ComputerSoftwareDto computerSoftwareDto = computerSoftwareService.getSoftwareById(incident.getComputerSoftwareId());
+                incidentDto.setComputerSoftwareDto(computerSoftwareDto);
+            }
+
             incidentDtoList.add(incidentDto);
         }
         return incidentDtoList.stream()
@@ -103,7 +122,7 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     public IncidentDto addIncidentForComputer(IncidentDto incidentDto) {
         Incident incident = incidentMapper.incidentDtoToIncident(incidentDto);
-        incident.setTechnicianId(incidentDto.getTechnicianDto().getId());
+        incident.setTechnicianId(incidentDto.getTechnicianId());
         incidentRepository.save(incident);
 
         Computer computer = computerRepository.findById(incidentDto.getComputerId()).orElse(null);
@@ -143,7 +162,7 @@ public class IncidentServiceImpl implements IncidentService {
         TechnicianDto technicianDto = technicianService.getTechnicianDtoById(incident.getTechnicianId());
         String computerName = computerService.getComputerById(incident.getComputerId()).getName();
         incidentDto.setComputerName(computerName);
-        incidentDto.setTechnicianDto(technicianDto);
+        incidentDto.setTechnicianId(technicianDto.getId());
         return incidentDto;
     }
 
@@ -158,8 +177,8 @@ public class IncidentServiceImpl implements IncidentService {
         incident.setUnprocessedReason(incidentDto.getUnprocessedReason());
         
         // Nếu có thay đổi kỹ thuật viên
-        if (incidentDto.getTechnicianDto() != null) {
-            Technician technician = technicianRepository.findById(incidentDto.getTechnicianDto().getId())
+        if (incidentDto.getTechnicianId() != 0) {
+            Technician technician = technicianRepository.findById(incidentDto.getTechnicianId())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy kỹ thuật viên"));
             incident.setTechnicianId(technician.getUserId());
         }
@@ -187,6 +206,22 @@ public class IncidentServiceImpl implements IncidentService {
             computerRepository.save(computer);
         }
 
+    }
+
+    @Override
+    public IncidentDto getLatestIncidentByComputerDeviceId(int computerDeviceId) {
+        Optional<Incident> latestIncident = incidentRepository
+            .findTopByComputerDeviceIdOrderByReportDateDesc(computerDeviceId);
+        
+        return latestIncident.map(incidentMapper::incidentToIncidentDto).orElse(null);
+    }
+
+    @Override
+    public IncidentDto getLatestIncidentByComputerSoftwareId(int computerSoftwareId) {
+        Optional<Incident> latestIncident = incidentRepository
+            .findTopByComputerSoftwareIdOrderByReportDateDesc(computerSoftwareId);
+        
+        return latestIncident.map(incidentMapper::incidentToIncidentDto).orElse(null);
     }
 
 }

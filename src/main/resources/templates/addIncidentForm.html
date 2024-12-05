@@ -80,6 +80,45 @@
                 </select>
             </div>
 
+            <div class="form-group">
+                <label>Thiết bị bị lỗi:</label>
+                <div class="device-list row">
+                    <div th:each="device, iterStat : ${availableDevices}" class="col-6">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="radio" 
+                                   th:id="'device-' + ${device.id}"
+                                   th:value="${device.id}"
+                                   name="computerDeviceId"
+                                   onchange="handleDeviceSelection(this)">
+                            <label class="form-check-label" th:for="'device-' + ${device.id}">
+                                <span th:text="${device.type}">Tên thiết bị</span>
+                                <span th:if="${device.description}" th:text="'(' + ${device.description} + ')'"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Phần mềm bị lỗi:</label>
+                <div class="software-list row">
+                    <div th:each="software, iterStat : ${availableSoftware}" class="col-6">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="radio" 
+                                   th:id="'software-' + ${software.id}"
+                                   th:value="${software.id}"
+                                   name="computerSoftwareId"
+                                   onchange="handleSoftwareSelection(this)">
+                            <label class="form-check-label" th:for="'software-' + ${software.id}">
+                                <span th:text="${software.name}">Tên phần mềm</span>
+                                <span th:if="${software.version}" th:text="'v' + ${software.version}"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Nút hành động -->
             <button type="submit" class="btn btn-primary">Thêm Sự Cố</button>
@@ -92,5 +131,20 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <div th:replace="~{fragments/footer :: footer}"></div>
+<script>
+function handleDeviceSelection(radio) {
+    if (radio.checked) {
+        // Uncheck all software radios
+        document.querySelectorAll('.software-list input[type="radio"]').forEach(rb => rb.checked = false);
+    }
+}
+
+function handleSoftwareSelection(radio) {
+    if (radio.checked) {
+        // Uncheck all device radios
+        document.querySelectorAll('.device-list input[type="radio"]').forEach(rb => rb.checked = false);
+    }
+}
+</script>
 </body>
 </html>

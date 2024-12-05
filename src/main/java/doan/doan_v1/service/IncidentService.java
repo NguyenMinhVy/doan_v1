@@ -24,4 +24,8 @@ public interface IncidentService {
     IncidentDto getIncidentDtoById(Integer id);
 
     void updateIncident(Integer id, IncidentDto incidentDto);
+
+    IncidentDto getLatestIncidentByComputerDeviceId(int computerDeviceId);
+
+    IncidentDto getLatestIncidentByComputerSoftwareId(int computerSoftwareId);
 }

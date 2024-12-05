@@ -745,3 +745,51 @@ html, body {
     text-decoration: none;
     color: inherit;
 }
+
+.device-item, .software-item {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 4px;
+}
+
+.status-normal {
+    background-color: #4caf50;
+    color: white;
+}
+
+.status-unprocessed {
+    background-color: #ff9800;
+    color: white;
+}
+
+.status-processing {
+    background-color: #2196F3;
+    color: white;
+}
+
+/* Styles for incident form radio buttons */
+.device-list, .software-list {
+    margin-top: 10px;
+}
+
+.form-check {
+    margin-bottom: 10px;
+}
+
+.form-check-label {
+    margin-left: 5px;
+}
+
+.form-check-input[type="radio"] {
+    cursor: pointer;
+}
+
+.form-check-label span {
+    vertical-align: middle;
+}
+
+/* Thêm màu hover cho label */
+.form-check:hover .form-check-label {
+    color: #007bff;
+    cursor: pointer;
+}

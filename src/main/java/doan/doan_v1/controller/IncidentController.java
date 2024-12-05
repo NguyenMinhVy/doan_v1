@@ -46,6 +46,12 @@ public class IncidentController {
     @Autowired
     private LocationService locationService;
 
+    @Autowired
+    private ComputerDeviceService computerDeviceService;
+
+    @Autowired
+    private ComputerSoftwareService computerSoftwareService;
+
     @GetMapping("/device/{deviceId}/{computerId}")
     public String getIncidentDetailByDeviceId (@PathVariable("deviceId") int deviceId, @PathVariable("computerId") int computerId, Model model) {
         List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoListByDeviceId(deviceId);
@@ -126,7 +132,7 @@ public class IncidentController {
         if (technicianId != null) {
             Integer finalTechnicianId = technicianId;
             incidentDtoList = incidentDtoList.stream()
-                    .filter(incident -> incident.getTechnicianDto() != null && incident.getTechnicianDto().getId() == finalTechnicianId)
+                    .filter(incident -> incident.getTechnicianId() != 0 && incident.getTechnicianId() == finalTechnicianId)
                     .collect(Collectors.toList());
         }
 
@@ -154,24 +160,63 @@ public class IncidentController {
     }
 
     @GetMapping("/computer/add")
-    public String getAddIncidentForComputerForm (@RequestParam("computerId") int computerId, Model model) {
+    public String showAddIncidentForm(@RequestParam Integer computerId, Model model) {
         ComputerDto computerDto = computerService.getComputerById(computerId);
         RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
-        LocationDto locationDto= roomDto.getLocationDto();
+        LocationDto locationDto = roomDto.getLocationDto();
+        
+        // Lấy danh sách thiết bị và phần mềm có thể được báo cáo sự cố
+        List<ComputerDeviceDto> availableDevices = computerDeviceService
+            .getDevicesByComputerId(computerId)
+            .stream()
+            .filter(device -> {
+                IncidentDto latestIncident = incidentService.getLatestIncidentByComputerDeviceId(device.getId());
+                return latestIncident == null || 
+                       latestIncident.getStatus() == 3 || 
+                       latestIncident.getStatus() == 5;
+            })
+            .collect(Collectors.toList());
+
+        List<ComputerSoftwareDto> availableSoftware = computerSoftwareService
+            .getSoftwareByComputerId(computerId)
+            .stream()
+            .filter(software -> {
+                IncidentDto latestIncident = incidentService.getLatestIncidentByComputerSoftwareId(software.getId());
+                return latestIncident == null || 
+                       latestIncident.getStatus() == 3 || 
+                       latestIncident.getStatus() == 5;
+            })
+            .collect(Collectors.toList());
+
         TechnicianDto technicianDto = technicianService.getTechnicianDtoListByLocationId(locationDto.getId()).get(0);
         List<TechnicianDto> technicianDtoList = technicianService.getAllTechnicianDto();
         IncidentDto incidentDto = new IncidentDto();
         incidentDto.setComputerId(computerId);
         incidentDto.setLocationId(locationDto.getId());
+        incidentDto.setTechnicianDto(technicianService.getTechnicianDtoById(incidentDto.getTechnicianId()));
+
         model.addAttribute("technicianDto", technicianDto);
         model.addAttribute("incidentDto", incidentDto);
         model.addAttribute("technicianDtoList", technicianDtoList);
+        model.addAttribute("availableDevices", availableDevices);
+        model.addAttribute("availableSoftware", availableSoftware);
+        // ... existing code ...
         return "addIncidentForm";
     }
 
     @PostMapping("/computer/add")
-    public String addIncidentForComputer (@ModelAttribute IncidentDto incidentDto, RedirectAttributes redirectAttributes, Model model) {
+    public String addIncidentForComputer(@ModelAttribute IncidentDto incidentDto, 
+                                       @RequestParam(required = false) Integer computerDeviceId,
+                                       @RequestParam(required = false) Integer computerSoftwareId,
+                                       RedirectAttributes redirectAttributes) {
         try {
+            // Validate that either computerDeviceId or computerSoftwareId is provided
+            if (computerDeviceId == null && computerSoftwareId == null) {
+                throw new IllegalArgumentException("Phải chọn thiết bị hoặc phần mềm bị lỗi");
+            }
+
+            incidentDto.setComputerDeviceId(computerDeviceId);
+            incidentDto.setComputerSoftwareId(computerSoftwareId);
             incidentDto.setStatus(Constant.INCIDENT_STATUS.UNPROCESSED);
             User user = getRoleCurrentUser();
             incidentDto.setReportUser(user.getId());
@@ -181,15 +226,16 @@ public class IncidentController {
             ComputerDto computerDto = computerService.getComputerById(incidentDto.getComputerId());
             RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
             LocationDto locationDto = roomDto.getLocationDto();
-            TechnicianDto technicianDto = technicianService.getTechnicianDtoListByLocationId(locationDto.getId()).get(0);
-            incidentDto.setTechnicianDto(technicianDto);
-//            }
+//            TechnicianDto technicianDto = technicianService.getTechnicianDtoListByLocationId(locationDto.getId()).get(0);
+//            incidentDto.setTechnicianDto(technicianDto);
+////            }
             IncidentDto createdIncidentDto = incidentService.addIncidentForComputer(incidentDto);
             redirectAttributes.addFlashAttribute("message", "Thêm phòng thành công!");
+            
             return "redirect:/computer/" + createdIncidentDto.getComputerId();
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi thêm phòng");
-            return "redirect:/computer/add?computerId=" + incidentDto.getComputerId() + "&error=true";
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/incident/computer/add?computerId=" + incidentDto.getComputerId();
         }
     }
 

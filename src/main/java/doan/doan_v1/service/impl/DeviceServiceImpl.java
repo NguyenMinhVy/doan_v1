@@ -1,6 +1,5 @@
 package doan.doan_v1.service.impl;
 
-import doan.doan_v1.Constant.Constant;
 import doan.doan_v1.dto.DeviceDto;
 import doan.doan_v1.entity.ComputerDevice;
 import doan.doan_v1.entity.Device;
@@ -69,4 +68,12 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return deviceMapper.deviceListToDeviceDtoList(deviceList);
     }
+
+    @Override
+    public DeviceDto getDeviceById(int id) {
+        Device device = deviceRepository.findById(id).orElse(null);
+        DeviceDto deviceDto = new DeviceDto();
+        deviceDto = deviceMapper.deviceToDeviceDto(device);
+        return deviceDto;
+}
 }

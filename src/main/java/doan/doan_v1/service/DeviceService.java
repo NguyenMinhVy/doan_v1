@@ -14,4 +14,5 @@ public interface DeviceService {
 
     List<DeviceDto> findAllDeviceDtoList();
 
+    DeviceDto getDeviceById(int id);
 }
