@@ -123,7 +123,7 @@ h1, h2 {
 }
 
 /* Định dạng thẻ card chung cho thiết bị, phần mềm và máy tính */
-.device-card, .software-card, .room-card, .computer-card, .incident-card, .technician-card {
+.device-card, .software-card, .room-card, .computer-card, .incident-card, .technician-card, .lecturer-card {
     background-color: #f8f9fa;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -134,21 +134,21 @@ h1, h2 {
 }
 
 .device-card{
-    height: 205px;
+    height: 100px;
 }
 
 .software-card{
-    height: 300px;
+    height: 100px;
 }
 
 
 /* Hiệu ứng hover cho card */
-.device-card:hover, .software-card:hover, .room-card:hover, .computer-card:hover, .incident-card, .technician-card:hover {
+.device-card:hover, .software-card:hover, .room-card:hover, .computer-card:hover, .incident-card, .technician-card:hover, .lecturer-card:hover {
     transform: scale(1.05);
 }
 
 /* Định dạng tiêu đề trong thẻ card */
-.device-card .title, .software-card .title, .room-card .room-title, .computer-card .computer-title, .incident-card .incident-title, .technician-card .technician-title {
+.device-card .title, .software-card .title, .room-card .room-title, .computer-card .computer-title, .incident-card .incident-title, .technician-card .technician-title, .lecturer-card .lecturer-title {
     font-size: 1.0em;
     font-weight: bold;
     margin-bottom: 10px;
@@ -172,7 +172,7 @@ h1, h2 {
     background-color: white;
 }
 
-.technician-card.purple {
+.technician-card.purple, .lecturer-card.purple{
     border-color: #7a62a5;
     background-color: #dcd3ff;
 }

@@ -20,6 +20,7 @@
     <form th:action="@{/technician/update}" method="post">
         <!-- Hidden field to store technician ID -->
         <input type="hidden" name="id" th:value="${technicianDto.id}"/>
+        <input type="hidden" name="userDto.id" th:value="${technicianDto.userDto.id}"/>
 
         <!--user name -->
         <div class="form-group">
@@ -33,13 +34,16 @@
             <label for="fullName">Họ tên kỹ thuật viên:</label>
             <input type="text" class="form-control" id="fullName" name="userDto.name"
                    th:value="${technicianDto.userDto.name}" required>
+            <span th:if="${#fields.hasErrors('technicianDto.userDto.name')}" th:errors="*{technicianDto.userDto.name}" class="text-danger"></span>
+
         </div>
 
         <!-- Technician code -->
         <div class="form-group">
             <label for="technicianCode">Mã kỹ thuật viên:</label>
             <input type="text" class="form-control" id="technicianCode" name="technicianCode"
-                   th:value="${technicianDto.technicianCode}" required>
+                   th:value="${technicianDto.technicianCode}" required readonly>
+            <span th:if="${#fields.hasErrors('technicianDto.technicianCode')}" th:errors="*{technicianDto.technicianCode}" class="text-danger"></span>
         </div>
 
         <!-- Location selection -->

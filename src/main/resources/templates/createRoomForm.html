@@ -43,7 +43,8 @@
                 <option value="" disabled selected>Chọn loại phòng</option>
                 <option th:each="roomType : ${roomTypeDtoList}"
                         th:value="${roomType.id}"
-                        th:text="${roomType.name}">loại phòng</option>
+                        th:text="${roomType.id == 1 ? '15 MÁY' : (roomType.id == 2 ? '30 MÁY' : (roomType.id == 3 ? '45 MÁY' : ''))}">
+                </option>
             </select>
         </div>
         <!-- Chọn kỹ thuât vin -->

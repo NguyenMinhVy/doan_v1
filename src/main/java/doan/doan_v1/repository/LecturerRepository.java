@@ -13,8 +13,10 @@ public interface LecturerRepository extends JpaRepository<Lecturer, Integer> {
 
     Lecturer findByIdAndDelFlagFalse(Integer id);
 
+    Lecturer findByUserIdAndDelFlagFalse(Integer id);
+
     @Query("SELECT CASE WHEN COUNT(l) > 0 THEN true ELSE false END FROM Lecturer l " +
-            "WHERE l.lectureCode = :lecturerCode AND l.delFlag = false")
+            "WHERE l.lecturerCode = :lecturerCode AND l.delFlag = false")
     boolean existsByLecturerCodeAndDelFlagFalse(@Param("lecturerCode") String lecturerCode);
 
 //    @Query("SELECT l FROM Lecturer l " +

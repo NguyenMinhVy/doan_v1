@@ -83,7 +83,7 @@ public class TechnicianController {
     }
 
     @PostMapping("/delete/{technicianId}")
-    public String deleteRoom (@PathVariable("technicianId") int technicianId) {
+    public String deleteTechnician (@PathVariable("technicianId") int technicianId) {
         TechnicianDto technicianDto = technicianService.getTechnicianDtoById(technicianId);
         Technician technician = technicianMapper.technicianDtoToTechnician(technicianDto);
         technician.setDelFlag(true);
@@ -107,25 +107,24 @@ public class TechnicianController {
             TechnicianDto oldTechnicianDto = technicianService.getTechnicianDtoById(technicianDto.getId());
             UserDto oldUserDto = oldTechnicianDto.getUserDto();
             if (!oldUserDto.getName().equals(technicianDto.getUserDto().getName())) {
-                if (userRepository.existsByUsername(oldUserDto.getName())) {
-                    bindingResult.rejectValue("name", "error.name", "Tên đã tồn tại");
-//                } else {
-//                    String username = technicianService.ge()
-//                }
+                if (userRepository.existsByName(technicianDto.getUserDto().getName())) {
+                    bindingResult.rejectValue("userDto.name", "error.name", "Tên đã tồn tại");
                 }
-                // Nếu có lỗi, trả về form `createRoomForm` và hiển thị lỗi
-                if (bindingResult.hasErrors()) {
-                    List<LocationDto> locationDtoList = locationService.getAllLocationsSortedByName();
-
-                    model.addAttribute("locationDtoList", locationDtoList);
-                    return "updateTechnicianForm";
-                }
-                TechnicianDto updatedDto = technicianService.updateTechnician(technicianDto);
-
-                redirectAttributes.addFlashAttribute("message", "Cp nhật thành công!");
-                return "redirect:/technician/list";
-
             }
+            if (!oldTechnicianDto.getTechnicianCode().equals(technicianDto.getTechnicianCode())) {
+                if (technicianRepository.existsByTechnicianCodeAndDelFlagFalse(technicianDto.getTechnicianCode())) {
+                    bindingResult.rejectValue("technicianCode", "error.technicianCode", "Mã đã tồn tại");
+                }
+            }
+            if (bindingResult.hasErrors()) {
+                List<LocationDto> locationDtoList = locationService.getAllLocationsSortedByName();
+
+                model.addAttribute("locationDtoList", locationDtoList);
+                return "updateTechnicianForm";
+            }
+            TechnicianDto updatedDto = technicianService.updateTechnician(technicianDto);
+
+            redirectAttributes.addFlashAttribute("message", "Cập nhật thành công!");
             return "redirect:/technician/list";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi cập nhật");

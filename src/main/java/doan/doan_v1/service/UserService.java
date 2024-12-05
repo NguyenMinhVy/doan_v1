@@ -15,4 +15,8 @@ public interface UserService {
     UserDto findByUsername(String username);
 
     User getCurrentUserInfo();
+
+    boolean isUser(String username, String employeeCode, String fullName);
+
+    boolean updatePassword(String userName, String newPassword);
 }
