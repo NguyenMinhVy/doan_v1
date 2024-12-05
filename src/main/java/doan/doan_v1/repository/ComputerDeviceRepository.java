@@ -9,4 +9,5 @@ public interface ComputerDeviceRepository extends JpaRepository<ComputerDevice, 
 
     List<ComputerDevice> findByComputerId(int computerId);
 
+    void deleteByComputerId(Integer computerId);
 }

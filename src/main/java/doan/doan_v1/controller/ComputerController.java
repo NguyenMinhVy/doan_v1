@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +46,20 @@ public class ComputerController {
     public String getComputerDetail(@PathVariable("computerId") int computerId, Model model) {
         List<DeviceDto> deviceDtoList = deviceService.findAllDeviceDtoByComputerId(computerId);
         List<SoftWareDto> softWareDtoList = softWareService.getSoftWareDtoListByComputerId(computerId);
+
+        List<IncidentDto> incidents = incidentService.getIncidentDtoListByComputerId(computerId);
+        LocalDateTime now = LocalDateTime.now();
+
+        incidents.stream()
+                .filter(incident -> incident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED) // Đang xử lý
+                .filter(incident -> incident.getExpectCompleteDate() != null
+                        && now.isAfter(incident.getExpectCompleteDate()))
+                .forEach(incident -> {
+                    incident.setStatus(Constant.INCIDENT_STATUS.OVERDUE_UNPROCESSED); // Cập nhật thành Đã quá hạn
+                    incidentService.updateIncident(incident);
+                });
+
+        // Lấy lại danh sách sau khi cập nhật
         List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoListByComputerId(computerId);
         List<IncidentDto> incidentDtoListByStatus = new ArrayList<>();
         incidentDtoListByStatus.addAll(incidentService.getIncidentDtoListByStatus(incidentDtoList, Constant.INCIDENT_STATUS.UNPROCESSED));
@@ -174,11 +189,11 @@ public class ComputerController {
 //            }
             computerService.updateComputer(computerDto.getId(), computerDto);
 
-            redirectAttributes.addFlashAttribute("message", "Thêm phòng thành công!");
+            redirectAttributes.addFlashAttribute("message", "Cập nhật phòng thành công!");
             return "redirect:/computer/" + computerDto.getId();
 
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi thêm phòng");
+            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi cập nhật phòng");
             return "redirect:/computer/updateComputer?error=true&computerId=" + computerDto.getId();
         }
 

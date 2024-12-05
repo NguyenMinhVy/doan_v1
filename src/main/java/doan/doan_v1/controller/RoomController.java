@@ -42,7 +42,9 @@ public class RoomController {
 
     @GetMapping(value = "/{roomId}")
     public String getRoomDetail (@PathVariable("roomId") int roomId, Model model) {
+        RoomDto roomDto = roomService.getRoomById(roomId);
         List<ComputerDto> computerDtoList = computerService.getComputerListByRoomId(roomId);
+        model.addAttribute("roomName", roomDto.getName());
         model.addAttribute("computerDtoList", computerDtoList);
         return "roomDetail";
     }
@@ -144,6 +146,11 @@ public class RoomController {
                 roomDto.setRoomTypeDto(oldRoomDto.getRoomTypeDto());
             }
             RoomDto updatedRoom = roomService.updateRoom(roomDto);
+
+            List<ComputerDto> computers = computerService.getComputerListByRoomId(roomDto.getId());
+            for (ComputerDto computer : computers) {
+                computerService.updateComputerNameByRoom(computer.getId(), roomDto.getName());
+            }
 
             redirectAttributes.addFlashAttribute("message", "Thêm phòng thành công!");
             return "redirect:/room/" + updatedRoom.getId();

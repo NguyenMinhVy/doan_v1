@@ -27,6 +27,17 @@
                 <input type="text" class="form-control" th:field="*{computerName}" readonly>
             </div>
 
+            <!-- Hiển thị thông tin thiết bị hoặc phần mềm -->
+            <div class="form-group" th:if="${deviceType != null}">
+                <label>Thiết bị:</label>
+                <input type="text" class="form-control" th:value="${deviceType}" readonly>
+            </div>
+
+            <div class="form-group" th:if="${softwareName != null}">
+                <label>Phần mềm:</label>
+                <input type="text" class="form-control" th:value="${softwareName}" readonly>
+            </div>
+
             <div class="form-group">
                 <label>Người báo cáo:</label>
                 <input type="text" class="form-control" th:field="*{reportUserName}" readonly>

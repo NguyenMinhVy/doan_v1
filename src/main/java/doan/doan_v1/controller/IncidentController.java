@@ -222,14 +222,12 @@ public class IncidentController {
             incidentDto.setReportUser(user.getId());
             incidentDto.setReportUserName(user.getName());
             incidentDto.setReportDate(LocalDateTime.now());
-//            if (incidentDto.getTechnicianDto() == null) {
             ComputerDto computerDto = computerService.getComputerById(incidentDto.getComputerId());
             RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
-            LocationDto locationDto = roomDto.getLocationDto();
-//            TechnicianDto technicianDto = technicianService.getTechnicianDtoListByLocationId(locationDto.getId()).get(0);
-//            incidentDto.setTechnicianDto(technicianDto);
-////            }
+            incidentDto.setLocationId(roomDto.getLocationDto().getId());
+
             IncidentDto createdIncidentDto = incidentService.addIncidentForComputer(incidentDto);
+
             redirectAttributes.addFlashAttribute("message", "Thêm phòng thành công!");
             
             return "redirect:/computer/" + createdIncidentDto.getComputerId();
@@ -275,14 +273,16 @@ public class IncidentController {
             "Việc cá nhân",
             "Khác"
         );
-        
-//        // Kiểm tra nếu kỹ thuật viên hiện tại có quyền xem incident này
-//        if (isTechnician) {
-//            Technician technician = technicianService.findByUserId(currentUser.getId());
-//            if (technician == null || !technician.getId().equals(incident.getTechnicianDto().getId())) {
-//                return "redirect:/incident/list";
-//            }
-//        }
+
+        if (incident.getComputerDeviceId() > 0) {
+            ComputerDeviceDto device = computerDeviceService.getDeviceById(incident.getComputerDeviceId());
+            model.addAttribute("deviceType", device.getType());
+        }
+
+        if (incident.getComputerSoftwareId() > 0) {
+            ComputerSoftwareDto software = computerSoftwareService.getSoftwareById(incident.getComputerSoftwareId());
+            model.addAttribute("softwareName", software.getName());
+        }
 
         model.addAttribute("incident", incident);
         model.addAttribute("isAdmin", isAdmin);

@@ -10,7 +10,6 @@ public interface IncidentService {
 
     List<IncidentDto> getIncidentDtoListBySoftwareId(int softwareId);
 
-
     IncidentDto addIncident(IncidentDto incidentDto);
 
     IncidentDto addIncidentForComputer(IncidentDto incidentDto);
@@ -25,7 +24,10 @@ public interface IncidentService {
 
     void updateIncident(Integer id, IncidentDto incidentDto);
 
+    void updateIncident(IncidentDto incidentDto);
+
     IncidentDto getLatestIncidentByComputerDeviceId(int computerDeviceId);
 
     IncidentDto getLatestIncidentByComputerSoftwareId(int computerSoftwareId);
+
 }

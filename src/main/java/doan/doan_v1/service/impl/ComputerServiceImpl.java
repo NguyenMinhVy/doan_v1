@@ -7,11 +7,13 @@ import doan.doan_v1.mapper.ComputerMapper;
 import doan.doan_v1.repository.ComputerDeviceRepository;
 import doan.doan_v1.repository.ComputerRepository;
 import doan.doan_v1.repository.ComputerSoftWareRepository;
+import doan.doan_v1.repository.IncidentRepository;
 import doan.doan_v1.repository.RoomRepository;
 import doan.doan_v1.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +51,9 @@ public class ComputerServiceImpl implements ComputerService {
     @Autowired
     private RoomTypeService roomTypeService;
 
+    @Autowired
+    private IncidentRepository incidentRepository;
+
     @Override
     public List<ComputerDto> getComputerListByRoomId(int roomId) {
         List<Computer> computerList = computerRepository.findByRoomIdAndDelFlagFalse(roomId);
@@ -60,18 +65,19 @@ public class ComputerServiceImpl implements ComputerService {
 
     @Override
     public ComputerDto getComputerById(int id) {
-//        ComputerDto computerDto = new ComputerDto();
+
         Computer computer = computerRepository.findById(id).orElse(null);
         if (computer == null) {
             return null;
         }
-//        List<DeviceDto> deviceDtos = deviceService.findAllDeviceDtoByComputerId(id);
-//        List<SoftWareDto> softWareDtos = softWareService.getSoftWareDtoListByComputerId(id);
-//
-//        computerDto.setDeviceIdList(deviceDtos.stream().map(DeviceDto::getId).collect(Collectors.toList()));
-//        computerDto.setSoftWareIdList(softWareDtos.stream().map(SoftWareDto::getId).collect(Collectors.toList()));
+        List<DeviceDto> deviceDtos = deviceService.findAllDeviceDtoByComputerId(id);
+        List<SoftWareDto> softWareDtos = softWareService.getSoftWareDtoListByComputerId(id);
 
-        return computerMapper.computerToComputerDto(computer);
+        ComputerDto computerDto = computerMapper.computerToComputerDto(computer);
+        computerDto.setDeviceIdList(deviceDtos.stream().map(DeviceDto::getId).collect(Collectors.toList()));
+        computerDto.setSoftWareIdList(softWareDtos.stream().map(SoftWareDto::getId).collect(Collectors.toList()));
+
+        return computerDto;
     }
 
     @Override
@@ -139,10 +145,8 @@ public class ComputerServiceImpl implements ComputerService {
     }
 
     @Override
+    @Transactional
     public void updateComputer(int id, ComputerDto computerDto) {
-        List<DeviceDto> deviceDtoList = new ArrayList<>();
-        List<SoftWareDto> softwareDtoList = new ArrayList<>();
-
         Computer computer = computerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy máy tính với ID: " + id));
 
@@ -153,32 +157,58 @@ public class ComputerServiceImpl implements ComputerService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng với ID: " + computerDto.getRoomId()));
         computer.setRoomId(room.getId());
 
-        List<Integer> oldComputerDeviceID = computerDeviceRepository.findByComputerId(computer.getId()).stream().map(ComputerDevice::getDeviceId).toList();
-        List<Integer> oldComputerSoftwareID = computerSoftWareRepository.findByComputerId(computer.getId()).stream().map(ComputerSoftware::getSoftwareId).toList();
+        if (computerDto.getStatus() == Constant.STATUS.EMPTY) {
+            // Xóa tất cả thiết bị của máy tính
+            computerDeviceRepository.deleteByComputerId(computer.getId());
 
-        List<ComputerDevice> oldComputerDevicesInactive = computerDeviceRepository.findByComputerId(computer.getId()).stream()
-                .filter(item -> !computerDto.getDeviceIdList().contains(item.getDeviceId())).collect(Collectors.toList());
+            // Xóa tất cả phần mềm của máy tính
+            computerSoftWareRepository.deleteByComputerId(computer.getId());
 
-        List<ComputerSoftware> oldComputerSoftwaresInactive = computerSoftWareRepository.findByComputerId(computer.getId()).stream()
-                .filter(item -> !computerDto.getSoftWareIdList().contains(item.getSoftwareId())).collect(Collectors.toList());
+            // Xóa tất cả sự cố của máy tính
+            incidentRepository.deleteByComputerId(computer.getId());
+        } else {
+            // Xử lý cập nhật thiết bị và phần mềm như bình thường
+            List<DeviceDto> deviceDtoList = new ArrayList<>();
+            List<SoftWareDto> softwareDtoList = new ArrayList<>();
 
-        computerDeviceRepository.deleteAll(oldComputerDevicesInactive);
-        computerSoftWareRepository.deleteAll(oldComputerSoftwaresInactive);
+            List<Integer> oldComputerDeviceID = computerDeviceRepository.findByComputerId(computer.getId())
+                    .stream().map(ComputerDevice::getDeviceId).toList();
+            List<Integer> oldComputerSoftwareID = computerSoftWareRepository.findByComputerId(computer.getId())
+                    .stream().map(ComputerSoftware::getSoftwareId).toList();
 
-        List<Integer> newComputerDeviceId = computerDto.getDeviceIdList().stream().filter(item -> !oldComputerDeviceID.contains(item)).toList();
-        List<Integer> newSoftwareDeviceId = computerDto.getSoftWareIdList().stream().filter(item -> !oldComputerSoftwareID.contains(item)).toList();
+            //handle old device
+            List<ComputerDevice> oldComputerDevicesInactive = computerDeviceRepository.findByComputerId(computer.getId())
+                    .stream()
+                    .filter(item -> !computerDto.getDeviceIdList().contains(item.getDeviceId()))
+                    .collect(Collectors.toList());
+            computerDeviceRepository.deleteAll(oldComputerDevicesInactive);
+            List<Integer> newComputerDeviceId = computerDto.getDeviceIdList().stream()
+                    .filter(item -> !oldComputerDeviceID.contains(item)).toList();
 
-        for (Integer deviceId : newComputerDeviceId) {
-            DeviceDto deviceDto = deviceService.findDeviceDtoById(deviceId);
-            deviceDtoList.add(deviceDto);
+            for (Integer deviceId : newComputerDeviceId) {
+                DeviceDto deviceDto = deviceService.findDeviceDtoById(deviceId);
+                deviceDtoList.add(deviceDto);
+            }
+
+            ////handle old software
+            if (!computerDto.getSoftWareIdList().isEmpty()){
+                List<ComputerSoftware> oldComputerSoftwaresInactive = computerSoftWareRepository.findByComputerId(computer.getId())
+                        .stream()
+                        .filter(item -> !computerDto.getSoftWareIdList().contains(item.getSoftwareId()))
+                        .collect(Collectors.toList());
+
+                computerSoftWareRepository.deleteAll(oldComputerSoftwaresInactive);
+                List<Integer> newSoftwareDeviceId = computerDto.getSoftWareIdList().stream()
+                        .filter(item -> !oldComputerSoftwareID.contains(item)).toList();
+                for (Integer softWareId : newSoftwareDeviceId) {
+                    SoftWareDto softWareDto = softWareService.getSoftWareDtoById(softWareId);
+                    softwareDtoList.add(softWareDto);
+                }
+            }
+
+            saveComputerDeviceList(deviceDtoList, computer);
+            saveComputerSoftwareList(softwareDtoList, computer);
         }
-        for (Integer softWareId : newSoftwareDeviceId) {
-            SoftWareDto softWareDto = softWareService.getSoftWareDtoById(softWareId);
-            softwareDtoList.add(softWareDto);
-        }
-
-        saveComputerDeviceList(deviceDtoList, computer);
-        saveComputerSoftwareList(softwareDtoList, computer);
 
         computerRepository.save(computer);
     }
@@ -210,6 +240,22 @@ public class ComputerServiceImpl implements ComputerService {
         Computer computer = computerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy máy tính với ID: " + id));
         computer.setDelFlag(true);
+        computerRepository.save(computer);
+    }
+
+    @Override
+    public void updateComputerNameByRoom(Integer computerId, String newRoomName) {
+        Computer computer = computerRepository.findById(computerId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy máy tính"));
+
+        // Lấy số thứ tự từ tên máy hiện tại (2 chữ số cuối)
+        String currentName = computer.getName();
+        String numberPart = currentName.substring(currentName.length() - 2);
+
+        // Tạo tên máy mới theo format: [Tên phòng không có dấu chấm]M[Số thứ tự]
+        String newComputerName = newRoomName.replace(".", "") + "M" + numberPart;
+
+        computer.setName(newComputerName);
         computerRepository.save(computer);
     }
 

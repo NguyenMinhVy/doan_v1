@@ -12,6 +12,8 @@ import java.util.Optional;
 @Repository
 public interface ComputerSoftWareRepository extends JpaRepository<ComputerSoftware, Integer> {
 
+    void deleteByComputerId(Integer computerId);
+
     List<ComputerSoftware> findByComputerId(int computerId);
 
     Optional<ComputerSoftware> findById(Integer id);

@@ -209,6 +209,12 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
+    public void updateIncident(IncidentDto incidentDto) {
+        Incident incident = incidentMapper.incidentDtoToIncident(incidentDto);
+        incidentRepository.save(incident);
+    }
+
+    @Override
     public IncidentDto getLatestIncidentByComputerDeviceId(int computerDeviceId) {
         Optional<Incident> latestIncident = incidentRepository
             .findTopByComputerDeviceIdOrderByReportDateDesc(computerDeviceId);
@@ -223,5 +229,10 @@ public class IncidentServiceImpl implements IncidentService {
         
         return latestIncident.map(incidentMapper::incidentToIncidentDto).orElse(null);
     }
+
+//    @Override
+//    public List<IncidentDto> getIncidentsByComputerId(int computerId) {
+//        return List.of();
+//    }
 
 }

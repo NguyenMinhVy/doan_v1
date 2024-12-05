@@ -19,4 +19,6 @@ public interface ComputerService {
     void updateComputer(int id, ComputerDto computerDto);
 
     void deleteComputer(int id);
+
+    void updateComputerNameByRoom(Integer computerId, String newRoomName);
 }

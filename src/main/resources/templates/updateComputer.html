@@ -76,7 +76,8 @@
         <!-- Chọn phần mềm -->
         <div class="form-group">
             <label for="software">Phần mềm:</label>
-            <select id="software" name="softWareIdList" class="form-control" multiple>
+            <select id="software" name="softWareIdList" class="form-control" multiple
+                    th:field="*{softWareIdList}">
                 <option th:each="software : ${softWareDtoList}"
                         th:value="${software.id}"
                         th:text="${software.name}"></option>

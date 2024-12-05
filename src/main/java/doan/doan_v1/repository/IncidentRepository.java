@@ -22,4 +22,5 @@ public interface IncidentRepository extends JpaRepository<Incident, Integer> {
 
     Optional<Incident> findTopByComputerSoftwareIdOrderByReportDateDesc(int computerSoftwareId);
 
+    void deleteByComputerId(Integer computerId);
 }
