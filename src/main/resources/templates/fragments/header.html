@@ -30,6 +30,7 @@
                     <li><a th:href="@{/lecturer/create}">Thêm giảng viên</a></li>
                 </ul>
             </li>
+            <li sec:authorize="hasAuthority('ADMIN')"><a th:href="@{/statistics/list}">Thống kê</a></li>
         </ul>
         <div class="header-user-info">
             <span th:text="${#authentication.name}">Tên Người Dùng</span>
