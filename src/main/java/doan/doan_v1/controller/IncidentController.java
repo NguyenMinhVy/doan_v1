@@ -80,7 +80,18 @@ public class IncidentController {
             @RequestParam(required = false) Integer technicianId,
             Model model) {
         
-             List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoList();
+        List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoList();
+        
+        // Kiểm tra và cập nhật trạng thái cho các incident quá hạn
+        LocalDateTime now = LocalDateTime.now();
+        incidentDtoList.forEach(incident -> {
+            if ((incident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED )
+                && incident.getExpectCompleteDate() != null 
+                && incident.getExpectCompleteDate().isBefore(now)) {
+                incident.setStatus(Constant.INCIDENT_STATUS.OVERDUE_UNPROCESSED);
+                incidentService.updateIncident(incident.getId(), incident);
+            }
+        });
         
         // Lọc theo locationId
         if (locationId != null) {
@@ -166,13 +177,13 @@ public class IncidentController {
             incidentDto.setReportUser(user.getId());
             incidentDto.setReportUserName(user.getName());
             incidentDto.setReportDate(LocalDateTime.now());
-            if (incidentDto.getTechnicianDto() == null) {
-                ComputerDto computerDto = computerService.getComputerById(incidentDto.getComputerId());
-                RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
-                LocationDto locationDto= roomDto.getLocationDto();
-                TechnicianDto technicianDto = technicianService.getTechnicianDtoListByLocationId(locationDto.getId()).get(0);
-                incidentDto.setTechnicianDto(technicianDto);
-            }
+//            if (incidentDto.getTechnicianDto() == null) {
+            ComputerDto computerDto = computerService.getComputerById(incidentDto.getComputerId());
+            RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
+            LocationDto locationDto = roomDto.getLocationDto();
+            TechnicianDto technicianDto = technicianService.getTechnicianDtoListByLocationId(locationDto.getId()).get(0);
+            incidentDto.setTechnicianDto(technicianDto);
+//            }
             IncidentDto createdIncidentDto = incidentService.addIncidentForComputer(incidentDto);
             redirectAttributes.addFlashAttribute("message", "Thêm phòng thành công!");
             return "redirect:/computer/" + createdIncidentDto.getComputerId();
@@ -242,44 +253,60 @@ public class IncidentController {
 
     @PostMapping("/update/{id}")
     public String updateIncident(@PathVariable Integer id, 
-                               @ModelAttribute IncidentDto incidentDto) {
-        User currentUser = getRoleCurrentUser();
-        boolean isAdmin = false;
-        boolean isTechnician = false;
-        if (currentUser.getRoleId() == Constant.ROLE_ID.ROLE_ADMIN){
-            isAdmin = true;
+                           @ModelAttribute IncidentDto incidentDto,
+                           RedirectAttributes redirectAttributes) {
+        // Lấy incident hiện tại
+        IncidentDto currentIncident = incidentService.getIncidentDtoById(id);
+        if (currentIncident == null) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy sự cố");
+            return "redirect:/incident/list";
         }
 
-        if (currentUser.getRoleId() == Constant.ROLE_ID.ROLE_TECHNICIAN){
-            isTechnician = true;
-        }
+        // Kiểm tra quyền truy cập
+        User currentUser = getRoleCurrentUser();
+        boolean isAdmin = currentUser.getRoleId() == Constant.ROLE_ID.ROLE_ADMIN;
+        boolean isTechnician = currentUser.getRoleId() == Constant.ROLE_ID.ROLE_TECHNICIAN;
         
         if (!isAdmin && !isTechnician) {
             return "redirect:/incident/list";
         }
 
-        // Lấy incident hiện tại
-        IncidentDto currentIncident = incidentService.getIncidentDtoById(id);
-        if (currentIncident == null) {
-            return "redirect:/incident/list";
-        }
-
-        // Kiểm tra nếu quá hạn
+        // Kiểm tra thời hạn
         boolean isOverdue = currentIncident.getExpectCompleteDate().isBefore(LocalDateTime.now());
-        if (isOverdue && incidentDto.getStatus() != 5) { // 5 là trạng thái "Đã hoàn thành nhưng quá hạn"
-            return "redirect:/incident/update/" + id + "?error=overdue";
-        }
-
-        // Nếu là technician, chỉ cho phép update status và lý do
-        if (isTechnician) {
-            incidentDto.setTechnicianDto(currentIncident.getTechnicianDto());
+        
+        // Validate trạng thái
+        if (isOverdue) {
+            if (currentIncident.getStatus() == 4 && incidentDto.getStatus() != 2) {
+                redirectAttributes.addFlashAttribute("error", "Chỉ có thể chuyển sang trạng thái Đang xử lý");
+                return "redirect:/incident/update/" + id;
+            }
+            if (currentIncident.getStatus() == 2 && incidentDto.getStatus() != 5) {
+                redirectAttributes.addFlashAttribute("error", "Chỉ có thể chuyển sang trạng thái Đã hoàn thành nhưng quá hạn");
+                return "redirect:/incident/update/" + id;
+            }
+        } else {
+            if (currentIncident.getStatus() == 1 && incidentDto.getStatus() != 2) {
+                redirectAttributes.addFlashAttribute("error", "Từ trạng thái Chưa xử lý chỉ có thể chuyển sang Đang xử lý");
+                return "redirect:/incident/update/" + id;
+            }
+            if (currentIncident.getStatus() == 2 && incidentDto.getStatus() != 3) {
+                redirectAttributes.addFlashAttribute("error", "Từ trạng thái Đang xử lý chỉ có thể chuyển sang Đã hoàn thành");
+                return "redirect:/incident/update/" + id;
+            }
         }
 
         try {
+            // Cập nhật thời gian hoàn thành nếu cần
+            if (incidentDto.getStatus() == 3 || incidentDto.getStatus() == 5) {
+                incidentDto.setCompletedDate(LocalDateTime.now());
+            }
+            
             incidentService.updateIncident(id, incidentDto);
-            return "redirect:/incident/list?success=true";
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thành công");
+            return "redirect:/incident/list";
         } catch (Exception e) {
-            return "redirect:/incident/update/" + id + "?error=true";
+            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi cập nhật");
+            return "redirect:/incident/update/" + id;
         }
     }
 

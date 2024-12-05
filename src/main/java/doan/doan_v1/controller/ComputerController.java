@@ -49,6 +49,7 @@ public class ComputerController {
         List<IncidentDto> incidentDtoListByStatus = new ArrayList<>();
         incidentDtoListByStatus.addAll(incidentService.getIncidentDtoListByStatus(incidentDtoList, Constant.INCIDENT_STATUS.UNPROCESSED));
         incidentDtoListByStatus.addAll(incidentService.getIncidentDtoListByStatus(incidentDtoList, Constant.INCIDENT_STATUS.PROCESSING));
+        incidentDtoListByStatus.addAll(incidentService.getIncidentDtoListByStatus(incidentDtoList, Constant.INCIDENT_STATUS.OVERDUE_UNPROCESSED));
         incidentDtoListByStatus.sort((o1, o2) -> Long.compare(o2.getId(), o1.getId()));
         model.addAttribute("softWareDtoList", softWareDtoList);
         model.addAttribute("deviceDtoList", deviceDtoList);

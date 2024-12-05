@@ -15,4 +15,6 @@ public interface IncidentRepository extends JpaRepository<Incident, Integer> {
 
     List<Incident> findByComputerIdAndDelFlagFalse(int softwareId);
 
+    List<Incident> findAllByComputerIdAndDelFlagFalse(int computerId);
+
 }

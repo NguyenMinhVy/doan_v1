@@ -54,7 +54,8 @@
             <!-- Phần có thể cập nhật -->
             <div class="form-group" th:if="${isAdmin}">
                 <label>Kỹ thuật viên:</label>
-                <select class="form-control" th:field="*{technicianDto.id}">
+                <select class="form-control" th:field="*{technicianDto.id}" 
+                        th:disabled="${incident.status == 3 || incident.status == 4 || incident.status == 5}">
                     <option th:each="tech : ${technicianList}"
                             th:value="${tech.id}"
                             th:text="${tech.userDto.name}">
@@ -64,19 +65,28 @@
 
             <div class="form-group">
                 <label>Trạng thái:</label>
-                <select class="form-control" th:field="*{status}" 
-                        th:disabled="${!isAdmin && isOverdue && status != 4}"
-                        onchange="handleStatusChange(this.value)">
-                    <option value="1">Chưa xử lý</option>
-                    <option value="2">Đang xử lý</option>
-                    <option value="3">Đã hoàn thành</option>
-                    <option value="5" th:if="${isOverdue}">Đã hoàn thành nhưng quá hạn</option>
+                <select class="form-control" th:field="*{status}" id="statusSelect" 
+                        th:disabled="${incident.status == 5}">
+                    <option th:if="${incident.status == 1}" value="1">Chưa xử lý</option>
+                    <option th:if="${incident.status == 2}" value="2">Đang xử lý</option>
+                    <option th:if="${incident.status == 3}" value="3">Đã hoàn thành</option>
+                    <option th:if="${incident.status == 4}" value="4">Quá hạn nhưng chưa hoàn thành</option>
+                    <option th:if="${incident.status == 5}" value="5">Đã hoàn thành nhưng quá hạn</option>
+
+                    <option th:if="${incident.status == 1}" value="2">Đang xử lý</option>
+                    <option th:if="${!isOverdue && incident.status == 2}" value="3">Đã hoàn thành</option>
+                    <option th:if="${isOverdue && incident.status == 2}" value="5">Đã hoàn thành nhưng quá hạn</option>
+                    <option th:if="${isOverdue && incident.status == 4}" value="2">Đang xử lý</option>
                 </select>
+                <small class="text-muted" th:if="${incident.status == 5}">
+                    Sự cố đã được hoàn thành, không thể thay đổi trạng thái.
+                </small>
             </div>
 
-            <div class="form-group" th:if="${status == 1}">
+            <div class="form-group" th:if="${incident.status == 1}">
                 <label>Lý do chưa xử lý:</label>
-                <select class="form-control" th:field="*{unprocessedReason}">
+                <select class="form-control" th:field="*{unprocessedReason}" 
+                        th:disabled="${incident.status == 5}">
                     <option value="">-- Chọn lý do --</option>
                     <option th:each="reason : ${unprocessedReasons}"
                             th:value="${reason}"
@@ -88,7 +98,8 @@
             <!-- Thêm combobox lý do trễ hạn -->
             <div class="form-group" th:if="${isOverdue}">
                 <label>Lý do trễ hạn:</label>
-                <select class="form-control" th:field="*{unprocessedReason}">
+                <select class="form-control" th:field="*{unprocessedReason}" 
+                        th:disabled="${incident.status == 5}">
                     <option value="">-- Chọn lý do trễ hạn --</option>
                     <option value="Chờ thiết bị">Chờ thiết bị</option>
                     <option value="Lý do cá nhân">Lý do cá nhân</option>
@@ -107,15 +118,56 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 
     <!-- Thêm script ở cuối file, trước closing body tag -->
-    <script>
-    function handleStatusChange(status) {
-        // Nếu trạng thái là "Đã hoàn thành" (3) hoặc "Đã hoàn thành nhưng quá hạn" (5)
-        if (status === '3' || status === '5') {
-            document.getElementById('shouldUpdateCompletedDate').value = 'true';
-        } else {
-            document.getElementById('shouldUpdateCompletedDate').value = 'false';
-        }
-    }
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const isOverdue = [[${isOverdue}]];
+            const currentStatus = [[${incident.status}]];
+            const statusSelect = document.getElementById('statusSelect');
+
+            // Disable select nếu không có option nào được hiển thị
+            if (statusSelect.options.length <= 1) {
+                statusSelect.disabled = true;
+            }
+
+            statusSelect.addEventListener('change', function(e) {
+                const newStatus = parseInt(e.target.value);
+                
+                // Nếu đã quá hạn
+                if (isOverdue) {
+                    if (currentStatus === 4) { // Quá hạn nhưng chưa hoàn thành
+                        if (newStatus !== 2) { // Chỉ cho phép chuyển sang Đang xử lý
+                            e.preventDefault();
+                            alert('Chỉ có thể chuyển sang trạng thái Đang xử lý');
+                            statusSelect.value = currentStatus;
+                        }
+                    } else if (currentStatus === 2) { // Đang xử lý
+                        if (newStatus !== 5) { // Chỉ cho phép chuyển sang Đã hoàn thành nhưng quá hạn
+                            e.preventDefault();
+                            alert('Chỉ có thể chuyển sang trạng thái Đã hoàn thành nhưng quá hạn');
+                            statusSelect.value = currentStatus;
+                        }
+                    }
+                } else {
+                    // Nếu chưa quá hạn
+                    if (currentStatus === 1 && newStatus !== 2) {
+                        e.preventDefault();
+                        alert('Từ trạng thái Chưa xử lý chỉ có thể chuyển sang Đang xử lý');
+                        statusSelect.value = currentStatus;
+                    } else if (currentStatus === 2 && newStatus !== 3) {
+                        e.preventDefault();
+                        alert('Từ trạng thái Đang xử lý chỉ có thể chuyển sang Đã hoàn thành');
+                        statusSelect.value = currentStatus;
+                    }
+                }
+
+                // Cập nhật shouldUpdateCompletedDate
+                if (newStatus === 3 || newStatus === 5) {
+                    document.getElementById('shouldUpdateCompletedDate').value = 'true';
+                } else {
+                    document.getElementById('shouldUpdateCompletedDate').value = 'false';
+                }
+            });
+        });
     </script>
 </body>
 </html> 
