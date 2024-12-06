@@ -257,9 +257,9 @@ public class IncidentController {
             isTechnician = true;
         }
         
-        if (!isAdmin && !isTechnician) {
-            return "redirect:/incident/list";
-        }
+//        if (!isAdmin && !isTechnician) {
+//            return "redirect:/incident/list";
+//        }
 
         if (isAdmin) {
             // Nếu là admin, thêm danh sách kỹ thuật viên để có thể chọn

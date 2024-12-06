@@ -44,6 +44,9 @@ public class ComputerController {
 
     @GetMapping("/{computerId}")
     public String getComputerDetail(@PathVariable("computerId") int computerId, Model model) {
+        ComputerDto computer = computerService.getComputerById(computerId);
+        model.addAttribute("computer", computer);
+
         List<DeviceDto> deviceDtoList = deviceService.findAllDeviceDtoByComputerId(computerId);
         List<SoftWareDto> softWareDtoList = softWareService.getSoftWareDtoListByComputerId(computerId);
 

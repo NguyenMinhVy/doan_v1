@@ -66,12 +66,15 @@
             <div class="form-group" th:if="${isAdmin}">
                 <label>Kỹ thuật viên:</label>
                 <select class="form-control" th:field="*{technicianDto.id}" 
-                        th:disabled="${incident.status == 3 || incident.status == 4 || incident.status == 5}">
+                        th:disabled="${!isAdmin}">
                     <option th:each="tech : ${technicianList}"
                             th:value="${tech.id}"
                             th:text="${tech.userDto.name}">
                     </option>
                 </select>
+                <small class="text-muted" th:if="${!isAdmin}">
+                    Chỉ Admin mới có quyền thay đổi kỹ thuật viên phụ trách.
+                </small>
             </div>
 
             <div class="form-group">
@@ -121,8 +124,11 @@
             <!-- Thêm hidden input để gửi thông tin về thời gian hoàn thành -->
             <input type="hidden" id="shouldUpdateCompletedDate" name="shouldUpdateCompletedDate" value="false">
 
-            <button type="submit" class="btn btn-primary">Cập nhật</button>
-            <a th:href="@{/incident/list}" class="btn btn-secondary">Quay lại</a>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary"
+                        th:if="${isAdmin || isTechnician}">Cập nhật</button>
+                <a th:href="@{/incident/list}" class="btn btn-secondary">Quay lại</a>
+            </div>
         </form>
     </div>
 

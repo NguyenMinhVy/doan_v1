@@ -19,7 +19,7 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <div class="container mt-5">
-    <h1 class="text-center">Chi tiết Máy Tính</h1>
+    <h1 class="text-center" th:text="${computer.name}">Chi tiết Máy Tính</h1>
     <div class="status-legend" style="display: flex; padding: 15px">
         <p style="padding: 15px"><span class="status-badge yellow-border"></span>Chưa xử lý</p>
         <p style="padding: 15px"><span class="status-badge blue-border"></span>Đang xử lý</p>

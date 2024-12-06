@@ -180,7 +180,7 @@ public class IncidentServiceImpl implements IncidentService {
         if (incidentDto.getTechnicianId() != 0) {
             Technician technician = technicianRepository.findById(incidentDto.getTechnicianId())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy kỹ thuật viên"));
-            incident.setTechnicianId(technician.getUserId());
+            incident.setTechnicianId(technician.getId());
         }
         
         // Cập nhật thời gian hoàn thành nếu trạng thái là đã hoàn thành
