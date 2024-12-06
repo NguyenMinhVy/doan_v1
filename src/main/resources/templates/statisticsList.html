@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <title>Thống Kê Báo Cáo Sự Cố</title>
+    <style>
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e0f7fa;
+        }
+
+        td {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<h1>Thống Kê Báo Cáo Sự Cố</h1>
+
+<!-- Form lọc -->
+<div style="text-align: center; margin-bottom: 20px;">
+    <form action="#" method="get">
+        <!-- Trường Location -->
+        <select name="locationId" style="padding: 5px; width: 200px;" th:value="${locationId}">
+            <option value="">Chọn địa điểm</option>
+            <!-- Duyệt qua danh sách các vị trí -->
+            <option th:each="location : ${locations}"
+                    th:value="${location.id}"
+                    th:text="${location.name}"
+                    th:selected="${location.id == locationId}">Địa điểm</option>
+        </select>
+
+        <!-- Trường Tên kỹ thuật viên -->
+        <input type="text" name="technicianName" placeholder="Tìm tên kỹ thuật viên"
+               style="padding: 5px; width: 200px;" th:value="${technicianName}">
+
+        <!-- Trường Ngày bắt đầu -->
+        <input type="date" name="startDate" style="padding: 5px;" th:value="${startDate}">
+
+        <!-- Trường Ngày kết thúc -->
+        <input type="date" name="endDate" style="padding: 5px;" th:value="${endDate}">
+
+        <button type="submit" class="btn btn-primary">Lọc</button>
+    </form>
+</div>
+
+<!-- Bảng thống kê -->
+<table>
+    <thead>
+    <tr>
+        <th>Tên Kỹ Thuật Viên</th>
+        <th>Tổng Số Sự Cố</th>
+        <th>Chưa Xử Lý</th>
+        <th>Đang Xử Lý</th>
+        <th>Đã Xử Lý</th>
+        <th>Quá Hạn Chưa Xử Lý</th>
+        <th>Quá Hạn Đã Xử Lý</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="stat : ${statisticsList}">
+        <td th:text="${stat.technicianName}">Tên Kỹ Thuật Viên</td>
+        <td th:text="${stat.totalIncidents}">0</td>
+        <td th:text="${stat.unprocessed}">0</td>
+        <td th:text="${stat.processing}">0</td>
+        <td th:text="${stat.processed}">0</td>
+        <td th:text="${stat.overdueUnprocessed}">0</td>
+        <td th:text="${stat.overdueProcessed}">0</td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

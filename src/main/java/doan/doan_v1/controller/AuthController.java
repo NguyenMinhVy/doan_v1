@@ -118,7 +118,7 @@ public class AuthController {
             boolean isUpdated = userService.updatePassword(username, newPassword);
             if (isUpdated) {
                 model.addAttribute("message", "Cập nhật thành công.");
-                return "login";
+                return  "redirect:/login;";
             } else {
                 model.addAttribute("error", "Cập nhật thất bại.");
                 return "update-password";
