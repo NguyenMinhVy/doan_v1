@@ -54,20 +54,18 @@
             <!-- Kỹ thuật viên phụ trách -->
             <div class="form-group" sec:authorize="hasAuthority('ADMIN')">
                 <label>Kỹ thuật viên phụ trách:</label>
-                <select class="form-control" name="technicianId">
+                <select class="form-control" th:field="*{technicianId}">
                     <option value="">-- Chọn kỹ thuật viên --</option>
                     <option th:each="tech : ${technicianDtoList}"
                             th:value="${tech.id}"
-                            th:text="${tech.userDto.name}"
-                            th:selected="${tech.id == technicianDto.id}">
+                            th:text="${tech.userDto.name}">
                     </option>
-                </select>s
+                </select>
             </div>
 
             <div class="form-group" sec:authorize="!hasAuthority('ADMIN')">
                 <label>Kỹ thuật viên phụ trách:</label>
-                <select class="form-control" th:field="*{technicianDto.id}" disabled>
-                    <!-- Mặc định kỹ thuật viên phụ trách là kỹ thuật viên hiện tại -->
+                <select class="form-control" th:field="*{technicianId}">
                     <option th:value="${technicianDto.id}"
                             th:text="${technicianDto.userDto.name}"
                             selected></option>

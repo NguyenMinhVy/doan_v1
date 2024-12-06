@@ -196,7 +196,7 @@ h1, h2 {
 /* Định dạng cho các thẻ a để trông giống văn bản */
 a {
     color: black; /* Màu xanh */
-    text-decoration: none; /* Loại bỏ gạch chân */
+    text-decoration: none; /* Lo���i bỏ gạch chân */
 }
 
 a:hover {
@@ -787,4 +787,60 @@ html, body {
 .form-check:hover .form-check-label {
     color: #007bff;
     cursor: pointer;
+}
+
+/* CSS cho computer card */
+.computer-card {
+    position: relative;
+}
+
+/* Trạng thái của máy tính */
+.computer-card.normal {
+    background-color: #e8f5e9;
+    border: 2px solid #28a745;
+    border-radius: 8px;
+    width: 120px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.computer-card.error {
+    background-color: #ffebee;
+    border: 2px solid #dc3545;
+    border-radius: 8px;
+    width: 120px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Style cho tiêu đề máy tính */
+.computer-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+/* Style cho các nút */
+.delete-computer, .update-computer {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
+    position: absolute !important;
+    top: -12px !important;
+    padding: 0 !important;
+    border: none !important;
+    z-index: 1;
+}
+
+.delete-computer {
+    right: -12px !important;
+    background-color: #A67B5B !important;
+}
+
+.update-computer {
+    right: 20px !important;
+    background-color: #6B5B95 !important;
 }
