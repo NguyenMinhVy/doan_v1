@@ -163,6 +163,7 @@ public class IncidentServiceImpl implements IncidentService {
         String computerName = computerService.getComputerById(incident.getComputerId()).getName();
         incidentDto.setComputerName(computerName);
         incidentDto.setTechnicianId(technicianDto.getId());
+        incidentDto.setTechnicianDto(technicianDto);
         return incidentDto;
     }
 

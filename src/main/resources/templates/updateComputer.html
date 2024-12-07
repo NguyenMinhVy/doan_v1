@@ -32,8 +32,7 @@
         <div class="form-group">
             <label for="status">Trạng thái</label>
             <select id="status" class="form-control" required th:field="*{status}">
-                <option value="1" th:selected="${computerDto.status == 1}">Tôt</option>
-                <option value="2" th:selected="${computerDto.status == 2}">Lỗi</option>
+                <option value="1" th:selected="${computerDto.status == 1}">Tốt</option>
                 <option value="3" th:selected="${computerDto.status == 3}">Trống</option>
             </select>
         </div>

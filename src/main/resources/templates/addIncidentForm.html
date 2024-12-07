@@ -55,7 +55,7 @@
             <div class="form-group" sec:authorize="hasAuthority('ADMIN')">
                 <label>Kỹ thuật viên phụ trách:</label>
                 <select class="form-control" th:field="*{technicianId}">
-                    <option value="">-- Chọn kỹ thuật viên --</option>
+                    <option value=0>-- Chọn kỹ thuật viên --</option>
                     <option th:each="tech : ${technicianDtoList}"
                             th:value="${tech.id}"
                             th:text="${tech.userDto.name}">
@@ -63,17 +63,17 @@
                 </select>
             </div>
 
-            <div class="form-group" sec:authorize="!hasAuthority('ADMIN')">
-                <label>Kỹ thuật viên phụ trách:</label>
-                <select class="form-control" th:field="*{technicianId}">
-                    <option th:value="${technicianDto.id}"
-                            th:text="${technicianDto.userDto.name}"
-                            selected></option>
+<!--            <div class="form-group" sec:authorize="!hasAuthority('ADMIN')">-->
+<!--                <label>Kỹ thuật viên phụ trách:</label>-->
+<!--                <select class="form-control" th:field="*{technicianId}">-->
+<!--                    <option th:value="${technicianDto.id}"-->
+<!--                            th:text="${technicianDto.userDto.name}"-->
+<!--                            selected></option>-->
 
-                    <!-- Hiển thị một lựa chọn không thể chọn cho người dùng không phải ADMIN -->
-                    <option th:value="${technicianDto.id}" th:text="${technicianDto.userDto.name}" disabled></option>
-                </select>
-            </div>
+<!--                    &lt;!&ndash; Hiển thị một lựa chọn không thể chọn cho người dùng không phải ADMIN &ndash;&gt;-->
+<!--                    <option th:value="${technicianDto.id}" th:text="${technicianDto.userDto.name}" disabled></option>-->
+<!--                </select>-->
+<!--            </div>-->
 
             <div class="form-group">
                 <label>Thiết bị bị lỗi:</label>

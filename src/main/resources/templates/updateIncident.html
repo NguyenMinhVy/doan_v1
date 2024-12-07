@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>Cập nhật sự cố</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -65,17 +65,32 @@
             <!-- Phần có thể cập nhật -->
             <div class="form-group" th:if="${isAdmin}">
                 <label>Kỹ thuật viên:</label>
-                <select class="form-control" th:field="*{technicianDto.id}" 
+                <select class="form-control" th:field="*{technicianDto.id}"
                         th:disabled="${!isAdmin}">
                     <option th:each="tech : ${technicianList}"
                             th:value="${tech.id}"
-                            th:text="${tech.userDto.name}">
+                            th:text="${tech.userDto.name}"
+                            th:selected="${tech.id == incident.technicianDto.id}">
                     </option>
                 </select>
                 <small class="text-muted" th:if="${!isAdmin}">
                     Chỉ Admin mới có quyền thay đổi kỹ thuật viên phụ trách.
                 </small>
             </div>
+
+<!--            <div class="form-group" sec:authorize="hasAuthority('ADMIN')">-->
+<!--                <label>Kỹ thuật viên phụ trách:</label>-->
+<!--                <select class="form-control" th:field="*{technicianId}">-->
+<!--                    <option value="">&#45;&#45; Chọn kỹ thuật viên &#45;&#45;</option>-->
+<!--                    <option th:each="tech : ${technicianDtoList}"-->
+<!--                            th:value="${tech.id}"-->
+<!--                            th:text="${tech.userDto.name}">-->
+<!--                    </option>-->
+<!--                </select>-->
+<!--                <small class="text-muted" th:if="${!isAdmin}">&ndash;&gt;-->
+<!--                                        Chỉ Admin mới có quyền thay đổi kỹ thuật viên phụ trách.-->
+<!--                                    </small>-->
+<!--            </div>-->
 
             <div class="form-group">
                 <label>Trạng thái:</label>

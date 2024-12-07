@@ -331,7 +331,7 @@ public class IncidentController {
                 return "redirect:/incident/update/" + id;
             }
         } else {
-            if (currentIncident.getStatus() == 1 && incidentDto.getStatus() != 2) {
+            if (currentIncident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED && incidentDto.getStatus() != 2) {
                 redirectAttributes.addFlashAttribute("error", "Từ trạng thái Chưa xử lý chỉ có thể chuyển sang Đang xử lý");
                 return "redirect:/incident/update/" + id;
             }
@@ -346,7 +346,8 @@ public class IncidentController {
             if (incidentDto.getStatus() == 3 || incidentDto.getStatus() == 5) {
                 incidentDto.setCompletedDate(LocalDateTime.now());
             }
-            
+
+            incidentDto.setTechnicianId(incidentDto.getTechnicianDto().getId());
             incidentService.updateIncident(id, incidentDto);
             redirectAttributes.addFlashAttribute("success", "Cập nhật thành công");
             return "redirect:/incident/list";
