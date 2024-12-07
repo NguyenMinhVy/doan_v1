@@ -63,17 +63,17 @@
                 </select>
             </div>
 
-<!--            <div class="form-group" sec:authorize="!hasAuthority('ADMIN')">-->
-<!--                <label>Kỹ thuật viên phụ trách:</label>-->
-<!--                <select class="form-control" th:field="*{technicianId}">-->
-<!--                    <option th:value="${technicianDto.id}"-->
-<!--                            th:text="${technicianDto.userDto.name}"-->
-<!--                            selected></option>-->
+            <div class="form-group" sec:authorize="!hasAuthority('ADMIN')">
+                <label>Kỹ thuật viên phụ trách:</label>
+                <select class="form-control" th:field="*{technicianId}">
+                    <option th:value="${technicianDto.id}"
+                            th:text="${technicianDto.userDto.name}"
+                            selected></option>
 
-<!--                    &lt;!&ndash; Hiển thị một lựa chọn không thể chọn cho người dùng không phải ADMIN &ndash;&gt;-->
-<!--                    <option th:value="${technicianDto.id}" th:text="${technicianDto.userDto.name}" disabled></option>-->
-<!--                </select>-->
-<!--            </div>-->
+                    <!-- Hiển thị một lựa chọn không thể chọn cho người dùng không phải ADMIN -->
+                    <option th:value="${technicianDto.id}" th:text="${technicianDto.userDto.name}" disabled></option>
+                </select>
+            </div>
 
             <div class="form-group">
                 <label>Thiết bị bị lỗi:</label>
