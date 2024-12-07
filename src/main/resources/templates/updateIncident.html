@@ -9,6 +9,12 @@
     <div th:replace="~{fragments/header :: header}"></div>
 
     <div class="container mt-5">
+        <div th:if="${success}" class="alert alert-success" role="alert">
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <span th:text="${error}"></span>
+        </div>
         <h2>Cập nhật sự cố</h2>
         
         <div class="alert alert-danger" th:if="${param.error == 'overdue'}">
@@ -81,7 +87,7 @@
 <!--            <div class="form-group" sec:authorize="hasAuthority('ADMIN')">-->
 <!--                <label>Kỹ thuật viên phụ trách:</label>-->
 <!--                <select class="form-control" th:field="*{technicianId}">-->
-<!--                    <option value="">&#45;&#45; Chọn kỹ thuật viên &#45;&#45;</option>-->
+<!--                    <option value=0>&#45;&#45; Chọn kỹ thuật viên &#45;&#45;</option>-->
 <!--                    <option th:each="tech : ${technicianDtoList}"-->
 <!--                            th:value="${tech.id}"-->
 <!--                            th:text="${tech.userDto.name}">-->
