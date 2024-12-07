@@ -141,7 +141,9 @@
 
             <div class="form-group">
                 <button type="submit" class="btn btn-primary"
-                        th:if="${isAdmin || isTechnician}">Cập nhật</button>
+                        th:if="${isAdmin || (isTechnician && incident.technicianDto.id == currentTechnicianId)}">
+                    Cập nhật
+                </button>
                 <a th:href="@{/incident/list}" class="btn btn-secondary">Quay lại</a>
             </div>
         </form>
@@ -187,7 +189,7 @@
                         statusSelect.value = currentStatus;
                     } else if (currentStatus === 2 && newStatus !== 3) {
                         e.preventDefault();
-                        alert('Từ trạng thái Đang xử lý chỉ có thể chuyển sang Đã hoàn thành');
+                        alert('T�� trạng thái Đang xử lý chỉ có thể chuyển sang Đã hoàn thành');
                         statusSelect.value = currentStatus;
                     }
                 }

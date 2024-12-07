@@ -300,6 +300,15 @@ public class IncidentController {
 //            }
 //        }
 
+        Integer currentTechnicianId = null;
+        if (isTechnician) {
+            TechnicianDto currentTechnician = technicianService.getTechnicianDtoByUserId(currentUser.getId());
+            if (currentTechnician != null) {
+                currentTechnicianId = currentTechnician.getId();
+            }
+        }
+        
+        model.addAttribute("currentTechnicianId", currentTechnicianId);
         model.addAttribute("incident", incident);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("isTechnician", isTechnician);
@@ -378,7 +387,7 @@ public class IncidentController {
                                @RequestParam(value = "shouldUpdateCompletedDate", required = false) boolean shouldUpdateCompletedDate) {
         
         if (shouldUpdateCompletedDate) {
-            // Cập nhật thời gian hoàn thành là thời điểm hiện tại
+            // Cập nhật th���i gian hoàn thành là thời điểm hiện tại
             incidentDto.setCompletedDate(LocalDateTime.now());
         }
         
