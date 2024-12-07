@@ -115,12 +115,14 @@ public class IncidentController {
                     .filter(incident -> incident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED || incident.getStatus() == Constant.INCIDENT_STATUS.OVERDUE_UNPROCESSED)
                     .collect(Collectors.toList());
 
-            if (!isAdmin) {
-                // Nếu là kỹ thuật viên, chỉ hiện sự cố được gán cho họ
-                final Integer finalTechnicianId = currentTechnician.getId();
-                incidentDtoList = incidentDtoList.stream()
-                        .filter(incident -> incident.getTechnicianId() == finalTechnicianId)
-                        .collect(Collectors.toList());
+            if (!isAdmin ) {
+                if (currentTechnician != null){
+                    // Nếu là kỹ thuật viên, chỉ hiện sự cố được gán cho họ
+                    final int finalTechnicianId = currentTechnician.getId();
+                    incidentDtoList = incidentDtoList.stream()
+                            .filter(incident -> incident.getTechnicianId() == finalTechnicianId)
+                            .collect(Collectors.toList());
+                }
             }
         } else {
             // Xử lý các filter được chọn
@@ -278,9 +280,9 @@ public class IncidentController {
             isTechnician = true;
         }
         
-        if (!isAdmin && !isTechnician) {
-            return "redirect:/incident/list";
-        }
+//        if (!isAdmin && !isTechnician) {
+//            return "redirect:/incident/list";
+//        }
 
         if (isAdmin) {
             // Nếu là admin, thêm danh sách kỹ thuật viên để có thể chọn
