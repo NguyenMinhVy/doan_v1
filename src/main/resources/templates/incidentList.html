@@ -22,6 +22,7 @@
         </div>
         <div class="card-body">
             <form th:action="@{/incident/list}" method="get">
+                <input type="hidden" name="filtered" value="true">
                 <div class="row">
                     <!-- Filter theo dãy nhà -->
                     <div class="col-md-3 mb-3">

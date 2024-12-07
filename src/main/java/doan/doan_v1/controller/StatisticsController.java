@@ -39,10 +39,16 @@ public class StatisticsController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public String getStatisticsList(
             @RequestParam(required = false) Integer locationId,
-            @RequestParam(required = false) String technicianName,
+            @RequestParam(required = false) List<Integer> technicianIds,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             Model model) {
+
+        // Nếu không có ngày đ�ợc chọn, mặc định là ngày hôm nay
+        if (startDate == null && endDate == null) {
+            startDate = LocalDate.now();
+            endDate = LocalDate.now();
+        }
 
         // Lấy danh sách kỹ thuật viên
         List<TechnicianDto> technicianDtoList = (locationId != null)
@@ -52,24 +58,23 @@ public class StatisticsController {
         // Lấy danh sách sự cố
         List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoList();
 
-        // Áp dụng bộ lọc theo khoảng thời gian nếu có
-        if (startDate != null && endDate != null) {
-            incidentDtoList = incidentDtoList.stream()
-                    .filter(incident -> {
-                        LocalDate incidentDate = incident.getReportDate().toLocalDate();
-                        return !incidentDate.isBefore(startDate) && !incidentDate.isAfter(endDate);
-                    })
-                    .collect(Collectors.toList());
-        }
-
-
+        // Luôn áp dụng filter theo thoi gian vì đã có giá trị mặc định
+        LocalDate finalStartDate = startDate;
+        LocalDate finalEndDate = endDate;
+        incidentDtoList = incidentDtoList.stream()
+                .filter(incident -> {
+                    LocalDate incidentDate = incident.getReportDate().toLocalDate();
+                    return !incidentDate.isBefore(finalStartDate) && !incidentDate.isAfter(finalEndDate);
+                })
+                .toList();
 
         // Danh sách kết quả thống kê
         List<TechnicianStatisticsDto> statisticsList = new ArrayList<>();
 
         for (TechnicianDto technicianDto : technicianDtoList) {
             // Áp dụng bộ lọc theo tên kỹ thuật viên nếu có
-            if (technicianName != null && !technicianDto.getUserDto().getName().toLowerCase().contains(technicianName.toLowerCase())) {
+            if (technicianIds != null && !technicianIds.isEmpty() 
+                && !technicianIds.contains(technicianDto.getId())) {
                 continue;
             }
 
@@ -123,12 +128,13 @@ public class StatisticsController {
         }
         List<LocationDto> locations = locationService.getAllLocationsSortedByName();
         model.addAttribute("locations", locations);
+        model.addAttribute("technicianList", technicianDtoList);
 
         // Gửi dữ liệu thống kê qua model
         model.addAttribute("statisticsList", statisticsList);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-        model.addAttribute("technicianName", technicianName);
+        model.addAttribute("selectedTechnicianIds", technicianIds);
         model.addAttribute("locationId", locationId);
 
         return "statisticsList";

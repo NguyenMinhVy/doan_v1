@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <title>Thống Kê Báo Cáo Sự Cố</title>
     <style>
@@ -52,29 +53,45 @@
 <h1>Thống Kê Báo Cáo Sự Cố</h1>
 
 <!-- Form lọc -->
-<div style="text-align: center; margin-bottom: 20px;">
-    <form action="#" method="get">
-        <!-- Trường Location -->
-        <select name="locationId" style="padding: 5px; width: 200px;" th:value="${locationId}">
-            <option value="">Chọn địa điểm</option>
-            <!-- Duyệt qua danh sách các vị trí -->
-            <option th:each="location : ${locations}"
-                    th:value="${location.id}"
-                    th:text="${location.name}"
-                    th:selected="${location.id == locationId}">Địa điểm</option>
-        </select>
+<div class="container mb-4">
+    <form action="#" method="get" class="row">
+        <div class="col-md-3">
+            <select name="locationId" class="form-control">
+                <option value="">Chọn địa điểm</option>
+                <option th:each="location : ${locations}"
+                        th:value="${location.id}"
+                        th:text="${location.name}"
+                        th:selected="${location.id == locationId}">
+                </option>
+            </select>
+        </div>
 
-        <!-- Trường Tên kỹ thuật viên -->
-        <input type="text" name="technicianName" placeholder="Tìm tên kỹ thuật viên"
-               style="padding: 5px; width: 200px;" th:value="${technicianName}">
+        <!-- Multiple select cho kỹ thuật viên -->
+        <div class="col-md-3">
+            <select class="selectpicker form-control" 
+                    multiple 
+                    data-live-search="true"
+                    name="technicianIds"
+                    title="Chọn kỹ thuật viên">
+                <option th:each="tech : ${technicianList}"
+                        th:value="${tech.id}"
+                        th:text="${tech.userDto.name}"
+                        th:selected="${selectedTechnicianIds != null && selectedTechnicianIds.contains(tech.id)}">
+                </option>
+            </select>
+        </div>
 
-        <!-- Trường Ngày bắt đầu -->
-        <input type="date" name="startDate" style="padding: 5px;" th:value="${startDate}">
+        <div class="col-md-2">
+            <input type="date" name="startDate" class="form-control" th:value="${startDate}">
+        </div>
 
-        <!-- Trường Ngày kết thúc -->
-        <input type="date" name="endDate" style="padding: 5px;" th:value="${endDate}">
+        <div class="col-md-2">
+            <input type="date" name="endDate" class="form-control" th:value="${endDate}">
+        </div>
 
-        <button type="submit" class="btn btn-primary">Lọc</button>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Lọc</button>
+        </div>
     </form>
 </div>
 
@@ -105,5 +122,26 @@
 </table>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('.selectpicker').selectpicker({
+        noneSelectedText: 'Chọn kỹ thuật viên',
+        noneResultsText: 'Không tìm thấy kết quả',
+        countSelectedText: 'Đã chọn {0} kỹ thuật viên',
+        selectAllText: 'Chọn tất cả',
+        deselectAllText: 'Bỏ chọn tất cả',
+        actionsBox: true,
+        liveSearch: true,
+        selectedTextFormat: 'count > 2'
+    });
+});
+</script>
 </body>
 </html>

@@ -84,12 +84,19 @@ public class IncidentController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = false) Integer technicianId,
+            @RequestParam(required = false, defaultValue = "false") boolean filtered,
             Model model) {
         
         List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoList();
         User currentUser = getRoleCurrentUser();
         boolean isAdmin = currentUser.getRoleId() == Constant.ROLE_ID.ROLE_ADMIN;
         
+        // Lấy thông tin kỹ thuật viên hiện tại nếu không phải admin
+        TechnicianDto currentTechnician = null;
+        if (!isAdmin) {
+            currentTechnician = technicianService.getTechnicianDtoByUserId(currentUser.getId());
+        }
+
         // Kiểm tra và cập nhật trạng thái cho các incident quá hạn
         LocalDateTime now = LocalDateTime.now();
         incidentDtoList.forEach(incident -> {
@@ -101,19 +108,18 @@ public class IncidentController {
             }
         });
         
-        // Nếu không có filter nào được chọn, áp dụng filter mặc định
-        if (locationId == null && startDate == null && endDate == null && status == null && technicianId == null) {
-            // Filter mặc định: Chưa xử lý (1) và Đã quá hạn (4)
+        // Nếu form chưa được submit (filtered = false), áp dụng filter mặc định
+        if (!filtered) {
+            // Filter mặc định: Chưa xử lý (1) và Đang xử lý (2)
             incidentDtoList = incidentDtoList.stream()
-                    .filter(incident -> incident.getStatus() == 1 || incident.getStatus() == 4)
+                    .filter(incident -> incident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED || incident.getStatus() == Constant.INCIDENT_STATUS.OVERDUE_UNPROCESSED)
                     .collect(Collectors.toList());
 
             if (!isAdmin) {
                 // Nếu là kỹ thuật viên, chỉ hiện sự cố được gán cho họ
-                TechnicianDto technicianDto = technicianService.getTechnicianDtoByUserId(currentUser.getId());
-                int currentTechnicianId = technicianDto.getId();
+                final Integer finalTechnicianId = currentTechnician.getId();
                 incidentDtoList = incidentDtoList.stream()
-                        .filter(incident -> incident.getTechnicianId() == currentTechnicianId)
+                        .filter(incident -> incident.getTechnicianId() == finalTechnicianId)
                         .collect(Collectors.toList());
             }
         } else {
@@ -139,15 +145,9 @@ public class IncidentController {
                         .collect(Collectors.toList());
             }
             
-            if (!isAdmin && technicianId == null) {
-                TechnicianDto technicianDto = technicianService.getTechnicianDtoByUserId(currentUser.getId());
-                technicianId = technicianDto.getId();
-            }
-            
             if (technicianId != null) {
-                Integer finalTechnicianId = technicianId;
                 incidentDtoList = incidentDtoList.stream()
-                        .filter(incident -> incident.getTechnicianId() == finalTechnicianId)
+                        .filter(incident -> incident.getTechnicianId() == technicianId)
                         .collect(Collectors.toList());
             }
         }
@@ -157,7 +157,7 @@ public class IncidentController {
                 .sorted(Comparator.comparing(IncidentDto::getId).reversed())
                 .collect(Collectors.toList());
 
-        // Thêm dữ liệu cho các combobox
+        // Chuẩn bị dữ liệu cho các dropdown
         List<LocationDto> locationDtoList = locationService.getAllLocationsSortedByName();
         List<TechnicianDto> technicianDtoList = technicianService.getAllTechnicianDto();
 
@@ -169,6 +169,8 @@ public class IncidentController {
         model.addAttribute("selectedEndDate", endDate);
         model.addAttribute("selectedStatus", status);
         model.addAttribute("selectedTechnicianId", technicianId);
+        model.addAttribute("filtered", filtered);
+        model.addAttribute("isAdmin", isAdmin);
         
         return "incidentList";
     }
@@ -376,7 +378,7 @@ public class IncidentController {
                                @RequestParam(value = "shouldUpdateCompletedDate", required = false) boolean shouldUpdateCompletedDate) {
         
         if (shouldUpdateCompletedDate) {
-            // Cập nhật thời gian hoàn thành là th���i điểm hiện tại
+            // Cập nhật thời gian hoàn thành là thời điểm hiện tại
             incidentDto.setCompletedDate(LocalDateTime.now());
         }
         
