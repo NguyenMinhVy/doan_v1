@@ -87,11 +87,13 @@ public class IncidentController {
             Model model) {
         
         List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoList();
+        User currentUser = getRoleCurrentUser();
+        boolean isAdmin = currentUser.getRoleId() == Constant.ROLE_ID.ROLE_ADMIN;
         
         // Kiểm tra và cập nhật trạng thái cho các incident quá hạn
         LocalDateTime now = LocalDateTime.now();
         incidentDtoList.forEach(incident -> {
-            if ((incident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED )
+            if ((incident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED)
                 && incident.getExpectCompleteDate() != null 
                 && incident.getExpectCompleteDate().isBefore(now)) {
                 incident.setStatus(Constant.INCIDENT_STATUS.OVERDUE_UNPROCESSED);
@@ -99,41 +101,55 @@ public class IncidentController {
             }
         });
         
-        // Lọc theo locationId
-        if (locationId != null) {
+        // Nếu không có filter nào được chọn, áp dụng filter mặc định
+        if (locationId == null && startDate == null && endDate == null && status == null && technicianId == null) {
+            // Filter mặc định: Chưa xử lý (1) và Đã quá hạn (4)
             incidentDtoList = incidentDtoList.stream()
-                    .filter(incident -> incident.getLocationId() == locationId)
+                    .filter(incident -> incident.getStatus() == 1 || incident.getStatus() == 4)
                     .collect(Collectors.toList());
-        }
-        
-        // Lọc theo khoảng thời gian
-        if (startDate != null && endDate != null) {
-            incidentDtoList = incidentDtoList.stream()
-                    .filter(incident -> {
-                        LocalDate reportDate = incident.getReportDate().toLocalDate();
-                        return !reportDate.isBefore(startDate) && !reportDate.isAfter(endDate);
-                    })
-                    .collect(Collectors.toList());
-        }
-        
-        // Lọc theo status
-        if (status != null) {
-            incidentDtoList = incidentDtoList.stream()
-                    .filter(incident -> incident.getStatus() == status)
-                    .collect(Collectors.toList());
-        }
-        
-        // Lọc theo technicianId
-        User user = userService.getCurrentUserInfo();
-        if (user != null && user.getRoleId() == Constant.ROLE_ID.ROLE_TECHNICIAN && technicianId == null) {
-            TechnicianDto technicianDto = technicianService.getTechnicianDtoByUserId(user.getId());
-            technicianId = technicianDto.getId();
-        }
-        if (technicianId != null) {
-            Integer finalTechnicianId = technicianId;
-            incidentDtoList = incidentDtoList.stream()
-                    .filter(incident -> incident.getTechnicianId() != 0 && incident.getTechnicianId() == finalTechnicianId)
-                    .collect(Collectors.toList());
+
+            if (!isAdmin) {
+                // Nếu là kỹ thuật viên, chỉ hiện sự cố được gán cho họ
+                TechnicianDto technicianDto = technicianService.getTechnicianDtoByUserId(currentUser.getId());
+                int currentTechnicianId = technicianDto.getId();
+                incidentDtoList = incidentDtoList.stream()
+                        .filter(incident -> incident.getTechnicianId() == currentTechnicianId)
+                        .collect(Collectors.toList());
+            }
+        } else {
+            // Xử lý các filter được chọn
+            if (locationId != null) {
+                incidentDtoList = incidentDtoList.stream()
+                        .filter(incident -> incident.getLocationId() == locationId)
+                        .collect(Collectors.toList());
+            }
+            
+            if (startDate != null && endDate != null) {
+                incidentDtoList = incidentDtoList.stream()
+                        .filter(incident -> {
+                            LocalDate reportDate = incident.getReportDate().toLocalDate();
+                            return !reportDate.isBefore(startDate) && !reportDate.isAfter(endDate);
+                        })
+                        .collect(Collectors.toList());
+            }
+            
+            if (status != null) {
+                incidentDtoList = incidentDtoList.stream()
+                        .filter(incident -> incident.getStatus() == status)
+                        .collect(Collectors.toList());
+            }
+            
+            if (!isAdmin && technicianId == null) {
+                TechnicianDto technicianDto = technicianService.getTechnicianDtoByUserId(currentUser.getId());
+                technicianId = technicianDto.getId();
+            }
+            
+            if (technicianId != null) {
+                Integer finalTechnicianId = technicianId;
+                incidentDtoList = incidentDtoList.stream()
+                        .filter(incident -> incident.getTechnicianId() == finalTechnicianId)
+                        .collect(Collectors.toList());
+            }
         }
 
         // Sắp xếp giảm dần theo id
@@ -148,8 +164,6 @@ public class IncidentController {
         model.addAttribute("locationDtoList", locationDtoList);
         model.addAttribute("technicianDtoList", technicianDtoList);
         model.addAttribute("incidentDtoList", incidentDtoList);
-        
-        // Thêm các giá trị đã chọn để giữ lại trên form
         model.addAttribute("selectedLocationId", locationId);
         model.addAttribute("selectedStartDate", startDate);
         model.addAttribute("selectedEndDate", endDate);
@@ -222,12 +236,14 @@ public class IncidentController {
             incidentDto.setReportUser(user.getId());
             incidentDto.setReportUserName(user.getName());
             incidentDto.setReportDate(LocalDateTime.now());
+//            if (incidentDto.getTechnicianDto() == null) {
             ComputerDto computerDto = computerService.getComputerById(incidentDto.getComputerId());
             RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
-            incidentDto.setLocationId(roomDto.getLocationDto().getId());
-
+            LocationDto locationDto = roomDto.getLocationDto();
+//            TechnicianDto technicianDto = technicianService.getTechnicianDtoListByLocationId(locationDto.getId()).get(0);
+//            incidentDto.setTechnicianDto(technicianDto);
+////            }
             IncidentDto createdIncidentDto = incidentService.addIncidentForComputer(incidentDto);
-
             redirectAttributes.addFlashAttribute("message", "Thêm phòng thành công!");
             
             return "redirect:/computer/" + createdIncidentDto.getComputerId();
@@ -257,9 +273,9 @@ public class IncidentController {
             isTechnician = true;
         }
         
-//        if (!isAdmin && !isTechnician) {
-//            return "redirect:/incident/list";
-//        }
+        if (!isAdmin && !isTechnician) {
+            return "redirect:/incident/list";
+        }
 
         if (isAdmin) {
             // Nếu là admin, thêm danh sách kỹ thuật viên để có thể chọn
@@ -273,16 +289,14 @@ public class IncidentController {
             "Việc cá nhân",
             "Khác"
         );
-
-        if (incident.getComputerDeviceId() > 0) {
-            ComputerDeviceDto device = computerDeviceService.getDeviceById(incident.getComputerDeviceId());
-            model.addAttribute("deviceType", device.getType());
-        }
-
-        if (incident.getComputerSoftwareId() > 0) {
-            ComputerSoftwareDto software = computerSoftwareService.getSoftwareById(incident.getComputerSoftwareId());
-            model.addAttribute("softwareName", software.getName());
-        }
+        
+//        // Kiểm tra nếu kỹ thuật viên hiện tại có quyền xem incident này
+//        if (isTechnician) {
+//            Technician technician = technicianService.findByUserId(currentUser.getId());
+//            if (technician == null || !technician.getId().equals(incident.getTechnicianDto().getId())) {
+//                return "redirect:/incident/list";
+//            }
+//        }
 
         model.addAttribute("incident", incident);
         model.addAttribute("isAdmin", isAdmin);
@@ -331,7 +345,7 @@ public class IncidentController {
                 return "redirect:/incident/update/" + id;
             }
         } else {
-            if (currentIncident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED && incidentDto.getStatus() != 2) {
+            if (currentIncident.getStatus() == 1 && incidentDto.getStatus() != 2) {
                 redirectAttributes.addFlashAttribute("error", "Từ trạng thái Chưa xử lý chỉ có thể chuyển sang Đang xử lý");
                 return "redirect:/incident/update/" + id;
             }
@@ -346,8 +360,7 @@ public class IncidentController {
             if (incidentDto.getStatus() == 3 || incidentDto.getStatus() == 5) {
                 incidentDto.setCompletedDate(LocalDateTime.now());
             }
-
-            incidentDto.setTechnicianId(incidentDto.getTechnicianDto().getId());
+            
             incidentService.updateIncident(id, incidentDto);
             redirectAttributes.addFlashAttribute("success", "Cập nhật thành công");
             return "redirect:/incident/list";
@@ -363,7 +376,7 @@ public class IncidentController {
                                @RequestParam(value = "shouldUpdateCompletedDate", required = false) boolean shouldUpdateCompletedDate) {
         
         if (shouldUpdateCompletedDate) {
-            // Cập nhật thời gian hoàn thành là thời điểm hiện tại
+            // Cập nhật thời gian hoàn thành là th���i điểm hiện tại
             incidentDto.setCompletedDate(LocalDateTime.now());
         }
         
