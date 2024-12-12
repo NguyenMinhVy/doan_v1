@@ -51,30 +51,6 @@
                 <input type="datetime-local" class="form-control" th:field="*{expectCompleteDate}" required />
             </div>
 
-            <!-- Kỹ thuật viên phụ trách -->
-            <div class="form-group" sec:authorize="hasAuthority('ADMIN')">
-                <label>Kỹ thuật viên phụ trách:</label>
-                <select class="form-control" th:field="*{technicianId}">
-                    <option value=0>-- Chọn kỹ thuật viên --</option>
-                    <option th:each="tech : ${technicianDtoList}"
-                            th:value="${tech.id}"
-                            th:text="${tech.userDto.name}">
-                    </option>
-                </select>
-            </div>
-
-            <div class="form-group" sec:authorize="!hasAuthority('ADMIN')">
-                <label>Kỹ thuật viên phụ trách:</label>
-                <select class="form-control" th:field="*{technicianId}">
-                    <option th:value="${technicianDto.id}"
-                            th:text="${technicianDto.userDto.name}"
-                            selected></option>
-
-                    <!-- Hiển thị một lựa chọn không thể chọn cho người dùng không phải ADMIN -->
-                    <option th:value="${technicianDto.id}" th:text="${technicianDto.userDto.name}" disabled></option>
-                </select>
-            </div>
-
             <div class="form-group">
                 <label>Thiết bị bị lỗi:</label>
                 <div class="device-list row">

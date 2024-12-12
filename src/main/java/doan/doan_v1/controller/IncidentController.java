@@ -110,9 +110,9 @@ public class IncidentController {
         
         // Nếu form chưa được submit (filtered = false), áp dụng filter mặc định
         if (!filtered) {
-            // Filter mặc định: Chưa xử lý (1) và Đang xử lý (2)
+            // Filter mặc định: Chưa xử lý/ quá hạn chưa xử lý và chưa được gán cho KTV
             incidentDtoList = incidentDtoList.stream()
-                    .filter(incident -> incident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED || incident.getStatus() == Constant.INCIDENT_STATUS.OVERDUE_UNPROCESSED)
+                    .filter(incident -> incident.getTechnicianId() == 0 && (incident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED || incident.getStatus() == Constant.INCIDENT_STATUS.OVERDUE_UNPROCESSED))
                     .collect(Collectors.toList());
 
             if (!isAdmin ) {
@@ -242,16 +242,17 @@ public class IncidentController {
             incidentDto.setReportUser(user.getId());
             incidentDto.setReportUserName(user.getName());
             incidentDto.setReportDate(LocalDateTime.now());
-//            if (incidentDto.getTechnicianDto() == null) {
+            
+            // Lấy location từ computer
             ComputerDto computerDto = computerService.getComputerById(incidentDto.getComputerId());
             RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
             LocationDto locationDto = roomDto.getLocationDto();
-//            TechnicianDto technicianDto = technicianService.getTechnicianDtoListByLocationId(locationDto.getId()).get(0);
-//            incidentDto.setTechnicianDto(technicianDto);
-////            }
+            incidentDto.setLocationId(locationDto.getId());
+            
+            // Bỏ phần set technician
             IncidentDto createdIncidentDto = incidentService.addIncidentForComputer(incidentDto);
 
-            redirectAttributes.addFlashAttribute("message", "Thêm phòng thành công!");
+            redirectAttributes.addFlashAttribute("message", "Thêm sự cố thành công!");
             
             return "redirect:/computer/" + createdIncidentDto.getComputerId();
         } catch (Exception e) {
@@ -399,7 +400,7 @@ public class IncidentController {
                                @RequestParam(value = "shouldUpdateCompletedDate", required = false) boolean shouldUpdateCompletedDate) {
         
         if (shouldUpdateCompletedDate) {
-            // Cập nhật th���i gian hoàn thành là thời điểm hiện tại
+            // Cập nhật thời gian hoàn thành là thời điểm hiện tại
             incidentDto.setCompletedDate(LocalDateTime.now());
         }
         

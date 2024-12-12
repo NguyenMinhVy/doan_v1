@@ -101,7 +101,8 @@
                     <p><strong>Ngày hoàn thành mong muốn:</strong>
                         <span th:text="${#temporals.format(incident.expectCompleteDate, 'dd/MM/yyyy HH:mm')}"></span>
                     </p>
-                    <p><strong>Kỹ thuật viên:</strong>
+                    <p th:if="${incident.technicianDto != null}">
+                        <strong>Kỹ thuật viên:</strong>
                         <span th:text="${incident.technicianDto.userDto.name}">Kỹ thuật viên</span>
                     </p>
                     <p th:if="${incident.computerDeviceId > 0}">

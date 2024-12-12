@@ -83,11 +83,13 @@ public class IncidentServiceImpl implements IncidentService {
         List<IncidentDto> incidentDtoList = new ArrayList<>();
         for (Incident incident : incidentList) {
             IncidentDto incidentDto = incidentMapper.incidentToIncidentDto(incident);
-            TechnicianDto technicianDto = technicianService.getTechnicianDtoById(incident.getTechnicianId());
+            if (incident.getTechnicianId() != 0) {
+                TechnicianDto technicianDto = technicianService.getTechnicianDtoById(incident.getTechnicianId());
+                incidentDto.setTechnicianDto(technicianDto);
+                incidentDto.setTechnicianId(incident.getTechnicianId());
+            }
             String computerName = computerService.getComputerById(incident.getComputerId()).getName();
             incidentDto.setComputerName(computerName);
-            incidentDto.setTechnicianId(technicianDto.getId());
-            incidentDto.setTechnicianDto(technicianDto);
 
             if (incident.getComputerDeviceId()>0){
                 ComputerDeviceDto computerDeviceDto = computerDeviceService.getDeviceById(incident.getComputerDeviceId());
