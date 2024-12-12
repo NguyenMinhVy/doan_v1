@@ -196,7 +196,7 @@ h1, h2 {
 /* Định dạng cho các thẻ a để trông giống văn bản */
 a {
     color: black; /* Màu xanh */
-    text-decoration: none; /* Lo���i bỏ gạch chân */
+    text-decoration: none; /* Loại bỏ gạch chân */
 }
 
 a:hover {
@@ -843,4 +843,57 @@ html, body {
 .update-computer {
     right: 20px !important;
     background-color: #6B5B95 !important;
+}
+
+/* Styles cho trang thống kê */
+.statistics-container {
+    padding: 20px 0;
+}
+
+.statistics-title {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.filter-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.filter-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-item {
+    flex: 1;
+    min-width: 200px;
+}
+
+.stats-table {
+    margin-top: 20px;
+}
+
+.stats-table th {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: 500;
+}
+
+.stats-table td, 
+.stats-table th {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+    .filter-item {
+        min-width: 100%;
+    }
 }

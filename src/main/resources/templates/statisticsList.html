@@ -8,22 +8,35 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <title>Thống Kê Báo Cáo Sự Cố</title>
     <style>
+        .container {
+            margin-top: 100px;
+            margin-bottom: 30px;
+        }
+
         h1 {
             text-align: center;
             color: #4CAF50;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .filter-form {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         table {
-            width: 80%;
+            width: 100%;
             margin: 0 auto;
             border-collapse: collapse;
             background-color: #ffffff;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         th, td {
-            padding: 12px;
+            padding: 15px;
             text-align: left;
             border: 1px solid #ddd;
         }
@@ -32,94 +45,121 @@
             background-color: #4CAF50;
             color: white;
             text-transform: uppercase;
+            font-weight: 500;
         }
 
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f8f9fa;
         }
 
         tr:hover {
-            background-color: #e0f7fa;
+            background-color: #e9ecef;
+            transition: background-color 0.3s ease;
         }
 
         td {
             color: #333;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+            border-color: #45a049;
+        }
+
+        .form-control {
+            border-radius: 4px;
+        }
+
+        label {
+            font-weight: 500;
+            color: #555;
         }
     </style>
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 
-<h1>Thống Kê Báo Cáo Sự Cố</h1>
+<div class="container">
+    <h1>Thống Kê Báo Cáo Sự Cố</h1>
 
-<!-- Form lọc -->
-<div class="container mb-4">
-    <form action="#" method="get" class="row">
-        <div class="col-md-3">
-            <select name="locationId" class="form-control">
-                <option value="">Chọn địa điểm</option>
-                <option th:each="location : ${locations}"
-                        th:value="${location.id}"
-                        th:text="${location.name}"
-                        th:selected="${location.id == locationId}">
-                </option>
-            </select>
-        </div>
+    <!-- Form lọc -->
+    <div class="filter-form">
+        <form action="#" method="get" class="row">
+            <div class="col-md-3">
+                <label>Địa điểm:</label>
+                <select name="locationId" class="form-control">
+                    <option value="">Chọn địa điểm</option>
+                    <option th:each="location : ${locations}"
+                            th:value="${location.id}"
+                            th:text="${location.name}"
+                            th:selected="${location.id == locationId}">
+                    </option>
+                </select>
+            </div>
 
-        <!-- Multiple select cho kỹ thuật viên -->
-        <div class="col-md-3">
-            <select class="selectpicker form-control" 
-                    multiple 
-                    data-live-search="true"
-                    name="technicianIds"
-                    title="Chọn kỹ thuật viên">
-                <option th:each="tech : ${technicianList}"
-                        th:value="${tech.id}"
-                        th:text="${tech.userDto.name}"
-                        th:selected="${selectedTechnicianIds != null && selectedTechnicianIds.contains(tech.id)}">
-                </option>
-            </select>
-        </div>
+            <div class="col-md-3">
+                <label>Kỹ thuật viên:</label>
+                <select class="selectpicker form-control" 
+                        multiple 
+                        data-live-search="true"
+                        name="technicianIds"
+                        title="Chọn kỹ thuật viên">
+                    <option th:each="tech : ${technicianList}"
+                            th:value="${tech.id}"
+                            th:text="${tech.userDto.name}"
+                            th:selected="${selectedTechnicianIds != null && selectedTechnicianIds.contains(tech.id)}">
+                    </option>
+                </select>
+            </div>
 
-        <div class="col-md-2">
-            <input type="date" name="startDate" class="form-control" th:value="${startDate}">
-        </div>
+            <div class="col-md-2">
+                <label>Từ ngày:</label>
+                <input type="date" name="startDate" class="form-control" th:value="${startDate}">
+            </div>
 
-        <div class="col-md-2">
-            <input type="date" name="endDate" class="form-control" th:value="${endDate}">
-        </div>
+            <div class="col-md-2">
+                <label>Đến ngày:</label>
+                <input type="date" name="endDate" class="form-control" th:value="${endDate}">
+            </div>
 
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">Lọc</button>
-        </div>
-    </form>
+            <div class="col-md-2">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">Lọc</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bảng thống kê -->
+    <table>
+        <thead>
+            <tr>
+                <th>TÊN KỸ THUẬT VIÊN</th>
+                <th>TỔNG SỐ SỰ CỐ</th>
+                <th>CHƯA XỬ LÝ</th>
+                <th>ĐANG XỬ LÝ</th>
+                <th>ĐÃ XỬ LÝ</th>
+                <th>QUÁ HẠN CHƯA XỬ LÝ</th>
+                <th>QUÁ HẠN ĐÃ XỬ LÝ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="stat : ${statisticsList}">
+                <td th:text="${stat.technicianName}">Tên Kỹ Thuật Viên</td>
+                <td th:text="${stat.totalIncidents}">0</td>
+                <td th:text="${stat.unprocessed}">0</td>
+                <td th:text="${stat.processing}">0</td>
+                <td th:text="${stat.processed}">0</td>
+                <td th:text="${stat.overdueUnprocessed}">0</td>
+                <td th:text="${stat.overdueProcessed}">0</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
-
-<!-- Bảng thống kê -->
-<table>
-    <thead>
-    <tr>
-        <th>Tên Kỹ Thuật Viên</th>
-        <th>Tổng Số Sự Cố</th>
-        <th>Chưa Xử Lý</th>
-        <th>Đang Xử Lý</th>
-        <th>Đã Xử Lý</th>
-        <th>Quá Hạn Chưa Xử Lý</th>
-        <th>Quá Hạn Đã Xử Lý</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="stat : ${statisticsList}">
-        <td th:text="${stat.technicianName}">Tên Kỹ Thuật Viên</td>
-        <td th:text="${stat.totalIncidents}">0</td>
-        <td th:text="${stat.unprocessed}">0</td>
-        <td th:text="${stat.processing}">0</td>
-        <td th:text="${stat.processed}">0</td>
-        <td th:text="${stat.overdueUnprocessed}">0</td>
-        <td th:text="${stat.overdueProcessed}">0</td>
-    </tr>
-    </tbody>
-</table>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 
