@@ -30,4 +30,6 @@ public interface IncidentService {
 
     IncidentDto getLatestIncidentByComputerSoftwareId(int computerSoftwareId);
 
+    List<IncidentDto> getIncidentsByLocationAndTechnician(Integer locationId, Integer technicianId);
+
 }

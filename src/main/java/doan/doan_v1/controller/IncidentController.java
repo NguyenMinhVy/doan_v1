@@ -80,14 +80,20 @@ public class IncidentController {
     @GetMapping("/list")
     public String getIncidentList(
             @RequestParam(required = false) Integer locationId,
+            @RequestParam(required = false) Integer technicianId,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(required = false) Integer status,
-            @RequestParam(required = false) Integer technicianId,
             @RequestParam(required = false, defaultValue = "false") boolean filtered,
             Model model) {
         
-        List<IncidentDto> incidentDtoList = incidentService.getIncidentDtoList();
+        List<IncidentDto> incidentDtoList;
+        if (locationId != null || technicianId != null) {
+            incidentDtoList = incidentService.getIncidentsByLocationAndTechnician(locationId, technicianId);
+        } else {
+            incidentDtoList = incidentService.getIncidentDtoList();
+        }
+        
         User currentUser = getRoleCurrentUser();
         boolean isAdmin = currentUser.getRoleId() == Constant.ROLE_ID.ROLE_ADMIN;
 
@@ -112,7 +118,7 @@ public class IncidentController {
         if (!filtered) {
             // Filter mặc định: Chưa xử lý/ quá hạn chưa xử lý và chưa được gán cho KTV
             incidentDtoList = incidentDtoList.stream()
-                    .filter(incident -> incident.getTechnicianId() == 0 && (incident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED || incident.getStatus() == Constant.INCIDENT_STATUS.OVERDUE_UNPROCESSED))
+                    .filter(incident ->(incident.getStatus() == Constant.INCIDENT_STATUS.UNPROCESSED || incident.getStatus() == Constant.INCIDENT_STATUS.OVERDUE_UNPROCESSED))
                     .collect(Collectors.toList());
 
             if (!isAdmin ) {
@@ -123,6 +129,11 @@ public class IncidentController {
                             .filter(incident -> incident.getTechnicianId() == finalTechnicianId)
                             .collect(Collectors.toList());
                 }
+            } else {
+                incidentDtoList = incidentDtoList.stream()
+                        .filter(incident -> incident.getTechnicianId() == 0 )
+                        .collect(Collectors.toList());
+
             }
         } else {
             // Xử lý các filter được chọn
@@ -167,7 +178,7 @@ public class IncidentController {
         model.addAttribute("technicianDtoList", technicianDtoList);
         model.addAttribute("incidentDtoList", incidentDtoList);
         
-        // Thêm các giá trị đã chọn để giữ lại trên form
+        // Thêm các giá tr��� đã chọn để giữ lại trên form
         model.addAttribute("selectedLocationId", locationId);
         model.addAttribute("selectedStartDate", startDate);
         model.addAttribute("selectedEndDate", endDate);
@@ -243,13 +254,11 @@ public class IncidentController {
             incidentDto.setReportUserName(user.getName());
             incidentDto.setReportDate(LocalDateTime.now());
             
-            // Lấy location từ computer
             ComputerDto computerDto = computerService.getComputerById(incidentDto.getComputerId());
             RoomDto roomDto = roomService.getRoomById(computerDto.getRoomId());
             LocationDto locationDto = roomDto.getLocationDto();
             incidentDto.setLocationId(locationDto.getId());
             
-            // Bỏ phần set technician
             IncidentDto createdIncidentDto = incidentService.addIncidentForComputer(incidentDto);
 
             redirectAttributes.addFlashAttribute("message", "Thêm sự cố thành công!");

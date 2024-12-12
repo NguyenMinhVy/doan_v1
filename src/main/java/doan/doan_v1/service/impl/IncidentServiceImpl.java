@@ -9,11 +9,13 @@ import doan.doan_v1.entity.Computer;
 import doan.doan_v1.entity.Incident;
 import doan.doan_v1.entity.Technician;
 import doan.doan_v1.entity.User;
+import doan.doan_v1.entity.TechnicianLocation;
 import doan.doan_v1.mapper.IncidentMapper;
 import doan.doan_v1.repository.ComputerRepository;
 import doan.doan_v1.repository.IncidentRepository;
 import doan.doan_v1.repository.TechnicianRepository;
 import doan.doan_v1.repository.UserRepository;
+import doan.doan_v1.repository.TechnicianLocationRepository;
 import doan.doan_v1.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,6 +61,9 @@ public class IncidentServiceImpl implements IncidentService {
     @Autowired
     private TechnicianRepository technicianRepository;
     private ComputerDeviceServiceImpl computerDeviceServiceImpl;
+
+    @Autowired
+    private TechnicianLocationRepository technicianLocationRepository;
 
 
     @Override
@@ -137,9 +142,6 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     public List<IncidentDto> getIncidentDtoList() {
         List<Incident> incidentList = incidentRepository.findAll();
-        if (incidentList.isEmpty()) {
-            return Collections.emptyList();
-        }
         return getIncidentDtos(incidentList);
     }
 
@@ -160,12 +162,21 @@ public class IncidentServiceImpl implements IncidentService {
     public IncidentDto getIncidentDtoById(Integer id) {
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sự cố với ID: " + id));
+
         IncidentDto incidentDto = incidentMapper.incidentToIncidentDto(incident);
-        TechnicianDto technicianDto = technicianService.getTechnicianDtoById(incident.getTechnicianId());
+
         String computerName = computerService.getComputerById(incident.getComputerId()).getName();
         incidentDto.setComputerName(computerName);
-        incidentDto.setTechnicianId(technicianDto.getId());
-        incidentDto.setTechnicianDto(technicianDto);
+
+        if (incident.getTechnicianId() != 0) {
+
+            TechnicianDto technicianDto = technicianService.getTechnicianDtoById(incident.getTechnicianId());
+            if (technicianDto != null) {
+                incidentDto.setTechnicianId(technicianDto.getId());
+                incidentDto.setTechnicianDto(technicianDto);
+            }
+        }
+
         return incidentDto;
     }
 
@@ -231,6 +242,36 @@ public class IncidentServiceImpl implements IncidentService {
             .findTopByComputerSoftwareIdOrderByReportDateDesc(computerSoftwareId);
         
         return latestIncident.map(incidentMapper::incidentToIncidentDto).orElse(null);
+    }
+
+    @Override
+    public List<IncidentDto> getIncidentsByLocationAndTechnician(Integer locationId, Integer technicianId) {
+        List<Incident> incidents;
+        
+        if (locationId != null && technicianId != null) {
+            // Lấy danh sách location của technician
+            List<Integer> technicianLocationIds = technicianLocationRepository
+                .findByTechnicianId(technicianId)
+                .stream()
+                .map(TechnicianLocation::getLocationId)
+                .collect(Collectors.toList());
+            
+            // Kiểm tra xem location được chọn có thuộc về technician không
+            if (technicianLocationIds.contains(locationId)) {
+                incidents = incidentRepository.findByLocationIdAndTechnicianId(locationId, technicianId);
+            } else {
+                return new ArrayList<>(); // Trả về list rỗng nếu location không thuộc về technician
+            }
+        } else if (locationId != null) {
+            incidents = incidentRepository.findByLocationId(locationId);
+        } else if (technicianId != null) {
+            // Lấy tất cả sự cố của technician ở mọi location họ phụ trách
+            incidents = incidentRepository.findByTechnicianId(technicianId);
+        } else {
+            incidents = incidentRepository.findAll();
+        }
+        
+        return getIncidentDtos(incidents);
     }
 
 //    @Override

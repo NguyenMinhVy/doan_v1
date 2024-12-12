@@ -4,15 +4,15 @@ import doan.doan_v1.entity.Technician;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
+@Repository
 public interface TechnicianRepository extends JpaRepository<Technician, Integer> {
+//    List<Technician> findByLocationId(Integer locationId);
 
-    List<Technician> findByLocationId(Integer locationId);
-
-    List<Technician> findByDelFlagFalse();
+    List<Technician> findAllByDelFlagFalse();
 
     Technician findByIdAndDelFlagFalse(Integer id);
 
@@ -22,12 +22,15 @@ public interface TechnicianRepository extends JpaRepository<Technician, Integer>
             "WHERE t.technicianCode = :technicianCode AND t.delFlag = false")
     boolean existsByTechnicianCodeAndDelFlagFalse(@Param("technicianCode") String technicianCode);
 
-//    @Query("SELECT t FROM Technician t WHERE t.location.id = :locationId AND t.delFlag = false")
-//    List<Technician> findByLocationIdAndDelFlagFalse(@Param("locationId") Integer locationId);
-
-//    @Query("SELECT t FROM Technician t " +
-//            "LEFT JOIN FETCH t.user " +
-//            "LEFT JOIN FETCH t.location " +
-//            "WHERE t.delFlag = false")
-//    List<Technician> findAllWithDetailsAndDelFlagFalse();
+    @Query("SELECT t FROM Technician t JOIN TechnicianLocation tl ON t.id = tl.technicianId " +
+           "WHERE tl.locationId = :locationId")
+    List<Technician> findByLocationId(@Param("locationId") Integer locationId);
+    
+    Technician findByUserId(Integer userId);
+    Technician findByTechnicianCode(String technicianCode);
+    
+    @Query("SELECT DISTINCT t FROM Technician t " +
+           "JOIN TechnicianLocation tl ON t.id = tl.technicianId " +
+           "WHERE tl.locationId IN :locationIds")
+    List<Technician> findByLocationIds(@Param("locationIds") List<Integer> locationIds);
 }

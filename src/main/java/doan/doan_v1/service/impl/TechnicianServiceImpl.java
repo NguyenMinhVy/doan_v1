@@ -3,22 +3,26 @@ package doan.doan_v1.service.impl;
 import doan.doan_v1.Constant.Constant;
 import doan.doan_v1.dto.LocationDto;
 import doan.doan_v1.dto.TechnicianDto;
-import doan.doan_v1.entity.Room;
 import doan.doan_v1.entity.Technician;
+import doan.doan_v1.entity.TechnicianLocation;
 import doan.doan_v1.entity.User;
 import doan.doan_v1.mapper.TechnicianMapper;
 import doan.doan_v1.mapper.UserMapper;
 import doan.doan_v1.repository.LocationRepository;
+import doan.doan_v1.repository.TechnicianLocationRepository;
 import doan.doan_v1.repository.TechnicianRepository;
 import doan.doan_v1.repository.UserRepository;
 import doan.doan_v1.service.LocationService;
 import doan.doan_v1.service.TechnicianService;
+import doan.doan_v1.service.UserService;
+import doan.doan_v1.service.TechnicianUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -28,7 +32,19 @@ public class TechnicianServiceImpl implements TechnicianService {
     private TechnicianRepository technicianRepository;
 
     @Autowired
+    private TechnicianLocationRepository technicianLocationRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
+
+    @Autowired
     private TechnicianMapper technicianMapper;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private LocationService locationService;
 
     @Autowired
     private UserRepository userRepository;
@@ -37,40 +53,88 @@ public class TechnicianServiceImpl implements TechnicianService {
     private UserMapper userMapper;
 
     @Autowired
+    private TechnicianUserService technicianUserService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private LocationRepository locationRepository;
-
-    @Autowired
-    private LocationService locationService;
+    @Override
+    public TechnicianDto getTechnicianDtoById(Integer id) {
+        if (id == null || id == 0) {
+            return null;
+        }
+        Technician technician = technicianRepository.findById(id).orElse(null);
+        if (technician == null) {
+            return null;
+        }
+        
+        List<TechnicianLocation> technicianLocations = technicianLocationRepository.findByTechnicianId(id);
+        return technicianMapper.technicianToTechnicianDtoWithLocations(technician, technicianLocations);
+    }
 
     @Override
+    public List<TechnicianDto> getAllTechnicianDto() {
+        List<Technician> technicians = technicianRepository.findAllByDelFlagFalse();
+        return technicians.stream()
+            .map(technician -> {
+                TechnicianDto dto = technicianMapper.technicianToTechnicianDto(technician);
+                
+                // Lấy thông tin user
+                User user = userRepository.findById(technician.getUserId()).orElse(null);
+                if (user != null) {
+                    dto.setUserDto(userMapper.userToUserDto(user));
+                }
+                
+                // Lấy danh sách location
+                List<TechnicianLocation> technicianLocations =
+                    technicianLocationRepository.findByTechnicianId(technician.getId());
+                if (!technicianLocations.isEmpty()) {
+                    List<LocationDto> locationDtos = technicianLocations.stream()
+                        .map(tl -> locationRepository.findById(tl.getLocationId())
+                            .map(location -> {
+                                LocationDto locationDto = new LocationDto();
+                                locationDto.setId(location.getId());
+                                locationDto.setName(location.getName());
+                                return locationDto;
+                            })
+                            .orElse(null))
+                        .collect(Collectors.toList());
+                    dto.setLocationDtos(locationDtos);
+                }
+                
+                return dto;
+            })
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
     public String createTechnician(TechnicianDto technicianDto) {
-        // Kiểm tra mã kỹ thuật viên đã tồn tại chưa
         if (technicianRepository.existsByTechnicianCodeAndDelFlagFalse(technicianDto.getTechnicianCode())) {
             throw new RuntimeException("Mã kỹ thuật viên đã tồn tại");
         }
 
-        // Tạo username từ họ tên
         String username = generateUsername(technicianDto.getUserDto().getName());
-
-        // Tạo mới User
+        
         User user = new User();
         user.setUsername(username);
-        user.setPassword(passwordEncoder.encode("123456"));
-        user.setRoleId(Constant.ROLE_ID.ROLE_TECHNICIAN);
         user.setName(technicianDto.getUserDto().getName());
-        userRepository.save(user);
+        user.setPassword(passwordEncoder.encode("defaultPassword"));
+        user.setRoleId(Constant.ROLE_ID.ROLE_TECHNICIAN);
+        User savedUser = userRepository.save(user);
 
-        // Tạo mới Technician
-        Technician technician = new Technician();
-        technician.setTechnicianCode(technicianDto.getTechnicianCode());
-        technician.setUserId(user.getId());
-        technician.setLocationId(locationRepository.findByIdAndDelFlagFalse(technicianDto.getLocationDto().getId()).getId());
-        technician.setDelFlag(false);
+        Technician technician = technicianMapper.technicianDtoToTechnician(technicianDto);
+        technician.setUserId(savedUser.getId());
+        Technician savedTechnician = technicianRepository.save(technician);
 
-        technicianRepository.save(technician);
+        if (technicianDto.getLocationDtos() != null) {
+            for (LocationDto locationDto : technicianDto.getLocationDtos()) {
+                TechnicianLocation technicianLocation = new TechnicianLocation();
+                technicianLocation.setTechnicianId(savedTechnician.getId());
+                technicianLocation.setLocationId(locationDto.getId());
+                technicianLocationRepository.save(technicianLocation);
+            }
+        }
 
         return username;
     }
@@ -105,33 +169,55 @@ public class TechnicianServiceImpl implements TechnicianService {
         return username;
     }
 
-
     @Override
-    public List<TechnicianDto> getTechnicianDtoListByLocationId(int locationId) {
-        List<Technician> technicianList = technicianRepository.findByLocationId(locationId);
-        List<TechnicianDto> technicianDtoList = new ArrayList<>();
-        for (Technician technician : technicianList) {
-            TechnicianDto technicianDto = technicianMapper.technicianToTechnicianDto(technician);
-            User user = userRepository.findById(technician.getUserId()).orElseThrow();
-            technicianDto.setUserDto(userMapper.userToUserDto(user));
-            technicianDtoList.add(technicianDto);
+    public TechnicianDto getTechnicianDtoByUserId(Integer userId) {
+        Technician technician = technicianRepository.findByUserId(userId);
+        if (technician == null) {
+            return null;
         }
-        return technicianDtoList;
+        
+        List<TechnicianLocation> technicianLocations = 
+            technicianLocationRepository.findByTechnicianId(technician.getId());
+        return technicianMapper.technicianToTechnicianDtoWithLocations(technician, technicianLocations);
     }
 
     @Override
-    public List<TechnicianDto> getAllTechnicianDto() {
-        List<Technician> technicianList = technicianRepository.findByDelFlagFalse();
-        List<TechnicianDto> technicianDtoList = new ArrayList<>();
-        for (Technician technician : technicianList) {
-            TechnicianDto technicianDto = technicianMapper.technicianToTechnicianDto(technician);
-            User user = userRepository.findById(technician.getUserId()).orElseThrow();
-            LocationDto locationDto = locationService.getLocationById(technician.getLocationId());
-            technicianDto.setUserDto(userMapper.userToUserDto(user));
-            technicianDto.setLocationDto(locationDto);
-            technicianDtoList.add(technicianDto);
-        }
-        return technicianDtoList;
+    public List<TechnicianDto> getTechnicianDtoListByLocationId(Integer locationId) {
+        List<TechnicianLocation> technicianLocations = technicianLocationRepository.findByLocationId(locationId);
+        
+        List<Integer> technicianIds = technicianLocations.stream()
+            .map(TechnicianLocation::getTechnicianId)
+            .collect(Collectors.toList());
+        
+        List<Technician> technicians = technicianRepository.findAllById(technicianIds);
+        
+        return technicians.stream()
+            .map(technician -> {
+                List<TechnicianLocation> techLocations = 
+                    technicianLocationRepository.findByTechnicianId(technician.getId());
+                return technicianMapper.technicianToTechnicianDtoWithLocations(technician, techLocations);
+            })
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void updateTechnicianLocations(Integer technicianId, List<Integer> locationIds) {
+        // Xóa tất cả các location hiện tại của technician
+        technicianLocationRepository.deleteByTechnicianId(technicianId);
+        
+        // Thêm các location mới
+        locationIds.forEach(locationId -> {
+            TechnicianLocation technicianLocation = new TechnicianLocation();
+            technicianLocation.setTechnicianId(technicianId);
+            technicianLocation.setLocationId(locationId);
+            technicianLocationRepository.save(technicianLocation);
+        });
+    }
+
+    @Override
+    public boolean isTechnicianInLocation(Integer technicianId, Integer locationId) {
+        return technicianLocationRepository.existsByTechnicianIdAndLocationId(technicianId, locationId);
     }
 
     @Override
@@ -140,37 +226,66 @@ public class TechnicianServiceImpl implements TechnicianService {
         if (technician == null) {
             return null;
         }
-        TechnicianDto technicianDto = technicianMapper.technicianToTechnicianDto(technician);
-        LocationDto locationDto =locationService.getLocationById(technician.getLocationId());
-        User user = userRepository.findById(technician.getUserId()).orElseThrow();
-        technicianDto.setUserDto(userMapper.userToUserDto(user));
-        technicianDto.setLocationDto(locationDto);
-        return technicianDto;
-    }
-
-    @Override
-    public TechnicianDto getTechnicianDtoByUserId(int userId) {
-        Technician technician = technicianRepository.findByUserIdAndDelFlagFalse(userId);
-        if (technician == null) {
-            return null;
+        
+        User user = userRepository.findById(technician.getUserId()).orElse(null);
+        
+        List<TechnicianLocation> technicianLocations = technicianLocationRepository.findByTechnicianId(id);
+        
+        TechnicianDto technicianDto = technicianMapper.technicianToTechnicianDtoWithLocations(technician, technicianLocations);
+        if (user != null) {
+            technicianDto.setUserDto(userMapper.userToUserDto(user));
         }
-        TechnicianDto technicianDto = technicianMapper.technicianToTechnicianDto(technician);
-        LocationDto locationDto =locationService.getLocationById(technician.getLocationId());
-        technicianDto.setLocationDto(locationDto);
-        User user = userRepository.findById(technician.getUserId()).orElseThrow();
-        technicianDto.setUserDto(userMapper.userToUserDto(user));
+        
         return technicianDto;
     }
 
     @Override
-    public TechnicianDto updateTechnician(TechnicianDto technicianDto) {
-        Technician technician = technicianMapper.technicianDtoToTechnician(technicianDto);
-        technician.setLocationId(technicianDto.getLocationDto().getId());
-        technician.setUserId(technicianDto.getUserDto().getId());
-        technicianRepository.save(technician);
-        User user = userRepository.findById(technician.getUserId()).orElseThrow();
+    @Transactional
+    public void updateTechnician(TechnicianDto technicianDto) {
+        // Kiểm tra technician tồn tại
+        Technician existingTechnician = technicianRepository.findByIdAndDelFlagFalse(technicianDto.getId());
+        if (existingTechnician == null) {
+            throw new RuntimeException("Không tìm thấy kỹ thuật viên");
+        }
+
+        // Cập nhật thông tin user
+        User user = userRepository.findById(existingTechnician.getUserId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
+        
         user.setName(technicianDto.getUserDto().getName());
         userRepository.save(user);
-        return technicianDto;
+
+        // Cập nhật thông tin technician
+        existingTechnician.setTechnicianCode(technicianDto.getTechnicianCode());
+        technicianRepository.save(existingTechnician);
+
+        // Cập nhật danh sách location
+        // Xóa tất cả các location hiện tại
+        technicianLocationRepository.deleteByTechnicianId(existingTechnician.getId());
+
+        // Thêm các location mới
+        if (technicianDto.getLocationDtos() != null) {
+            for (LocationDto locationDto : technicianDto.getLocationDtos()) {
+                TechnicianLocation technicianLocation = new TechnicianLocation();
+                technicianLocation.setTechnicianId(existingTechnician.getId());
+                technicianLocation.setLocationId(locationDto.getId());
+                technicianLocationRepository.save(technicianLocation);
+            }
+        }
     }
+
+    @Override
+    @Transactional
+    public void deleteTechnician(Integer id) {
+        Technician technician = technicianRepository.findByIdAndDelFlagFalse(id);
+        if (technician != null) {
+            // Soft delete
+            technician.setDelFlag(true);
+            technicianRepository.save(technician);
+            
+            // Xóa các liên kết với location
+            technicianLocationRepository.deleteByTechnicianId(id);
+        }
+    }
+
 }

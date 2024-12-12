@@ -1,73 +1,71 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách Kỹ thuật viên</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 </head>
 <body>
-<div th:replace="~{fragments/header :: header}"></div>
+    <div th:replace="~{fragments/header :: header}"></div>
 
-<div class="container mt-5">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Danh sách Kỹ thuật viên</h1>
 
-    <h1 class="text-center">Danh sách Kỹ thuật viên</h1>
-
-    <div class="row mt-4">
-
-        <!-- Hiển thị thông báo nếu không có kỹ thuật viên -->
-        <div th:if="${technicianDtoList == null || technicianDtoList.isEmpty()}" class="col-12">
-            <p class="text-center text-muted">Không có kỹ thuật viên nào được tìm thấy.</p>
+        <div th:if="${success}" class="alert alert-success" role="alert">
+            <span th:text="${success}"></span>
         </div>
 
-        <div th:each="technician : ${technicianDtoList}" class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3">
-            <div class="technician-card position-relative">
-                <div class="admin-actions position-absolute"
-                     th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
-                     style="top: 10px; right: 10px;">
-                    <div class="tooltip-container">
-                        <a th:href="@{'/technician/updateTechnicianForm/' + ${technician.id}}" class="btn-update">
-                            <span class="tooltip">Cập nhật</span>
-                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                    <div class="tooltip-container">
-                        <form th:action="@{/technician/delete/{technicianId}(technicianId=${technician.id})}" method="post"
-                              style="display: inline;">
-                            <button type="submit" class="btn-delete"
-                                    onclick="return confirm('Bạn có chắc chắn muốn xóa kỹ thuật viên này?')">
-                                <span class="tooltip">Xóa</span>
-                                <i class="fa fa-times" aria-hidden="true"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                <div class="technician-link">
-                    <div class="technician-card purple">
-                        <div class="technician-title" th:text="${technician.userDto.name}">Tên Kỹ Thuật Viên</div>
-                        <p><strong>Mã kỹ thuật viên:</strong>
-                            <span th:text="${technician.technicianCode}">Mã</span>
-                        </p>
-                        <p><strong>Vị trí:</strong>
-                            <span th:text="${technician.locationDto != null ? technician.locationDto.name : 'Không xác định'}">Vị trí</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
+        <div class="mb-3">
+            <a th:href="@{/technician/create}" class="btn btn-primary">
+                Thêm Kỹ thuật viên mới
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Mã KTV</th>
+                        <th>Họ và tên</th>
+                        <th>Địa điểm phụ trách</th>
+                        <th>Username</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="technician : ${technicianDtoList}">
+                        <td th:text="${technician.technicianCode}"></td>
+                        <td th:text="${technician?.userDto?.name}"></td>
+                        <td>
+                            <span th:if="${technician.locationDtos != null}">
+                                <span th:each="location, iterStat : ${technician.locationDtos}">
+                                    <span th:if="${location != null}" th:text="${location.name}"></span>
+                                    <span th:if="${!iterStat.last && location != null}">, </span>
+                                </span>
+                            </span>
+                            <span th:if="${technician.locationDtos == null || technician.locationDtos.isEmpty()}">
+                                Chưa được phân công
+                            </span>
+                        </td>
+                        <td th:text="${technician?.userDto?.username}"></td>
+                        <td>
+                            <a th:href="@{/technician/edit/{id}(id=${technician.id})}" 
+                               class="btn btn-sm btn-warning">Sửa</a>
+                            <a th:href="@{/technician/delete/{id}(id=${technician.id})}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa kỹ thuật viên này?')">Xóa</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <button sec:authorize="hasAuthority('ADMIN')"
-            th:onclick="|window.location.href='/technician/create'|"
-            class="btn btn-primary">
-        Thêm kỹ thuật viên
-    </button>
-</div>
-<div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

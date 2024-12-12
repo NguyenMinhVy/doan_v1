@@ -13,6 +13,7 @@ import doan.doan_v1.service.LecturerService;
 import doan.doan_v1.service.TechnicianService;
 import doan.doan_v1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +21,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -39,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Autowired
+    @Lazy
     private TechnicianService technicianService;
 
     @Autowired
@@ -92,8 +93,7 @@ public class UserServiceImpl implements UserService {
             if (!(authentication instanceof AnonymousAuthenticationToken)) {
                 Object principal = authentication.getPrincipal();
 
-                if (principal instanceof UserDetails) {
-                    UserDetails userDetails = (UserDetails) principal;
+                if (principal instanceof UserDetails userDetails) {
                     return convertToUser(userDetails);
                 }
             }
@@ -138,4 +138,20 @@ public class UserServiceImpl implements UserService {
     private User convertToUser(UserDetails userDetails) {
         return userRepository.findByUsername(userDetails.getUsername());
     }
+
+//    @Override
+//    public UserDto getUserById(Integer id) {
+//        return userRepository.findById(id)
+//                .map(userMapper::userToUserDto)
+//                .orElse(null);
+//    }
+//
+//    @Override
+//    public User getCurrentUser() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication == null || !authentication.isAuthenticated()) {
+//            return null;
+//        }
+//        return userRepository.findByUsername(authentication.getName());
+//    }
 }

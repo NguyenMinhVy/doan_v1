@@ -73,10 +73,11 @@
                 <label>Kỹ thuật viên:</label>
                 <select class="form-control" th:field="*{technicianDto.id}"
                         th:disabled="${!isAdmin}">
+                    <option value="">-- Chọn kỹ thuật viên --</option>
                     <option th:each="tech : ${technicianList}"
                             th:value="${tech.id}"
                             th:text="${tech.userDto.name}"
-                            th:selected="${tech.id == incident.technicianDto.id}">
+                            th:selected="${incident.technicianDto != null && tech.id == incident.technicianDto.id}">
                     </option>
                 </select>
                 <small class="text-muted" th:if="${!isAdmin}">

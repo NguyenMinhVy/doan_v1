@@ -11,56 +11,55 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <div class="container mt-5">
+    <h1 class="text-center mb-4">Danh sách Giảng viên</h1>
 
-    <h1 class="text-center">Danh sách Giảng viên</h1>
-
-    <div class="row mt-4">
-
-        <!-- Hiển thị thông báo nếu không có Giảng viên -->
-        <div th:if="${lecturerDtoList == null || lecturerDtoList.isEmpty()}" class="col-12">
-            <p class="text-center text-muted">Không có Giảng viên nào được tìm thấy.</p>
-        </div>
-
-        <div th:each="lecturer : ${lecturerDtoList}" class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3">
-            <div class="lecturer-card position-relative">
-                <div class="admin-actions position-absolute"
-                     th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
-                     style="top: 10px; right: 10px;">
-                    <div class="tooltip-container">
-                        <a th:href="@{'/lecturer/updateLecturerForm/' + ${lecturer.id}}" class="btn-update">
-                            <span class="tooltip">Cập nhật</span>
-                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                    <div class="tooltip-container">
-                        <form th:action="@{/lecturer/delete/{lecturerId}(lecturerId=${lecturer.id})}" method="post"
-                              style="display: inline;">
-                            <button type="submit" class="btn-delete"
-                                    onclick="return confirm('Bạn có chắc chắn muốn xóa Giảng viên này?')">
-                                <span class="tooltip">Xóa</span>
-                                <i class="fa fa-times" aria-hidden="true"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                <div class="lecturer-link">
-                    <div class="lecturer-card purple">
-                        <div class="lecturer-title" th:text="${lecturer.userDto.name}">Tên Giảng Viên</div>
-                        <p><strong>Mã Giảng viên:</strong>
-                            <span th:text="${lecturer.lecturerCode}">Mã</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div th:if="${success}" class="alert alert-success" role="alert">
+        <span th:text="${success}"></span>
     </div>
 
-    <button sec:authorize="hasAuthority('ADMIN')"
-            th:onclick="|window.location.href='/lecturer/create'|"
-            class="btn btn-primary">
-        Thêm giảng viên
-    </button>
+    <div class="mb-3" sec:authorize="hasAuthority('ADMIN')">
+        <a th:href="@{/lecturer/create}" class="btn btn-primary">
+            Thêm Giảng viên mới
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Mã GV</th>
+                    <th>Họ và tên</th>
+                    <th>Username</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${lecturerDtoList == null || lecturerDtoList.isEmpty()}">
+                    <td colspan="4" class="text-center">Không có Giảng viên nào được tìm thấy.</td>
+                </tr>
+                <tr th:each="lecturer : ${lecturerDtoList}">
+                    <td th:text="${lecturer.lecturerCode}"></td>
+                    <td th:text="${lecturer?.userDto?.name}"></td>
+                    <td th:text="${lecturer?.userDto?.username}"></td>
+                    <td sec:authorize="hasAuthority('ADMIN')">
+                        <a th:href="@{/lecturer/updateLecturerForm/{id}(id=${lecturer.id})}" 
+                           class="btn btn-sm btn-warning">Sửa</a>
+                        <form th:action="@{/lecturer/delete/{lecturerId}(lecturerId=${lecturer.id})}" 
+                              method="post" 
+                              style="display: inline;">
+                            <button type="submit" 
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa Giảng viên này?')">
+                                Xóa
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
