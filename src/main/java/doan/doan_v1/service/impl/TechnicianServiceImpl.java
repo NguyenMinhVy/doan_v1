@@ -3,6 +3,7 @@ package doan.doan_v1.service.impl;
 import doan.doan_v1.Constant.Constant;
 import doan.doan_v1.dto.LocationDto;
 import doan.doan_v1.dto.TechnicianDto;
+import doan.doan_v1.dto.UserDto;
 import doan.doan_v1.entity.Technician;
 import doan.doan_v1.entity.TechnicianLocation;
 import doan.doan_v1.entity.User;
@@ -195,7 +196,11 @@ public class TechnicianServiceImpl implements TechnicianService {
             .map(technician -> {
                 List<TechnicianLocation> techLocations = 
                     technicianLocationRepository.findByTechnicianId(technician.getId());
-                return technicianMapper.technicianToTechnicianDtoWithLocations(technician, techLocations);
+                TechnicianDto technicianDto = technicianMapper.technicianToTechnicianDtoWithLocations(technician, techLocations);
+                User user = userRepository.findById(technician.getUserId()).orElse(null);
+                UserDto userDto = userMapper.userToUserDto(user);
+                technicianDto.setUserDto(userDto);
+                return technicianDto;
             })
             .collect(Collectors.toList());
     }

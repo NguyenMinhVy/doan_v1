@@ -36,7 +36,7 @@ public abstract class TechnicianMapper {
             List<TechnicianLocation> technicianLocations) {
         TechnicianDto dto = technicianToTechnicianDto(technician);
         
-        if (technicianLocations != null) {
+        if (technicianLocations != null && !technicianLocations.isEmpty()) {
             List<LocationDto> locationDtos = technicianLocations.stream()
                 .map(tl -> locationRepository.findById(tl.getLocationId())
                     .map(location -> locationMapper.locationToLocationDto(location))
