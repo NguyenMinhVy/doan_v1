@@ -107,8 +107,31 @@ public class RoomServiceImpl implements RoomService {
             roomsByLocation.computeIfAbsent(room.getLocationDto(), k -> new ArrayList<>()).add(room);
         }
 
+        Comparator<RoomDto> roomComparator = (room1, room2) -> {
+            String name1 = room1.getName();
+            String name2 = room2.getName();
+
+            String prefix1 = name1.replaceAll("\\d.*", "");
+            String prefix2 = name2.replaceAll("\\d.*", "");
+
+            if (!prefix1.equals(prefix2)) {
+                return prefix1.compareTo(prefix2);
+            }
+
+            String numberPart1 = name1.replaceAll("\\D+", "");
+            String numberPart2 = name2.replaceAll("\\D+", "");
+
+            if (!numberPart1.isEmpty() && !numberPart2.isEmpty()) {
+                int num1 = Integer.parseInt(numberPart1);
+                int num2 = Integer.parseInt(numberPart2);
+                return Integer.compare(num1, num2);
+            }
+
+            return name1.compareTo(name2);
+        };
+
         for (List<RoomDto> rooms : roomsByLocation.values()) {
-            rooms.sort(Comparator.comparing(RoomDto::getName));
+            rooms.sort(roomComparator);
         }
 
         return roomsByLocation;
