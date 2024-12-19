@@ -56,12 +56,14 @@
         <div class="form-group">
             <label for="technician">Kỹ thuật viên</label>
             <select id="technician" name="technicianDto.id" class="form-control" required>
-                <option value="" disabled th:if="${roomDto.technicianDto == null}" selected>Chọn kỹ thuật viên</option>
+                <option value="" disabled selected th:if="${technicianDtoList == null || technicianDtoList.isEmpty()}">Không có kỹ thuật viên</option>
+                <option value="" disabled th:if="${technicianDtoList != null && !technicianDtoList.isEmpty()}" selected>Chọn kỹ thuật viên</option>
                 <option th:each="technician : ${technicianDtoList}"
                         th:value="${technician.id}"
-                        th:selected="${technician.id == roomDto.technicianDto.id}"
+                        th:selected="${technician.id == (roomDto.technicianDto != null ? roomDto.technicianDto.id : null)}"
                         th:text="${technician.userDto.name}"></option>
             </select>
+
         </div>
         <!-- Nút submit -->
         <button type="submit" class="btn btn-primary">Cập Nhật</button>
